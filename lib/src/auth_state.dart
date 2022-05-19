@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
-class ApplicationState extends ChangeNotifier {
+class AuthState extends ChangeNotifier {
   ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
   ApplicationLoginState get loginState => _loginState;
 
@@ -13,7 +13,7 @@ class ApplicationState extends ChangeNotifier {
   String? _email;
   String? get email => _email;
 
-  ApplicationState(
+  AuthState(
     this.firebaseAuth, [
     Future<FirebaseApp>? Function({String? name, FirebaseOptions? options})
         firebaseInitializeAppFunction = Firebase.initializeApp,

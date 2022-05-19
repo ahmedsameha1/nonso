@@ -5,9 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:nonso/src/application_state.dart';
+import 'package:nonso/src/auth_state.dart';
 
-import 'application_state_test.mocks.dart';
+import 'auth_state_test.mocks.dart';
 import 'test_constants.dart';
 
 abstract class FirebaseInitializeAppFunction {
@@ -34,7 +34,7 @@ const workingWithApplicationState = "Working with ApplicationState class";
 const notifyListenersCalled =
     "ChangeNotifier.notifyListeners() has been called";
 const callingStartLoginFlow = "Calling startLoginFlow()";
-late ApplicationState sut;
+late AuthState sut;
 final firebaseAuthExceptionCallback =
     MockFirebaseAuthExceptionErrorCallbackFunction();
 final notifyListenersCall = MockProviderNotifiyListenerFunction();
@@ -57,7 +57,7 @@ main() {
 
   setUp(() {
     firebaseAuth = MockFirebaseAuth();
-    sut = ApplicationState(firebaseAuth, initializeCall)
+    sut = AuthState(firebaseAuth, initializeCall)
       ..addListener(notifyListenersCall);
     userCredential = MockUserCredential();
     streamController = StreamController();
