@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 
-class AuthState extends ChangeNotifier {
+class AuthState {
   ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
   ApplicationLoginState get loginState => _loginState;
 
@@ -35,13 +34,11 @@ class AuthState extends ChangeNotifier {
       } else {
         _loginState = ApplicationLoginState.loggedOut;
       }
-      notifyListeners();
     });
   }
 
   void startLoginFlow() {
     _loginState = ApplicationLoginState.emailAddress;
-    notifyListeners();
   }
 
   Future<void> verifyEmail(String email,
@@ -58,7 +55,6 @@ class AuthState extends ChangeNotifier {
         _loginState = ApplicationLoginState.register;
       }
       _email = email;
-      notifyListeners();
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);
     }
@@ -83,7 +79,6 @@ class AuthState extends ChangeNotifier {
           "To cancel registration you need to be at register stage!");
     }
     _loginState = ApplicationLoginState.emailAddress;
-    notifyListeners();
   }
 
   Future<void> registerAccount(
@@ -118,7 +113,6 @@ class AuthState extends ChangeNotifier {
 
   void toLoggedOut() {
     _loginState = ApplicationLoginState.loggedOut;
-    notifyListeners();
   }
 
   void updateUser() {
