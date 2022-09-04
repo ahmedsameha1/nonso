@@ -1,3 +1,3 @@
 library nonso;
 
-export 'src/auth_state.dart' show AuthState;
+export 'src/auth_state_notifier.dart' show AuthStateNotifier;

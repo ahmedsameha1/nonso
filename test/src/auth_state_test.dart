@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:nonso/src/auth_state.dart';
+import 'package:nonso/src/auth_state_notifier.dart';
 
 import 'auth_state_test.mocks.dart';
 import 'test_constants.dart';
@@ -32,7 +32,7 @@ const weakPassword = "123";
 const displayName = "displayName";
 const workingWithApplicationState = "Working with ApplicationState class";
 const callingStartLoginFlow = "Calling startLoginFlow()";
-late AuthState sut;
+late AuthStateNotifier sut;
 final firebaseAuthExceptionCallback =
     MockFirebaseAuthExceptionErrorCallbackFunction();
 const User? nullUser = null;
@@ -53,7 +53,7 @@ main() {
 
   setUp(() {
     firebaseAuth = MockFirebaseAuth();
-    sut = AuthState(firebaseAuth, initializeCall);
+    sut = AuthStateNotifier(firebaseAuth, initializeCall);
     userCredential = MockUserCredential();
     streamController = StreamController();
     when(firebaseAuth.userChanges())

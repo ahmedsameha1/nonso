@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-class AuthState {
+class AuthStateNotifier {
   ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
   ApplicationLoginState get loginState => _loginState;
 
@@ -12,7 +12,7 @@ class AuthState {
   String? _email;
   String? get email => _email;
 
-  AuthState(
+  AuthStateNotifier(
     this.firebaseAuth, [
     Future<FirebaseApp>? Function({String? name, FirebaseOptions? options})
         firebaseInitializeAppFunction = Firebase.initializeApp,
