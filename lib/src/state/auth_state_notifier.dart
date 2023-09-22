@@ -1,60 +1,59 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AuthStateNotifier {
-  ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
-  ApplicationLoginState get loginState => _loginState;
+import 'auth_state.dart';
+import 'value_classes/application_login_state.dart';
 
+class AuthStateNotifier extends StateNotifier<AuthState> {
   FirebaseAuth firebaseAuth;
 
-  String? _email;
-  String? get email => _email;
-
-  AuthStateNotifier(
-    this.firebaseAuth, [
-    Future<FirebaseApp>? Function({String? name, FirebaseOptions? options})
-        firebaseInitializeAppFunction = Firebase.initializeApp,
-  ]) {
-    _init(firebaseInitializeAppFunction);
+  AuthStateNotifier(this.firebaseAuth,
+      [state = const AuthState(
+          applicationLoginState: ApplicationLoginState.loggedOut)])
+      : super(state) {
+    _init();
   }
 
-  Future<void> _init(
-      Future<FirebaseApp>? Function({String? name, FirebaseOptions? options})
-          firebaseInitializeAppFunction) async {
-    await firebaseInitializeAppFunction();
+  void _init() {
     firebaseAuth.userChanges().listen((user) {
       if (user != null) {
         if (!user.emailVerified) {
-          _loginState = ApplicationLoginState.locked;
+          state = state.copyWith(
+              applicationLoginState: ApplicationLoginState.locked);
         } else {
-          _loginState = ApplicationLoginState.loggedIn;
+          state = state.copyWith(
+              applicationLoginState: ApplicationLoginState.loggedIn);
         }
       } else {
-        _loginState = ApplicationLoginState.loggedOut;
+        state = state.copyWith(
+            applicationLoginState: ApplicationLoginState.loggedOut);
       }
     });
   }
 
   void startLoginFlow() {
-    _loginState = ApplicationLoginState.emailAddress;
+    state = state.copyWith(
+        applicationLoginState: ApplicationLoginState.emailAddress);
   }
 
   Future<void> verifyEmail(String email,
       void Function(FirebaseAuthException exception) errorCallback) async {
-    if (_loginState != ApplicationLoginState.emailAddress) {
+    if (state.applicationLoginState != ApplicationLoginState.emailAddress) {
       throw StateError(
           "To verify the email you need to be at emailAddress stage!");
     }
     try {
       final methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
       if (methods.contains("password")) {
-        _loginState = ApplicationLoginState.password;
+        state = state.copyWith(
+            applicationLoginState: ApplicationLoginState.password);
       } else {
-        _loginState = ApplicationLoginState.register;
+        state = state.copyWith(
+            applicationLoginState: ApplicationLoginState.register);
       }
-      _email = email;
+      state = state.copyWith(email: email);
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);
     }
@@ -62,7 +61,7 @@ class AuthStateNotifier {
 
   Future<void> signInWithEmailAndPassword(String email, String password,
       void Function(FirebaseAuthException exception) errorCallback) async {
-    if (_loginState != ApplicationLoginState.password) {
+    if (state.applicationLoginState != ApplicationLoginState.password) {
       throw StateError("To sign in you need to be at password stage!");
     }
     try {
@@ -74,11 +73,12 @@ class AuthStateNotifier {
   }
 
   void cancelRegistration() {
-    if (_loginState != ApplicationLoginState.register) {
+    if (state.applicationLoginState != ApplicationLoginState.register) {
       throw StateError(
           "To cancel registration you need to be at register stage!");
     }
-    _loginState = ApplicationLoginState.emailAddress;
+    state = state.copyWith(
+        applicationLoginState: ApplicationLoginState.emailAddress);
   }
 
   Future<void> registerAccount(
@@ -86,33 +86,34 @@ class AuthStateNotifier {
       String password,
       String displayName,
       void Function(FirebaseAuthException exception) errorCallback) async {
-    if (_loginState != ApplicationLoginState.register) {
+    if (state.applicationLoginState != ApplicationLoginState.register) {
       throw StateError("To register you need to be at register stage!");
     }
     try {
       final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
       userCredential.user!.updateDisplayName(displayName);
-      userCredential.user!.sendEmailVerification();
+      await userCredential.user!.sendEmailVerification();
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);
     }
   }
 
   Future<void> signOut() async {
-    if (!(_loginState == ApplicationLoginState.loggedIn ||
-        _loginState == ApplicationLoginState.locked)) {
+    if (!(state.applicationLoginState == ApplicationLoginState.loggedIn ||
+        state.applicationLoginState == ApplicationLoginState.locked)) {
       throw StateError("To sign out you need to sign in first!");
     }
     await firebaseAuth.signOut();
   }
 
-  void sendEmailToVerifyEmailAddress() {
-    firebaseAuth.currentUser!.sendEmailVerification();
+  Future<void> sendEmailToVerifyEmailAddress() async {
+    await firebaseAuth.currentUser!.sendEmailVerification();
   }
 
   void toLoggedOut() {
-    _loginState = ApplicationLoginState.loggedOut;
+    state =
+        state.copyWith(applicationLoginState: ApplicationLoginState.loggedOut);
   }
 
   void updateUser() {
@@ -127,13 +128,4 @@ class AuthStateNotifier {
       errorCallback(exception);
     }
   }
-}
-
-enum ApplicationLoginState {
-  loggedOut,
-  loggedIn,
-  emailAddress,
-  password,
-  register,
-  locked,
 }
