@@ -1,10 +1,30 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_login_state.dart';
 import 'auth_events.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc()
+  FirebaseAuth firebaseAuth;
+
+  AuthBloc(this.firebaseAuth)
       : super(const AuthState(
-            applicationLoginState: ApplicationLoginState.loggedOut));
+            applicationLoginState: ApplicationLoginState.loggedOut)) {
+    _init();
+    on<LogInEvent>(
+      (event, emit) => emit(AuthState(
+          applicationLoginState: ApplicationLoginState.loggedIn,
+          email: event.email)),
+    );
+  }
+
+  void _init() {
+    firebaseAuth.userChanges().listen((user) {
+      if (user != null) {
+        if (user.email != null && user.emailVerified) {
+          add(LogInEvent(user.email!));
+        }
+      }
+    });
+  }
 }

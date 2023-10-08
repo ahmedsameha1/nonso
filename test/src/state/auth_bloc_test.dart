@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bloc_test/bloc_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -46,7 +47,7 @@ main() {
     userCredential = MockUserCredential();
     streamController = StreamController();
     when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
-    sut = AuthBloc();
+    sut = AuthBloc(firebaseAuth);
   });
 
   test("""
@@ -63,12 +64,32 @@ main() {
             applicationLoginState: ApplicationLoginState.loggedOut,
             email: null));
   });
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+        $wheN Creating a new AuthBloc instance
+          $and there is a signed in user
+          $and User.emailVerified returns true
+        $then state.applicationLoginState should return ApplicationLoginState.loggedIn
+      """,
+    build: () => sut,
+    setUp: () {
+      pushPreparedUserToUserChangesStream(notNullUser, true);
+    },
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.loggedIn,
+          email: "user1@example.com")
+    ],
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
     [bool emailVerified = false]) {
   if (user != null) {
     when(user.emailVerified).thenReturn(emailVerified);
+    when(user.email).thenReturn("user1@example.com");
   }
   streamController.sink.add(user);
 }
