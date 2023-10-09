@@ -11,3 +11,5 @@ final class LockedEvent extends AuthEvent {
 
   LockedEvent(this.email);
 }
+
+final class EmailAddressEvent extends AuthEvent {}

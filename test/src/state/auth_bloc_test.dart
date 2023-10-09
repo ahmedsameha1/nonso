@@ -102,6 +102,24 @@ main() {
           email: "user1@example.com")
     ],
   );
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN calling startLoginFlow()
+        $then That state.applicationLoginState returns ApplicationLoginState.emailAddress
+      """,
+    build: () => sut,
+    act: (bloc) {
+      fromLoggedOutToEmailAddress();
+    },
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.emailAddress,
+          email: null)
+    ],
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
@@ -111,4 +129,8 @@ void pushPreparedUserToUserChangesStream(User? user,
     when(user.email).thenReturn("user1@example.com");
   }
   streamController.sink.add(user);
+}
+
+void fromLoggedOutToEmailAddress() {
+  sut.startLoginFlow();
 }
