@@ -5,3 +5,9 @@ final class LogInEvent extends AuthEvent {
 
   LogInEvent(this.email);
 }
+
+final class LockedEvent extends AuthEvent {
+  final String email;
+
+  LockedEvent(this.email);
+}

@@ -16,6 +16,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           applicationLoginState: ApplicationLoginState.loggedIn,
           email: event.email)),
     );
+    on<LockedEvent>(
+      (event, emit) => emit(AuthState(
+          applicationLoginState: ApplicationLoginState.locked,
+          email: event.email)),
+    );
   }
 
   void _init() {
@@ -23,6 +28,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user != null) {
         if (user.email != null && user.emailVerified) {
           add(LogInEvent(user.email!));
+        } else if (user.email != null && !user.emailVerified) {
+          add(LockedEvent(user.email!));
         }
       }
     });

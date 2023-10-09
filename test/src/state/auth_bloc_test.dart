@@ -83,6 +83,25 @@ main() {
           email: "user1@example.com")
     ],
   );
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+        $wheN Creating a new AuthStateNotifier instance
+          $and there is a signed in user
+          $and User.emailVerified returns false
+        $then state.applicationLoginState should return ApplicationLoginState.locked
+      """,
+    build: () => sut,
+    setUp: () {
+      pushPreparedUserToUserChangesStream(notNullUser, false);
+    },
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.locked,
+          email: "user1@example.com")
+    ],
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
