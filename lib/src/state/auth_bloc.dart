@@ -43,4 +43,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void startLoginFlow() {
     add(EmailAddressEvent());
   }
+
+  Future<void> verifyEmail(String email,
+      void Function(FirebaseAuthException exception) errorCallback) async {
+    try {
+      await firebaseAuth.fetchSignInMethodsForEmail(email);
+    } on FirebaseAuthException catch (exception) {
+      errorCallback(exception);
+    }
+  }
 }

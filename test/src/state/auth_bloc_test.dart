@@ -120,6 +120,45 @@ main() {
           email: null)
     ],
   );
+
+  blocTest("""
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN Calling verifyEmail()
+          $and FirebaseAuthException has been thrown
+        $then the errorCallback() should be called
+""",
+      setUp: () {
+        when(firebaseAuth.fetchSignInMethodsForEmail(invalidEmail))
+            .thenThrow(firebaseAuthException);
+      },
+      build: () => sut,
+      act: (bloc) {
+        fromLoggedOutToEmailAddress();
+        sut.verifyEmail(invalidEmail, firebaseAuthExceptionCallback);
+      },
+      verify: (bloc) {
+        verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
+      });
+
+  blocTest("""
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN Calling verifyEmail() with a valid email address
+        $then the errorCallback() has NOT been called, which imply that a
+          FirebaseAuthException has NOT been thrown
+""",
+      setUp: () {
+        prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
+      },
+      build: () => sut,
+      act: (bloc) {
+        fromLoggedOutToEmailAddress();
+        sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      },
+      verify: (bloc) {
+        verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
+      });
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
@@ -133,4 +172,10 @@ void pushPreparedUserToUserChangesStream(User? user,
 
 void fromLoggedOutToEmailAddress() {
   sut.startLoginFlow();
+}
+
+void
+    prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod() {
+  when(firebaseAuth.fetchSignInMethodsForEmail(validEmail))
+      .thenAnswer((realInvocation) => Future.value(<String>["password"]));
 }
