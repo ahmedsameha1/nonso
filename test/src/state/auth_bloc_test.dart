@@ -167,6 +167,34 @@ main() {
           email: validEmail)
     ],
   );
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN Calling verifyEmail with a valid email address
+          $and verifyEmail returns a Future of List that doesn't contain "password"
+        $then state.applicationLoginState should return ApplicationLoginState.register
+          $and the email returns the same passed argument email
+""",
+    setUp: () {
+      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatDoesntContainPasswordMethod();
+    },
+    build: () => sut,
+    act: (bloc) {
+      fromLoggedOutToEmailAddress();
+      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+    },
+    verify: (bloc) {
+      verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
+    },
+    skip: 1,
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.register,
+          email: validEmail)
+    ],
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
@@ -186,4 +214,10 @@ void
     prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod() {
   when(firebaseAuth.fetchSignInMethodsForEmail(validEmail))
       .thenAnswer((realInvocation) => Future.value(<String>["password"]));
+}
+
+void
+    prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatDoesntContainPasswordMethod() {
+  when(firebaseAuth.fetchSignInMethodsForEmail(validEmail))
+      .thenAnswer((realInvocation) => Future.value(<String>[]));
 }

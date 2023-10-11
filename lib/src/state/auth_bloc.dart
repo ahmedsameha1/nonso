@@ -31,6 +31,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           applicationLoginState: ApplicationLoginState.password,
           email: event.email)),
     );
+    on<RegisterEvent>(
+      (event, emit) => emit(AuthState(
+          applicationLoginState: ApplicationLoginState.register,
+          email: event.email)),
+    );
   }
 
   void _init() {
@@ -55,6 +60,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
       if (methods.contains("password")) {
         add(PasswordEvent(email));
+      } else {
+        add(RegisterEvent(email));
       }
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);

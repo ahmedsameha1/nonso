@@ -19,3 +19,9 @@ final class PasswordEvent extends AuthEvent {
 
   PasswordEvent(this.email);
 }
+
+final class RegisterEvent extends AuthEvent {
+  final String email;
+
+  RegisterEvent(this.email);
+}
