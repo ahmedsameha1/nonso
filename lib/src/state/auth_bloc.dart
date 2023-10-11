@@ -26,6 +26,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           applicationLoginState: ApplicationLoginState.emailAddress,
           email: null)),
     );
+    on<PasswordEvent>(
+      (event, emit) => emit(AuthState(
+          applicationLoginState: ApplicationLoginState.password,
+          email: event.email)),
+    );
   }
 
   void _init() {
@@ -47,7 +52,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> verifyEmail(String email,
       void Function(FirebaseAuthException exception) errorCallback) async {
     try {
-      await firebaseAuth.fetchSignInMethodsForEmail(email);
+      final methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
+      if (methods.contains("password")) {
+        add(PasswordEvent(email));
+      }
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);
     }

@@ -141,24 +141,32 @@ main() {
         verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
       });
 
-  blocTest("""
+  blocTest(
+    """
         $given $workingWithAuthStateNotifier
           $and there is no signed in user
         $wheN Calling verifyEmail() with a valid email address
         $then the errorCallback() has NOT been called, which imply that a
           FirebaseAuthException has NOT been thrown
 """,
-      setUp: () {
-        prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
-      },
-      build: () => sut,
-      act: (bloc) {
-        fromLoggedOutToEmailAddress();
-        sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
-      },
-      verify: (bloc) {
-        verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
-      });
+    setUp: () {
+      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
+    },
+    build: () => sut,
+    act: (bloc) {
+      fromLoggedOutToEmailAddress();
+      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+    },
+    verify: (bloc) {
+      verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
+    },
+    skip: 1,
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.password,
+          email: validEmail)
+    ],
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
