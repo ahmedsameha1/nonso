@@ -67,4 +67,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       errorCallback(exception);
     }
   }
+
+  Future<void> signInWithEmailAndPassword(String email, String password,
+      void Function(FirebaseAuthException exception) errorCallback) async {
+    try {
+      await firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+    } on FirebaseAuthException catch (exception) {
+      errorCallback(exception);
+    }
+  }
 }

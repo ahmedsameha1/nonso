@@ -195,6 +195,30 @@ main() {
           email: validEmail)
     ],
   );
+
+  blocTest("""
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN Calling signInWithEmailAndPassword()
+          $and FirebaseAuthException has been thrown
+        $then the errorCallback() should be called
+""",
+      setUp: () {
+        prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
+        when(firebaseAuth.signInWithEmailAndPassword(
+                email: invalidEmail, password: password))
+            .thenThrow(firebaseAuthException);
+      },
+      build: () => sut,
+      act: (bloc) {
+        fromLoggedOutToEmailAddress();
+        sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+        sut.signInWithEmailAndPassword(
+            invalidEmail, password, firebaseAuthExceptionCallback);
+      },
+      verify: (bloc) {
+        verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
+      });
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
