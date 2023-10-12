@@ -80,7 +80,7 @@ main() {
     expect: () => [
       const AuthState(
           applicationLoginState: ApplicationLoginState.loggedIn,
-          email: "user1@example.com")
+          email: validEmail)
     ],
   );
 
@@ -99,7 +99,7 @@ main() {
     expect: () => [
       const AuthState(
           applicationLoginState: ApplicationLoginState.locked,
-          email: "user1@example.com")
+          email: validEmail)
     ],
   );
 
@@ -219,13 +219,81 @@ main() {
       verify: (bloc) {
         verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
       });
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN Calling signInWithEmailAndPassword() with a valid email and
+                password
+          $and User.emailVerified returns false
+        $then Calling state.applicationLoginState should return ApplicationLoginState.locked
+""",
+    setUp: () {
+      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
+      when(firebaseAuth.signInWithEmailAndPassword(
+              email: validEmail, password: password))
+          .thenAnswer((realInvocation) => Future.value(userCredential));
+    },
+    build: () => sut,
+    act: (bloc) {
+      fromLoggedOutToEmailAddress();
+      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+      pushPreparedUserToUserChangesStream(notNullUser, false);
+    },
+    verify: (bloc) {
+      verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
+    },
+    skip: 2,
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.locked,
+          email: validEmail)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN Calling signInWithEmailAndPassword() with a valid email and
+                password
+          $and User.emailVerified returns true
+        $then Calling state.applicationLoginState returns ApplicationLoginState.loggedIn
+""",
+    setUp: () {
+      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
+      when(firebaseAuth.signInWithEmailAndPassword(
+              email: validEmail, password: password))
+          .thenAnswer((realInvocation) => Future.value(userCredential));
+    },
+    build: () => sut,
+    act: (bloc) {
+      fromLoggedOutToEmailAddress();
+      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+      pushPreparedUserToUserChangesStream(notNullUser, true);
+    },
+    verify: (bloc) {
+      verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
+    },
+    skip: 2,
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.loggedIn,
+          email: validEmail)
+    ],
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
     [bool emailVerified = false]) {
   if (user != null) {
     when(user.emailVerified).thenReturn(emailVerified);
-    when(user.email).thenReturn("user1@example.com");
+    when(user.email).thenReturn(validEmail);
   }
   streamController.sink.add(user);
 }
