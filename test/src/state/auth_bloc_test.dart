@@ -321,6 +321,24 @@ main() {
           email: validEmail)
     ],
   );
+
+  blocTest(
+    """
+      $given $workingWithAuthStateNotifier
+      $wheN Calling updateUser()
+      $then User.reload() should be called
+      """,
+    setUp: () {
+      when(firebaseAuth.currentUser).thenReturn(notNullUser);
+    },
+    build: () => sut,
+    act: (bloc) {
+      sut.updateUser();
+    },
+    verify: (bloc) {
+      verify(notNullUser.reload()).called(1);
+    },
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
