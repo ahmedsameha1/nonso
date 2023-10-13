@@ -287,6 +287,40 @@ main() {
           email: validEmail)
     ],
   );
+
+  blocTest(
+    """
+      $given $workingWithAuthStateNotifier
+        $and there is signed in user
+      $wheN Calling sendEmailToVerifyEmailAddress()
+      $then User.sendEmailVerification() has been called
+      """,
+    setUp: () {
+      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
+      when(firebaseAuth.signInWithEmailAndPassword(
+              email: validEmail, password: password))
+          .thenAnswer((realInvocation) => Future.value(userCredential));
+    },
+    build: () => sut,
+    act: (bloc) {
+      fromLoggedOutToEmailAddress();
+      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+      pushPreparedUserToUserChangesStream(notNullUser, false);
+      when(firebaseAuth.currentUser).thenReturn(notNullUser);
+      sut.sendEmailToVerifyEmailAddress();
+    },
+    verify: (bloc) {
+      verify(notNullUser.sendEmailVerification()).called(1);
+    },
+    skip: 2,
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.locked,
+          email: validEmail)
+    ],
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,

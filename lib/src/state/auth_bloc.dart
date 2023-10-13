@@ -77,4 +77,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       errorCallback(exception);
     }
   }
+
+  Future<void> sendEmailToVerifyEmailAddress() {
+    return firebaseAuth.currentUser!.sendEmailVerification();
+  }
 }
