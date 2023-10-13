@@ -133,9 +133,9 @@ main() {
             .thenThrow(firebaseAuthException);
       },
       build: () => sut,
-      act: (bloc) {
+      act: (bloc) async {
         fromLoggedOutToEmailAddress();
-        sut.verifyEmail(invalidEmail, firebaseAuthExceptionCallback);
+        await sut.verifyEmail(invalidEmail, firebaseAuthExceptionCallback);
       },
       verify: (bloc) {
         verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
@@ -153,9 +153,9 @@ main() {
       prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
     },
     build: () => sut,
-    act: (bloc) {
+    act: (bloc) async {
       fromLoggedOutToEmailAddress();
-      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
     },
     verify: (bloc) {
       verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
@@ -181,9 +181,9 @@ main() {
       prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatDoesntContainPasswordMethod();
     },
     build: () => sut,
-    act: (bloc) {
+    act: (bloc) async {
       fromLoggedOutToEmailAddress();
-      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
     },
     verify: (bloc) {
       verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
@@ -210,9 +210,9 @@ main() {
             .thenThrow(firebaseAuthException);
       },
       build: () => sut,
-      act: (bloc) {
+      act: (bloc) async {
         fromLoggedOutToEmailAddress();
-        sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+        await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
         sut.signInWithEmailAndPassword(
             invalidEmail, password, firebaseAuthExceptionCallback);
       },
@@ -236,9 +236,9 @@ main() {
           .thenAnswer((realInvocation) => Future.value(userCredential));
     },
     build: () => sut,
-    act: (bloc) {
+    act: (bloc) async {
       fromLoggedOutToEmailAddress();
-      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
       sut.signInWithEmailAndPassword(
           validEmail, password, firebaseAuthExceptionCallback);
       pushPreparedUserToUserChangesStream(notNullUser, false);
@@ -270,9 +270,9 @@ main() {
           .thenAnswer((realInvocation) => Future.value(userCredential));
     },
     build: () => sut,
-    act: (bloc) {
+    act: (bloc) async {
       fromLoggedOutToEmailAddress();
-      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
       sut.signInWithEmailAndPassword(
           validEmail, password, firebaseAuthExceptionCallback);
       pushPreparedUserToUserChangesStream(notNullUser, true);
@@ -302,9 +302,9 @@ main() {
           .thenAnswer((realInvocation) => Future.value(userCredential));
     },
     build: () => sut,
-    act: (bloc) {
+    act: (bloc) async {
       fromLoggedOutToEmailAddress();
-      sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
       sut.signInWithEmailAndPassword(
           validEmail, password, firebaseAuthExceptionCallback);
       pushPreparedUserToUserChangesStream(notNullUser, false);
@@ -338,6 +338,30 @@ main() {
     verify: (bloc) {
       verify(notNullUser.reload()).called(1);
     },
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN Calling cancelRegistration()
+        $then Calling logginState should return ApplicationLogginState.emailAddress
+""",
+    setUp: () {
+      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatDoesntContainPasswordMethod();
+    },
+    build: () => sut,
+    act: (bloc) async {
+      fromLoggedOutToEmailAddress();
+      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      sut.cancelRegistration();
+    },
+    skip: 2,
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.emailAddress,
+          email: null)
+    ],
   );
 }
 

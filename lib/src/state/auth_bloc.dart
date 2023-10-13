@@ -36,6 +36,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           applicationLoginState: ApplicationLoginState.register,
           email: event.email)),
     );
+    on<CancelRegistrationEvent>(
+      (event, emit) => emit(const AuthState(
+          applicationLoginState: ApplicationLoginState.emailAddress,
+          email: null)),
+    );
   }
 
   void _init() {
@@ -84,5 +89,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void updateUser() {
     firebaseAuth.currentUser!.reload();
+  }
+
+  void cancelRegistration() {
+    add(CancelRegistrationEvent());
   }
 }

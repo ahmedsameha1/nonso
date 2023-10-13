@@ -25,3 +25,5 @@ final class RegisterEvent extends AuthEvent {
 
   RegisterEvent(this.email);
 }
+
+final class CancelRegistrationEvent extends AuthEvent {}
