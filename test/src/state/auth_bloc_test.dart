@@ -503,6 +503,42 @@ main() {
       verify(firebaseAuth.sendPasswordResetEmail(email: validEmail)).called(1);
     },
   );
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+          $and Calling state.applicationLoginState returns ApplicationLoginState.locked
+        $wheN Calling signOut()
+        $then Calling state.applicationLoginState returns ApplicationLoginState.loggedOut
+""",
+    setUp: () {
+      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
+      when(firebaseAuth.signInWithEmailAndPassword(
+              email: validEmail, password: password))
+          .thenAnswer((realInvocation) => Future.value(userCredential));
+    },
+    build: () => sut,
+    act: (bloc) async {
+      fromLoggedOutToEmailAddress();
+      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      await sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+      pushPreparedUserToUserChangesStream(notNullUser, false);
+      await sut.signOut();
+      pushPreparedUserToUserChangesStream(nullUser);
+    },
+    verify: (bloc) {
+      verify(firebaseAuth.signOut()).called(1);
+    },
+    skip: 2,
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.locked,
+          email: validEmail),
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.loggedOut, email: null)
+    ],
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
