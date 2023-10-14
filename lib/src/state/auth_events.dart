@@ -27,3 +27,5 @@ final class RegisterEvent extends AuthEvent {
 }
 
 final class CancelRegistrationEvent extends AuthEvent {}
+
+final class LogOutEvent extends AuthEvent {}

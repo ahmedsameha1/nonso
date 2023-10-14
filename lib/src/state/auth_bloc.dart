@@ -41,6 +41,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           applicationLoginState: ApplicationLoginState.emailAddress,
           email: null)),
     );
+    on<LogOutEvent>((event, emit) => emit(
+          const AuthState(
+              applicationLoginState: ApplicationLoginState.loggedOut,
+              email: null),
+        ));
   }
 
   void _init() {
@@ -51,6 +56,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         } else if (user.email != null && !user.emailVerified) {
           add(LockedEvent(user.email!));
         }
+      } else {
+        add(LogOutEvent());
       }
     });
   }
@@ -108,5 +115,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);
     }
+  }
+
+  Future<void> signOut() {
+    return firebaseAuth.signOut();
   }
 }

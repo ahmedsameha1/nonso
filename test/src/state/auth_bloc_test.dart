@@ -213,7 +213,7 @@ main() {
       act: (bloc) async {
         fromLoggedOutToEmailAddress();
         await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
-        sut.signInWithEmailAndPassword(
+        await sut.signInWithEmailAndPassword(
             invalidEmail, password, firebaseAuthExceptionCallback);
       },
       verify: (bloc) {
@@ -239,7 +239,7 @@ main() {
     act: (bloc) async {
       fromLoggedOutToEmailAddress();
       await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
-      sut.signInWithEmailAndPassword(
+      await sut.signInWithEmailAndPassword(
           validEmail, password, firebaseAuthExceptionCallback);
       pushPreparedUserToUserChangesStream(notNullUser, false);
     },
@@ -273,7 +273,7 @@ main() {
     act: (bloc) async {
       fromLoggedOutToEmailAddress();
       await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
-      sut.signInWithEmailAndPassword(
+      await sut.signInWithEmailAndPassword(
           validEmail, password, firebaseAuthExceptionCallback);
       pushPreparedUserToUserChangesStream(notNullUser, true);
     },
@@ -305,7 +305,7 @@ main() {
     act: (bloc) async {
       fromLoggedOutToEmailAddress();
       await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
-      sut.signInWithEmailAndPassword(
+      await sut.signInWithEmailAndPassword(
           validEmail, password, firebaseAuthExceptionCallback);
       pushPreparedUserToUserChangesStream(notNullUser, false);
       when(firebaseAuth.currentUser).thenReturn(notNullUser);
@@ -426,6 +426,42 @@ main() {
       const AuthState(
           applicationLoginState: ApplicationLoginState.locked,
           email: validEmail)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+          $and Calling state.applicationLoginState returns ApplicationLoginState.loggedIn
+        $wheN Calling signOut()
+        $then Calling state.applicationLoginState returns ApplicationLoginState.loggedOut
+""",
+    setUp: () {
+      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
+      when(firebaseAuth.signInWithEmailAndPassword(
+              email: validEmail, password: password))
+          .thenAnswer((realInvocation) => Future.value(userCredential));
+    },
+    build: () => sut,
+    act: (bloc) async {
+      fromLoggedOutToEmailAddress();
+      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      await sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+      pushPreparedUserToUserChangesStream(notNullUser, true);
+      await sut.signOut();
+      pushPreparedUserToUserChangesStream(nullUser);
+    },
+    verify: (bloc) {
+      verify(firebaseAuth.signOut()).called(1);
+    },
+    skip: 2,
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.loggedIn,
+          email: validEmail),
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.loggedOut, email: null)
     ],
   );
 }
