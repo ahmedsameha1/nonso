@@ -464,6 +464,45 @@ main() {
           applicationLoginState: ApplicationLoginState.loggedOut, email: null)
     ],
   );
+
+  blocTest(
+    """
+      $given $workingWithAuthStateNotifier
+      $wheN Calling resetPassword()
+        $and FirebaseAuthException has been thrown
+      $then the errorCallback should be called
+      """,
+    setUp: () {
+      when(firebaseAuth.sendPasswordResetEmail(email: validEmail))
+          .thenThrow(firebaseAuthException);
+    },
+    build: () => sut,
+    act: (bloc) {
+      sut.resetPassword(validEmail, firebaseAuthExceptionCallback);
+    },
+    verify: (bloc) {
+      verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
+    },
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+        $wheN Calling resetPassword()
+        $then Firebase.instance.sendPasswordResetEmail has been called
+      """,
+    setUp: () {
+      when(firebaseAuth.sendPasswordResetEmail(email: validEmail))
+          .thenAnswer((realInvocation) => Completer<void>().future);
+    },
+    build: () => sut,
+    act: (bloc) {
+      sut.resetPassword(validEmail, firebaseAuthExceptionCallback);
+    },
+    verify: (bloc) {
+      verify(firebaseAuth.sendPasswordResetEmail(email: validEmail)).called(1);
+    },
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
