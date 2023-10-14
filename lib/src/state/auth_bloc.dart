@@ -101,8 +101,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String displayName,
       void Function(FirebaseAuthException exception) errorCallback) async {
     try {
-      await firebaseAuth.createUserWithEmailAndPassword(
+      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
+      userCredential.user!.updateDisplayName(displayName);
+      await userCredential.user!.sendEmailVerification();
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);
     }

@@ -387,6 +387,47 @@ main() {
       verify: (bloc) {
         verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
       });
+
+  blocTest(
+    """
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN Calling registerAccount() with valid, not-already-used email and 
+                non-weak password
+        $then firebaseAuth.createUserWithEmailAndPassword() should be called once
+          $and User.updateDisplayName() has been called
+          $and User.sendEmailVerification() has been called
+          $and Calling state.applicationLoginState should return ApplicationLoginState.locked
+""",
+    setUp: () {
+      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatDoesntContainPasswordMethod();
+      when(userCredential.user).thenReturn(notNullUser);
+      when(firebaseAuth.createUserWithEmailAndPassword(
+              email: validEmail, password: password))
+          .thenAnswer((realInvocation) => Future.value(userCredential));
+    },
+    build: () => sut,
+    act: (bloc) async {
+      fromLoggedOutToEmailAddress();
+      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+      pushPreparedUserToUserChangesStream(notNullUser, false);
+      await sut.registerAccount(
+          validEmail, password, displayName, firebaseAuthExceptionCallback);
+    },
+    verify: (bloc) {
+      verify(firebaseAuth.createUserWithEmailAndPassword(
+              email: validEmail, password: password))
+          .called(1);
+      verify(notNullUser.updateDisplayName(displayName)).called(1);
+      verify(notNullUser.sendEmailVerification()).called(1);
+    },
+    skip: 2,
+    expect: () => [
+      const AuthState(
+          applicationLoginState: ApplicationLoginState.locked,
+          email: validEmail)
+    ],
+  );
 }
 
 void pushPreparedUserToUserChangesStream(User? user,
