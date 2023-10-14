@@ -343,7 +343,7 @@ main() {
   blocTest(
     """
         $given $workingWithAuthStateNotifier
-          $and there is no signed in user
+        $and there is no signed in user
         $wheN Calling cancelRegistration()
         $then Calling logginState should return ApplicationLogginState.emailAddress
 """,
@@ -363,6 +363,30 @@ main() {
           email: null)
     ],
   );
+
+  blocTest("""
+        $given $workingWithAuthStateNotifier
+          $and there is no signed in user
+        $wheN Calling registerAccount()
+          $and FirebaseAuthException has been thrown
+        $then the errorCallback() should be called
+""",
+      setUp: () {
+        prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatDoesntContainPasswordMethod();
+        when(firebaseAuth.createUserWithEmailAndPassword(
+                email: validEmail, password: password))
+            .thenThrow(firebaseAuthException);
+      },
+      build: () => sut,
+      act: (bloc) async {
+        fromLoggedOutToEmailAddress();
+        await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
+        sut.registerAccount(
+            validEmail, password, displayName, firebaseAuthExceptionCallback);
+      },
+      verify: (bloc) {
+        verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
+      });
 }
 
 void pushPreparedUserToUserChangesStream(User? user,

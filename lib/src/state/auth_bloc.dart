@@ -94,4 +94,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void cancelRegistration() {
     add(CancelRegistrationEvent());
   }
+
+  Future<void> registerAccount(
+      String email,
+      String password,
+      String displayName,
+      void Function(FirebaseAuthException exception) errorCallback) async {
+    try {
+      await firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+    } on FirebaseAuthException catch (exception) {
+      errorCallback(exception);
+    }
+  }
 }
