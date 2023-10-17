@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nonso/src/state/auth_state_notifier.dart';
-import 'package:nonso/src/state/value_classes/application_login_state.dart';
+import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 
 import '../test_constants.dart';
 import 'auth_state_notifier_test.mocks.dart';
@@ -51,11 +51,11 @@ main() {
         $given $workingWithAuthStateNotifier
         $wheN Creating a new AuthStateNotifier instance
           $and there is no signed in user
-        $then state.applicationLoginState should return ApplicationLoginState.loggedOut
+        $then state.applicationAuthState should return ApplicationLoginState.loggedOut
       """, () async {
     pushPreparedUserToUserChangesStream(nullUser);
     await expectLater(1, 1);
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
   });
 
   test("""
@@ -63,11 +63,11 @@ main() {
         $wheN Creating a new AuthStateNotifier instance
           $and there is a signed in user
           $and User.emailVerified returns true
-        $then state.applicationLoginState should return ApplicationLoginState.loggedIn
+        $then state.applicationAuthState should return ApplicationLoginState.loggedIn
       """, () async {
     pushPreparedUserToUserChangesStream(notNullUser, true);
     await expectLater(1, 1);
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedIn);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedIn);
   });
 
   test("""
@@ -75,18 +75,18 @@ main() {
         $wheN Creating a new AuthStateNotifier instance
           $and there is a signed in user
           $and User.emailVerified returns false
-        $then state.applicationLoginState should return ApplicationLoginState.locked
+        $then state.applicationAuthState should return ApplicationLoginState.locked
       """, () async {
     pushPreparedUserToUserChangesStream(notNullUser, false);
     await expectLater(1, 1);
-    expect(sut.state.applicationLoginState, ApplicationLoginState.locked);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.locked);
   });
 
   test("""
         $given $workingWithAuthStateNotifier
           $and there is no signed in user
         $wheN calling startLoginFlow()
-        $then That state.applicationLoginState returns ApplicationLoginState.emailAddress
+        $then That state.applicationAuthState returns ApplicationLoginState.emailAddress
       """, fromLoggedOutToEmailAddress);
 
   test("""
@@ -121,7 +121,7 @@ main() {
           $and there is no signed in user
         $wheN Calling verifyEmail with a valid email address
           $and verifyEmail returns a Future of List that contains "password"
-        $then state.applicationLoginState should return ApplicationLoginState.password
+        $then state.applicationAuthState should return ApplicationLoginState.password
           $and the email returns the same passed argument email
 """, () async {
     await fromLoggedOutToEmailAddressToPassword();
@@ -133,7 +133,7 @@ main() {
           $and there is no signed in user
         $wheN Calling verifyEmail with a valid email address
           $and verifyEmail returns a Future of List that doesn't contain "password"
-        $then state.applicationLoginState should return ApplicationLoginState.register
+        $then state.applicationAuthState should return ApplicationLoginState.register
           $and the email returns the same passed argument email
 """, fromLoggedOutToEmailAddressToRegister);
 
@@ -159,7 +159,7 @@ main() {
         $wheN Calling signInWithEmailAndPassword() with a valid email and
                 password
           $and User.emailVerified returns false
-        $then Calling state.applicationLoginState should return ApplicationLoginState.locked
+        $then Calling state.applicationAuthState should return ApplicationLoginState.locked
 """, () async {
     await fromLoggedOutToEmailAddressToPassword();
     await fromPasswordToLocked();
@@ -171,7 +171,7 @@ main() {
         $wheN Calling signInWithEmailAndPassword() with a valid email and
                 password
           $and User.emailVerified returns true
-        $then Calling state.applicationLoginState returns ApplicationLoginState.loggedIn
+        $then Calling state.applicationAuthState returns ApplicationLoginState.loggedIn
 """, () async {
     await fromLoggedOutToEmailAddressToPassword();
     await fromPasswordToLoggedIn();
@@ -188,7 +188,7 @@ main() {
     when(firebaseAuth.currentUser).thenReturn(notNullUser);
     await sut.sendEmailToVerifyEmailAddress();
     verify(notNullUser.sendEmailVerification()).called(1);
-    expect(sut.state.applicationLoginState, ApplicationLoginState.locked);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.locked);
   });
 
   test("""
@@ -209,7 +209,7 @@ main() {
 """, () async {
     await fromLoggedOutToEmailAddressToRegister();
     sut.cancelRegistration();
-    expect(sut.state.applicationLoginState, ApplicationLoginState.emailAddress);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.emailAddress);
   });
 
   test("""
@@ -235,7 +235,7 @@ main() {
         $then firebaseAuth.createUserWithEmailAndPassword() should be called once
           $and User.updateDisplayName() has been called
           $and User.sendEmailVerification() has been called
-          $and Calling state.applicationLoginState should return ApplicationLoginState.locked
+          $and Calling state.applicationAuthState should return ApplicationLoginState.locked
 """, () async {
     await fromLoggedOutToEmailAddressToRegister();
     when(userCredential.user).thenReturn(notNullUser);
@@ -250,21 +250,21 @@ main() {
         .called(1);
     verify(notNullUser.updateDisplayName(displayName)).called(1);
     verify(notNullUser.sendEmailVerification()).called(1);
-    expect(sut.state.applicationLoginState, ApplicationLoginState.locked);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.locked);
   });
 
   test("""
         $given $workingWithAuthStateNotifier
-          $and Calling state.applicationLoginState returns ApplicationLoginState.loggedIn
+          $and Calling state.applicationAuthState returns ApplicationLoginState.loggedIn
         $wheN Calling signOut()
-        $then Calling state.applicationLoginState returns ApplicationLoginState.loggedOut
+        $then Calling state.applicationAuthState returns ApplicationLoginState.loggedOut
 """, () async {
     await fromLoggedOutToEmailAddressToPassword();
     await fromPasswordToLoggedIn();
     pushPreparedUserToUserChangesStream(nullUser);
     await sut.signOut();
     verify(firebaseAuth.signOut()).called(1);
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
   });
 
   test("""
@@ -291,58 +291,58 @@ main() {
 
   test("""
         $given $workingWithAuthStateNotifier
-          $and Calling state.applicationLoginState returns ApplicationLoginState.locked
+          $and Calling state.applicationAuthState returns ApplicationLoginState.locked
         $wheN Calling signOut()
-        $then Calling state.applicationLoginState returns ApplicationLoginState.loggedOut
+        $then Calling state.applicationAuthState returns ApplicationLoginState.loggedOut
 """, () async {
     await fromLoggedOutToEmailAddressToPassword();
     await fromPasswordToLocked();
     pushPreparedUserToUserChangesStream(nullUser);
     await sut.signOut();
     verify(firebaseAuth.signOut()).called(1);
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
   });
 
   test("""
         $given $workingWithAuthStateNotifier
         $wheN Calling toLoggedOut()
-        $then Calling state.applicationLoginState should return ApplicationLoginState.loggedOut
+        $then Calling state.applicationAuthState should return ApplicationLoginState.loggedOut
         """, () async {
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
     sut.toLoggedOut();
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
 
     fromLoggedOutToEmailAddress();
     sut.toLoggedOut();
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
 
     await fromLoggedOutToEmailAddressToRegister();
     sut.toLoggedOut();
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
 
     await fromLoggedOutToEmailAddressToPassword();
     sut.toLoggedOut();
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
 
     await fromLoggedOutToEmailAddressToPassword();
     await fromPasswordToLoggedIn();
     sut.toLoggedOut();
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
 
     await fromLoggedOutToEmailAddressToPassword();
     await fromPasswordToLocked();
     sut.toLoggedOut();
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
   });
 
   test("""
         $given $workingWithAuthStateNotifier
-          $and Calling state.applicationLoginState returns anything other than ApplicationLoginState.loggedIn & ApplicationLoginState.locked
+          $and Calling state.applicationAuthState returns anything other than ApplicationLoginState.loggedIn & ApplicationLoginState.locked
         $wheN Calling signOut()
         $then StateError should be thrown
 """, () async {
     const message = "To sign out you need to sign in first!";
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
     expectExceptionFromSignOut(sut.signOut, message);
     fromLoggedOutToEmailAddress();
     expectExceptionFromSignOut(sut.signOut, message);
@@ -354,12 +354,12 @@ main() {
 
   test("""
         $given $workingWithAuthStateNotifier
-          $and Calling state.applicationLoginState returns anything other than ApplicationLoginState.password
+          $and Calling state.applicationAuthState returns anything other than ApplicationLoginState.password
         $wheN Calling signInWithUsernameAndPassword()
         $then StateError should be thrown
 """, () async {
     const message = "To sign in you need to be at password stage!";
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
     expectExceptionFromSignInWithEmailAndPassword(
         sut.signInWithEmailAndPassword, message);
     fromLoggedOutToEmailAddress();
@@ -380,12 +380,12 @@ main() {
 
   test("""
         $given $workingWithAuthStateNotifier
-          $and Calling state.applicationLoginState returns anything other than ApplicationLoginState.register
+          $and Calling state.applicationAuthState returns anything other than ApplicationLoginState.register
         $wheN Calling registerAccount()
         $then StateError should be thrown
 """, () async {
     const message = "To register you need to be at register stage!";
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
     expectExceptionFromRegisterAccount(sut.registerAccount, message);
     fromLoggedOutToEmailAddress();
     expectExceptionFromRegisterAccount(sut.registerAccount, message);
@@ -400,12 +400,12 @@ main() {
 
   test("""
         $given $workingWithAuthStateNotifier
-          $and Calling state.applicationLoginState returns anything other than ApplicationLoginState.register
+          $and Calling state.applicationAuthState returns anything other than ApplicationLoginState.register
         $wheN Calling cancelRegistration()
         $then StateError should be thrown
 """, () async {
     const message = "To cancel registration you need to be at register stage!";
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
     expectExceptionFromCancelRegistration(sut.cancelRegistration, message);
     fromLoggedOutToEmailAddress();
     expectExceptionFromCancelRegistration(sut.cancelRegistration, message);
@@ -420,12 +420,12 @@ main() {
 
   test("""
         $given $workingWithAuthStateNotifier
-          $and Calling state.applicationLoginState returns anything other than ApplicationLoginState.emailAddress
+          $and Calling state.applicationAuthState returns anything other than ApplicationLoginState.emailAddress
         $wheN Calling verifyEmail()
         $then StateError should be thrown
 """, () async {
     const message = "To verify the email you need to be at emailAddress stage!";
-    expect(sut.state.applicationLoginState, ApplicationLoginState.loggedOut);
+    expect(sut.state.applicationAuthState, ApplicationAuthState.signedOut);
     expectExceptionFromVerifyEmail(sut.verifyEmail, message);
     await fromLoggedOutToEmailAddressToRegister();
     expectExceptionFromVerifyEmail(sut.verifyEmail, message);
@@ -443,7 +443,7 @@ main() {
 
 void fromLoggedOutToEmailAddress() {
   sut.startLoginFlow();
-  expect(sut.state.applicationLoginState, ApplicationLoginState.emailAddress);
+  expect(sut.state.applicationAuthState, ApplicationAuthState.emailAddress);
 }
 
 void
@@ -470,14 +470,14 @@ Future<void> fromLoggedOutToEmailAddressToPassword() async {
   fromLoggedOutToEmailAddress();
   prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
   await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
-  expect(sut.state.applicationLoginState, ApplicationLoginState.password);
+  expect(sut.state.applicationAuthState, ApplicationAuthState.password);
 }
 
 Future<void> fromLoggedOutToEmailAddressToRegister() async {
   fromLoggedOutToEmailAddress();
   prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatDoesntContainPasswordMethod();
   await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
-  expect(sut.state.applicationLoginState, ApplicationLoginState.register);
+  expect(sut.state.applicationAuthState, ApplicationAuthState.register);
   expect(sut.state.email, validEmail);
 }
 
@@ -488,7 +488,7 @@ Future<void> fromPasswordToLoggedIn() async {
   pushPreparedUserToUserChangesStream(notNullUser, true);
   await sut.signInWithEmailAndPassword(
       validEmail, password, firebaseAuthExceptionCallback);
-  expect(sut.state.applicationLoginState, ApplicationLoginState.loggedIn);
+  expect(sut.state.applicationAuthState, ApplicationAuthState.signedIn);
 }
 
 Future<void> fromPasswordToLocked() async {
@@ -498,7 +498,7 @@ Future<void> fromPasswordToLocked() async {
   pushPreparedUserToUserChangesStream(notNullUser, false);
   await sut.signInWithEmailAndPassword(
       validEmail, password, firebaseAuthExceptionCallback);
-  expect(sut.state.applicationLoginState, ApplicationLoginState.locked);
+  expect(sut.state.applicationAuthState, ApplicationAuthState.locked);
 }
 
 void expectExceptionFromSignOut(Function() function, String message) {

@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AuthState {
-  ApplicationLoginState get applicationLoginState =>
+  ApplicationAuthState get applicationAuthState =>
       throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
 
@@ -30,7 +30,7 @@ abstract class $AuthStateCopyWith<$Res> {
   factory $AuthStateCopyWith(AuthState value, $Res Function(AuthState) then) =
       _$AuthStateCopyWithImpl<$Res, AuthState>;
   @useResult
-  $Res call({ApplicationLoginState applicationLoginState, String? email});
+  $Res call({ApplicationAuthState applicationAuthState, String? email});
 }
 
 /// @nodoc
@@ -46,14 +46,14 @@ class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? applicationLoginState = null,
+    Object? applicationAuthState = null,
     Object? email = freezed,
   }) {
     return _then(_value.copyWith(
-      applicationLoginState: null == applicationLoginState
-          ? _value.applicationLoginState
-          : applicationLoginState // ignore: cast_nullable_to_non_nullable
-              as ApplicationLoginState,
+      applicationAuthState: null == applicationAuthState
+          ? _value.applicationAuthState
+          : applicationAuthState // ignore: cast_nullable_to_non_nullable
+              as ApplicationAuthState,
       email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
@@ -69,7 +69,7 @@ abstract class _$$_AuthStateCopyWith<$Res> implements $AuthStateCopyWith<$Res> {
       __$$_AuthStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({ApplicationLoginState applicationLoginState, String? email});
+  $Res call({ApplicationAuthState applicationAuthState, String? email});
 }
 
 /// @nodoc
@@ -83,14 +83,14 @@ class __$$_AuthStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? applicationLoginState = null,
+    Object? applicationAuthState = null,
     Object? email = freezed,
   }) {
     return _then(_$_AuthState(
-      applicationLoginState: null == applicationLoginState
-          ? _value.applicationLoginState
-          : applicationLoginState // ignore: cast_nullable_to_non_nullable
-              as ApplicationLoginState,
+      applicationAuthState: null == applicationAuthState
+          ? _value.applicationAuthState
+          : applicationAuthState // ignore: cast_nullable_to_non_nullable
+              as ApplicationAuthState,
       email: freezed == email
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
@@ -102,16 +102,16 @@ class __$$_AuthStateCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_AuthState implements _AuthState {
-  const _$_AuthState({required this.applicationLoginState, this.email});
+  const _$_AuthState({required this.applicationAuthState, this.email});
 
   @override
-  final ApplicationLoginState applicationLoginState;
+  final ApplicationAuthState applicationAuthState;
   @override
   final String? email;
 
   @override
   String toString() {
-    return 'AuthState(applicationLoginState: $applicationLoginState, email: $email)';
+    return 'AuthState(applicationAuthState: $applicationAuthState, email: $email)';
   }
 
   @override
@@ -119,13 +119,13 @@ class _$_AuthState implements _AuthState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_AuthState &&
-            (identical(other.applicationLoginState, applicationLoginState) ||
-                other.applicationLoginState == applicationLoginState) &&
+            (identical(other.applicationAuthState, applicationAuthState) ||
+                other.applicationAuthState == applicationAuthState) &&
             (identical(other.email, email) || other.email == email));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, applicationLoginState, email);
+  int get hashCode => Object.hash(runtimeType, applicationAuthState, email);
 
   @JsonKey(ignore: true)
   @override
@@ -136,11 +136,11 @@ class _$_AuthState implements _AuthState {
 
 abstract class _AuthState implements AuthState {
   const factory _AuthState(
-      {required final ApplicationLoginState applicationLoginState,
+      {required final ApplicationAuthState applicationAuthState,
       final String? email}) = _$_AuthState;
 
   @override
-  ApplicationLoginState get applicationLoginState;
+  ApplicationAuthState get applicationAuthState;
   @override
   String? get email;
   @override

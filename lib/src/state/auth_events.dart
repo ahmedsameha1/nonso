@@ -1,9 +1,9 @@
 sealed class AuthEvent {}
 
-final class LogInEvent extends AuthEvent {
+final class SignInEvent extends AuthEvent {
   final String email;
 
-  LogInEvent(this.email);
+  SignInEvent(this.email);
 }
 
 final class LockedEvent extends AuthEvent {
@@ -28,4 +28,4 @@ final class RegisterEvent extends AuthEvent {
 
 final class CancelRegistrationEvent extends AuthEvent {}
 
-final class LogOutEvent extends AuthEvent {}
+final class SignOutEvent extends AuthEvent {}

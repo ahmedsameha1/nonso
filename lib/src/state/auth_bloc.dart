@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nonso/src/state/auth_state.dart';
-import 'package:nonso/src/state/value_classes/application_login_state.dart';
+import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 import 'auth_events.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -9,41 +9,41 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc(this.firebaseAuth)
       : super(const AuthState(
-            applicationLoginState: ApplicationLoginState.loggedOut)) {
+            applicationAuthState: ApplicationAuthState.signedOut)) {
     _init();
-    on<LogInEvent>(
+    on<SignInEvent>(
       (event, emit) => emit(AuthState(
-          applicationLoginState: ApplicationLoginState.loggedIn,
+          applicationAuthState: ApplicationAuthState.signedIn,
           email: event.email)),
     );
     on<LockedEvent>(
       (event, emit) => emit(AuthState(
-          applicationLoginState: ApplicationLoginState.locked,
+          applicationAuthState: ApplicationAuthState.locked,
           email: event.email)),
     );
     on<EmailAddressEvent>(
       (event, emit) => emit(const AuthState(
-          applicationLoginState: ApplicationLoginState.emailAddress,
+          applicationAuthState: ApplicationAuthState.emailAddress,
           email: null)),
     );
     on<PasswordEvent>(
       (event, emit) => emit(AuthState(
-          applicationLoginState: ApplicationLoginState.password,
+          applicationAuthState: ApplicationAuthState.password,
           email: event.email)),
     );
     on<RegisterEvent>(
       (event, emit) => emit(AuthState(
-          applicationLoginState: ApplicationLoginState.register,
+          applicationAuthState: ApplicationAuthState.register,
           email: event.email)),
     );
     on<CancelRegistrationEvent>(
       (event, emit) => emit(const AuthState(
-          applicationLoginState: ApplicationLoginState.emailAddress,
+          applicationAuthState: ApplicationAuthState.emailAddress,
           email: null)),
     );
-    on<LogOutEvent>((event, emit) => emit(
+    on<SignOutEvent>((event, emit) => emit(
           const AuthState(
-              applicationLoginState: ApplicationLoginState.loggedOut,
+              applicationAuthState: ApplicationAuthState.signedOut,
               email: null),
         ));
   }
@@ -52,17 +52,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     firebaseAuth.userChanges().listen((user) {
       if (user != null) {
         if (user.email != null && user.emailVerified) {
-          add(LogInEvent(user.email!));
+          add(SignInEvent(user.email!));
         } else if (user.email != null && !user.emailVerified) {
           add(LockedEvent(user.email!));
         }
       } else {
-        add(LogOutEvent());
+        add(SignOutEvent());
       }
     });
   }
 
-  void startLoginFlow() {
+  void start() {
     add(EmailAddressEvent());
   }
 
