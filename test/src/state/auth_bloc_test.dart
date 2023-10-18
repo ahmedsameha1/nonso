@@ -31,6 +31,8 @@ const callingStart = "Calling start()";
 const signOutExceptionMessage = "To sign out you need to sign in first!";
 const passswordExceptionMessage =
     "To sign in you need to be at password stage!";
+const registerExceptionMessage =
+    "To register you need to be at register stage!";
 const lockedState = AuthState(
     applicationAuthState: ApplicationAuthState.locked, email: validEmail);
 const emailAddressState = AuthState(
@@ -328,7 +330,7 @@ main() {
       build: () => sut,
       seed: () => registerState,
       act: (bloc) async {
-        sut.registerAccount(
+        await sut.registerAccount(
             validEmail, password, displayName, firebaseAuthExceptionCallback);
       },
       verify: (bloc) {
@@ -608,6 +610,96 @@ main() {
     errors: () => [
       predicate(
           (e) => e is StateError && e.message == passswordExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedOutState
+        $wheN Calling registerAccount()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => signedOutState,
+    act: (bloc) async {
+      await sut.registerAccount(
+          validEmail, password, displayName, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate((e) => e is StateError && e.message == registerExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedInState
+        $wheN Calling registerAccount()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => signedInState,
+    act: (bloc) async {
+      await sut.registerAccount(
+          validEmail, password, displayName, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate((e) => e is StateError && e.message == registerExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $passwordState
+        $wheN Calling registerAccount()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => passwordState,
+    act: (bloc) async {
+      await sut.registerAccount(
+          validEmail, password, displayName, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate((e) => e is StateError && e.message == registerExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $lockedState
+        $wheN Calling registerAccount()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => lockedState,
+    act: (bloc) async {
+      await sut.registerAccount(
+          validEmail, password, displayName, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate((e) => e is StateError && e.message == registerExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $emailAddressState
+        $wheN Calling registerAccount()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => emailAddressState,
+    act: (bloc) async {
+      await sut.registerAccount(
+          validEmail, password, displayName, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate((e) => e is StateError && e.message == registerExceptionMessage)
     ],
   );
 }

@@ -110,6 +110,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String password,
       String displayName,
       void Function(FirebaseAuthException exception) errorCallback) async {
+    if (state.applicationAuthState != ApplicationAuthState.register) {
+      throw StateError("To register you need to be at register stage!");
+    }
     try {
       final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
