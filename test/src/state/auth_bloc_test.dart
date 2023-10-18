@@ -29,6 +29,8 @@ const theCurrentStateIs = "the current state is";
 const theResultStateIs = "the result state is";
 const callingStart = "Calling start()";
 const signOutExceptionMessage = "To sign out you need to sign in first!";
+const passswordExceptionMessage =
+    "To sign in you need to be at password stage!";
 const lockedState = AuthState(
     applicationAuthState: ApplicationAuthState.locked, email: validEmail);
 const emailAddressState = AuthState(
@@ -192,15 +194,13 @@ main() {
         $then the errorCallback() should be called
 """,
       setUp: () {
-        prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
         when(firebaseAuth.signInWithEmailAndPassword(
                 email: invalidEmail, password: password))
             .thenThrow(firebaseAuthException);
       },
       build: () => sut,
-      seed: () => emailAddressState,
+      seed: () => passwordState,
       act: (bloc) async {
-        await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
         await sut.signInWithEmailAndPassword(
             invalidEmail, password, firebaseAuthExceptionCallback);
       },
@@ -218,15 +218,13 @@ main() {
         $then $theResultStateIs $lockedState
 """,
     setUp: () {
-      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
       when(firebaseAuth.signInWithEmailAndPassword(
               email: validEmail, password: password))
           .thenAnswer((realInvocation) => Future.value(userCredential));
     },
     build: () => sut,
-    seed: () => emailAddressState,
+    seed: () => passwordState,
     act: (bloc) async {
-      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
       await sut.signInWithEmailAndPassword(
           validEmail, password, firebaseAuthExceptionCallback);
       pushPreparedUserToUserChangesStream(notNullUser, false);
@@ -234,7 +232,6 @@ main() {
     verify: (bloc) {
       verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
     },
-    skip: 1,
     expect: () => [lockedState],
   );
 
@@ -248,15 +245,13 @@ main() {
         $then $theResultStateIs $signedInState
 """,
     setUp: () {
-      prepareFetchSignInMethodsForEmailWithValidEmailAndReturnAFutureOfListThatContainsPasswordMethod();
       when(firebaseAuth.signInWithEmailAndPassword(
               email: validEmail, password: password))
           .thenAnswer((realInvocation) => Future.value(userCredential));
     },
     build: () => sut,
-    seed: () => emailAddressState,
+    seed: () => passwordState,
     act: (bloc) async {
-      await sut.verifyEmail(validEmail, firebaseAuthExceptionCallback);
       await sut.signInWithEmailAndPassword(
           validEmail, password, firebaseAuthExceptionCallback);
       pushPreparedUserToUserChangesStream(notNullUser, true);
@@ -264,7 +259,6 @@ main() {
     verify: (bloc) {
       verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
     },
-    skip: 1,
     expect: () => [signedInState],
   );
 
@@ -519,6 +513,101 @@ main() {
     },
     errors: () => [
       predicate((e) => e is StateError && e.message == signOutExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedOutState
+        $wheN Calling signInWithUsernameAndPassword()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => signedOutState,
+    act: (bloc) async {
+      await sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == passswordExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedInState
+        $wheN Calling signInWithUsernameAndPassword()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => signedInState,
+    act: (bloc) async {
+      await sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == passswordExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $registerState
+        $wheN Calling signInWithUsernameAndPassword()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => registerState,
+    act: (bloc) async {
+      await sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == passswordExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $lockedState
+        $wheN Calling signInWithUsernameAndPassword()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => lockedState,
+    act: (bloc) async {
+      await sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == passswordExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $emailAddressState
+        $wheN Calling signInWithUsernameAndPassword()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => emailAddressState,
+    act: (bloc) async {
+      await sut.signInWithEmailAndPassword(
+          validEmail, password, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == passswordExceptionMessage)
     ],
   );
 }
