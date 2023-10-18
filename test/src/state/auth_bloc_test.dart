@@ -28,6 +28,7 @@ const workingWithAuthBloc = "Working with AuthBloc class";
 const theCurrentStateIs = "the current state is";
 const theResultStateIs = "the result state is";
 const callingStart = "Calling start()";
+const signOutExceptionMessage = "To sign out you need to sign in first!";
 const lockedState = AuthState(
     applicationAuthState: ApplicationAuthState.locked, email: validEmail);
 const emailAddressState = AuthState(
@@ -451,6 +452,74 @@ main() {
       verify(firebaseAuth.signOut()).called(1);
     },
     expect: () => [signedOutState],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedOutState
+        $wheN Calling signOut()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => signedOutState,
+    act: (bloc) async {
+      await sut.signOut();
+    },
+    errors: () => [
+      predicate((e) => e is StateError && e.message == signOutExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $emailAddressState
+        $wheN Calling signOut()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => emailAddressState,
+    act: (bloc) async {
+      await sut.signOut();
+    },
+    errors: () => [
+      predicate((e) => e is StateError && e.message == signOutExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $passwordState
+        $wheN Calling signOut()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => passwordState,
+    act: (bloc) async {
+      await sut.signOut();
+    },
+    errors: () => [
+      predicate((e) => e is StateError && e.message == signOutExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $registerState
+        $wheN Calling signOut()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => registerState,
+    act: (bloc) async {
+      await sut.signOut();
+    },
+    errors: () => [
+      predicate((e) => e is StateError && e.message == signOutExceptionMessage)
+    ],
   );
 }
 

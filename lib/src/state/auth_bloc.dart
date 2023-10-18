@@ -118,6 +118,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> signOut() {
+    if (!(state.applicationAuthState == ApplicationAuthState.signedIn ||
+        state.applicationAuthState == ApplicationAuthState.locked)) {
+      throw StateError("To sign out you need to sign in first!");
+    }
     return firebaseAuth.signOut();
   }
 
