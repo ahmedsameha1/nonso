@@ -68,6 +68,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> verifyEmail(String email,
       void Function(FirebaseAuthException exception) errorCallback) async {
+    if (state.applicationAuthState != ApplicationAuthState.emailAddress) {
+      throw StateError(
+          "To verify the email you need to be at emailAddress stage!");
+    }
     try {
       final methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
       if (methods.contains("password")) {

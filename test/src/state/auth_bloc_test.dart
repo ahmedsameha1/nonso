@@ -35,6 +35,8 @@ const registerExceptionMessage =
     "To register you need to be at register stage!";
 const cancelRegisterExceptionMessage =
     "To cancel registration you need to be at register stage!";
+const verifyEmailExceptionMessage =
+    "To verify the email you need to be at emailAddress stage!";
 const lockedState = AuthState(
     applicationAuthState: ApplicationAuthState.locked, email: validEmail);
 const emailAddressState = AuthState(
@@ -792,6 +794,96 @@ main() {
     errors: () => [
       predicate(
           (e) => e is StateError && e.message == cancelRegisterExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedOutState
+        $wheN Calling verifyEmail()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => signedOutState,
+    act: (bloc) async {
+      await sut.verifyEmail(invalidEmail, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == verifyEmailExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedInState
+        $wheN Calling verifyEmail()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => signedInState,
+    act: (bloc) async {
+      await sut.verifyEmail(invalidEmail, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == verifyEmailExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $passwordState
+        $wheN Calling verifyEmail()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => passwordState,
+    act: (bloc) async {
+      await sut.verifyEmail(invalidEmail, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == verifyEmailExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $lockedState
+        $wheN Calling verifyEmail()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => lockedState,
+    act: (bloc) async {
+      await sut.verifyEmail(invalidEmail, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == verifyEmailExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $registerState
+        $wheN Calling verifyEmail()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => registerState,
+    act: (bloc) async {
+      await sut.verifyEmail(invalidEmail, firebaseAuthExceptionCallback);
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == verifyEmailExceptionMessage)
     ],
   );
 }
