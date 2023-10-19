@@ -102,6 +102,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void cancelRegistration() {
+    if (state.applicationAuthState != ApplicationAuthState.register) {
+      throw StateError(
+          "To cancel registration you need to be at register stage!");
+    }
     add(CancelRegistrationEvent());
   }
 

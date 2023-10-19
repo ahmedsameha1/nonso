@@ -33,6 +33,8 @@ const passswordExceptionMessage =
     "To sign in you need to be at password stage!";
 const registerExceptionMessage =
     "To register you need to be at register stage!";
+const cancelRegisterExceptionMessage =
+    "To cancel registration you need to be at register stage!";
 const lockedState = AuthState(
     applicationAuthState: ApplicationAuthState.locked, email: validEmail);
 const emailAddressState = AuthState(
@@ -700,6 +702,96 @@ main() {
     },
     errors: () => [
       predicate((e) => e is StateError && e.message == registerExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedOutState
+        $wheN Calling cancelRegistration()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => signedOutState,
+    act: (bloc) {
+      sut.cancelRegistration();
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == cancelRegisterExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedInState
+        $wheN Calling cancelRegistration()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => signedInState,
+    act: (bloc) async {
+      sut.cancelRegistration();
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == cancelRegisterExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $passwordState
+        $wheN Calling cancelRegistration()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => passwordState,
+    act: (bloc) async {
+      sut.cancelRegistration();
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == cancelRegisterExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $lockedState
+        $wheN Calling cancelRegistration()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => lockedState,
+    act: (bloc) async {
+      sut.cancelRegistration();
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == cancelRegisterExceptionMessage)
+    ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $emailAddressState
+        $wheN Calling cancelRegistration()
+        $then StateError should be thrown
+""",
+    build: () => sut,
+    seed: () => emailAddressState,
+    act: (bloc) async {
+      sut.cancelRegistration();
+    },
+    errors: () => [
+      predicate(
+          (e) => e is StateError && e.message == cancelRegisterExceptionMessage)
     ],
   );
 }
