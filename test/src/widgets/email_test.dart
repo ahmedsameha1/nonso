@@ -2,18 +2,20 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:nonso/src/state/auth_state_notifier.dart';
-import 'package:nonso/src/state/providers.dart';
+import 'package:nonso/nonso.dart';
+import 'package:nonso/src/state/auth_state.dart';
+import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 import 'package:nonso/src/widgets/email.dart';
 import 'package:nonso/src/widgets/register.dart';
 
-import '../state/auth_state_notifier_test.mocks.dart';
+import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'email_test.mocks.dart';
+import 'password_test.dart';
 import 'skeleton_for_widget_testing.dart';
 
 abstract class VerifyEmailFunction {
@@ -25,14 +27,28 @@ abstract class ToLogoutFunction {
   call();
 }
 
+class FakeAuthBloc extends Fake implements AuthBloc {
+  final AuthBloc _authBloc;
+
+  FakeAuthBloc(FirebaseAuth firebaseAuth) : _authBloc = AuthBloc(firebaseAuth);
+
+  @override
+  Future<void> verifyEmail(String email,
+      void Function(FirebaseAuthException exception) errorCallback) async {
+    _authBloc.emit(const AuthState(
+        applicationAuthState: ApplicationAuthState.emailAddress, email: null));
+    _authBloc.verifyEmail(email, errorCallback);
+  }
+}
+
 @GenerateMocks([VerifyEmailFunction, ToLogoutFunction])
 void main() {
   final firebaseAuthException = FirebaseAuthException(code: "code");
   const User? nullUser = null;
   late StreamController<User?> streamController;
-  late ProviderScope widgetInSkeletonInProviderScope;
+  late BlocProvider widgetInSkeletonInBlocProvider;
   late FirebaseAuth firebaseAuth;
-  late AuthStateNotifier authStateNotifier;
+  late FakeAuthBloc authBloc;
   final MockVerifyEmailFunction verifyEmailFunctionCall =
       MockVerifyEmailFunction();
   final MockToLogoutFunction toLogoutFunctionCall = MockToLogoutFunction();
@@ -104,21 +120,21 @@ void main() {
       when(firebaseAuth.userChanges())
           .thenAnswer((_) => streamController.stream);
       streamController.sink.add(nullUser);
-      authStateNotifier = AuthStateNotifier(firebaseAuth);
+      authBloc = FakeAuthBloc(firebaseAuth);
       widgetInSkeleton = createWidgetInASkeleton(
-          Email(authStateNotifier.verifyEmail, toLogoutFunctionCall));
-      widgetInSkeletonInProviderScope = ProviderScope(
-          overrides: [authStateProvider.overrideWithValue(authStateNotifier)],
-          child: widgetInSkeleton);
+          Email(authBloc.verifyEmail, toLogoutFunctionCall));
+      widgetInSkeletonInBlocProvider = BlocProvider(
+        create: (context) => authBloc,
+        child: widgetInSkeleton,
+      );
     });
     testWidgets(
         "Test that a SnackBar is shown when FirebaseAuthException is thrown",
         (WidgetTester tester) async {
       const invalidEmail = "test@test.com";
-      authStateNotifier.startLoginFlow();
       when(firebaseAuth.fetchSignInMethodsForEmail(invalidEmail))
           .thenThrow(firebaseAuthException);
-      await tester.pumpWidget(widgetInSkeletonInProviderScope);
+      await tester.pumpWidget(widgetInSkeletonInBlocProvider);
       final emailTextFormFieldFinder = textFormFieldFinder;
       await tester.enterText(emailTextFormFieldFinder, invalidEmail);
       await tester.tap(textButtonFinder.at(0));
@@ -134,13 +150,11 @@ void main() {
     testWidgets(
         "Test that a SnackBar is NOT shown when NO FirebaseAuthException is thrown",
         (WidgetTester tester) async {
-      const invalidEmail = "test@test.com";
-      authStateNotifier.startLoginFlow();
-      when(firebaseAuth.fetchSignInMethodsForEmail(invalidEmail))
+      when(firebaseAuth.fetchSignInMethodsForEmail(email))
           .thenAnswer((realInvocation) => Future.value(<String>["password"]));
-      await tester.pumpWidget(widgetInSkeletonInProviderScope);
+      await tester.pumpWidget(widgetInSkeletonInBlocProvider);
       final emailTextFormFieldFinder = textFormFieldFinder;
-      await tester.enterText(emailTextFormFieldFinder, invalidEmail);
+      await tester.enterText(emailTextFormFieldFinder, email);
       await tester.tap(textButtonFinder.at(0));
       await tester.pumpAndSettle();
       expect(snackBarFinder, findsNothing);

@@ -10,7 +10,7 @@ import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 
 import '../test_constants.dart';
-import 'auth_state_notifier_test.mocks.dart';
+import 'auth_bloc_test.mocks.dart';
 
 abstract class FirebaseAuthExceptionErrorCallbackFunction {
   void call(FirebaseAuthException exception);

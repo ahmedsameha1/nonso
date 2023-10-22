@@ -1,16 +1,17 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/material.dart';
-import 'package:nonso/src/state/auth_state_notifier.dart';
-import 'package:nonso/src/state/providers.dart';
+import 'package:nonso/nonso.dart';
+import 'package:nonso/src/state/auth_state.dart';
+import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 import 'package:nonso/src/widgets/register.dart';
 
-import '../state/auth_state_notifier_test.mocks.dart';
+import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'email_test.mocks.dart';
 import 'register_test.mocks.dart';
@@ -21,9 +22,27 @@ abstract class RegisterAccountFunction {
       void Function(FirebaseAuthException exception) errorCallback);
 }
 
+class FakeAuthBloc extends Fake implements AuthBloc {
+  final AuthBloc _authBloc;
+
+  FakeAuthBloc(FirebaseAuth firebaseAuth) : _authBloc = AuthBloc(firebaseAuth);
+
+  @override
+  Future<void> registerAccount(
+      String email,
+      String password,
+      String displayName,
+      void Function(FirebaseAuthException exception) errorCallback) async {
+    _authBloc.emit(AuthState(
+        applicationAuthState: ApplicationAuthState.register, email: email));
+    _authBloc.registerAccount(email, password, displayName, errorCallback);
+  }
+}
+
+const email = "test@test.com";
+
 @GenerateMocks([RegisterAccountFunction])
 void main() {
-  const email = "test@test.com";
   late Widget widgetInSkeleton;
   const firebaseAuthExceptionCode = "code";
   final firebaseAuthException =
@@ -31,9 +50,9 @@ void main() {
   const User? nullUser = null;
   final User notNullUser = MockUser();
   late StreamController<User?> streamController;
-  late ProviderScope widgetInSkeletonInProviderScope;
+  late BlocProvider widgetInSkeletonInBlocProvider;
   late FirebaseAuth firebaseAuth;
-  late AuthStateNotifier authStateNotifier;
+  late FakeAuthBloc authBloc;
   late UserCredential userCredential;
   final registerAccountFunctionCall = MockRegisterAccountFunction();
   final toLogoutFunctionCall = MockToLogoutFunction();
@@ -43,7 +62,7 @@ void main() {
     userCredential = MockUserCredential();
     when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
     streamController.sink.add(nullUser);
-    authStateNotifier = AuthStateNotifier(firebaseAuth);
+    authBloc = FakeAuthBloc(firebaseAuth);
     widgetInSkeleton = createWidgetInASkeleton(
         Register(email, registerAccountFunctionCall, toLogoutFunctionCall));
   });
@@ -207,27 +226,22 @@ void main() {
   group("nextButton action", () {
     const userDisplayName = "name";
     setUp(() {
-    widgetInSkeleton = createWidgetInASkeleton(
-        Register(email, authStateNotifier.registerAccount, toLogoutFunctionCall));
-      widgetInSkeletonInProviderScope = ProviderScope(
-          overrides: [authStateProvider.overrideWithValue(authStateNotifier)],
-          child: widgetInSkeleton);
+      widgetInSkeleton = createWidgetInASkeleton(
+          Register(email, authBloc.registerAccount, toLogoutFunctionCall));
+      widgetInSkeletonInBlocProvider =
+          BlocProvider(create: (context) => authBloc, child: widgetInSkeleton);
     });
     testWidgets(
         "Test that a SnackBar is shown when FirebaseAuthException is thrown",
         (WidgetTester tester) async {
       const password = "oehgolewrbgowerb";
-      authStateNotifier.startLoginFlow();
-      when(firebaseAuth.fetchSignInMethodsForEmail(email))
-          .thenAnswer((realInvocation) => Future.value(<String>[]));
-      authStateNotifier.verifyEmail(email, (exception) {});
       when(notNullUser.updateDisplayName(userDisplayName))
           .thenAnswer((realInvocation) => Completer<void>().future);
       when(userCredential.user).thenReturn(notNullUser);
       when(firebaseAuth.createUserWithEmailAndPassword(
               email: email, password: password))
           .thenThrow(firebaseAuthException);
-      await tester.pumpWidget(widgetInSkeletonInProviderScope);
+      await tester.pumpWidget(widgetInSkeletonInBlocProvider);
       await tester.enterText(textFieldFinder.at(0), userDisplayName);
       await tester.enterText(textFieldFinder.at(1), password);
       await tester.enterText(textFieldFinder.at(2), password);
@@ -245,17 +259,13 @@ void main() {
         "Test that a SnackBar is shown to guide user to check his email",
         (WidgetTester tester) async {
       const password = "oehgolewrbgowerb";
-      authStateNotifier.startLoginFlow();
-      when(firebaseAuth.fetchSignInMethodsForEmail(email))
-          .thenAnswer((realInvocation) => Future.value(<String>[]));
-      authStateNotifier.verifyEmail(email, (exception) {});
       when(notNullUser.updateDisplayName(userDisplayName))
           .thenAnswer((realInvocation) => Completer<void>().future);
       when(userCredential.user).thenReturn(notNullUser);
       when(firebaseAuth.createUserWithEmailAndPassword(
               email: email, password: password))
           .thenAnswer((realInvocation) => Future.value(userCredential));
-      await tester.pumpWidget(widgetInSkeletonInProviderScope);
+      await tester.pumpWidget(widgetInSkeletonInBlocProvider);
       await tester.enterText(textFieldFinder.at(0), userDisplayName);
       await tester.enterText(textFieldFinder.at(1), password);
       await tester.enterText(textFieldFinder.at(2), password);
