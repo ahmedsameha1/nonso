@@ -29,3 +29,5 @@ final class RegisterEvent extends AuthEvent {
 final class CancelRegistrationEvent extends AuthEvent {}
 
 final class SignOutEvent extends AuthEvent {}
+
+final class CancelButtonEvent extends AuthEvent {}

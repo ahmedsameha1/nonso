@@ -458,6 +458,49 @@ main() {
     """
         $given $workingWithAuthBloc
           $and $theCurrentStateIs $signedOutState
+        $wheN Calling toSignedOut()
+        $then $theResultStateIs $signedOutState
+""",
+    build: () => sut,
+    seed: () => emailAddressState,
+    act: (bloc) async {
+      sut.toSignedOut();
+    },
+    expect: () => [signedOutState],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+        $wheN Calling toSignedOut()
+        $then $theResultStateIs $signedOutState
+""",
+    build: () => sut,
+    seed: () => passwordState,
+    act: (bloc) async {
+      sut.toSignedOut();
+    },
+    expect: () => [signedOutState],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+        $wheN Calling toSignedOut()
+        $then $theResultStateIs $signedOutState
+""",
+    build: () => sut,
+    seed: () => registerState,
+    act: (bloc) async {
+      sut.toSignedOut();
+    },
+    expect: () => [signedOutState],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and $theCurrentStateIs $signedOutState
         $wheN Calling signOut()
         $then StateError should be thrown
 """,

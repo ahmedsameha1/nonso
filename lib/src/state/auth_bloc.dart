@@ -46,6 +46,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               applicationAuthState: ApplicationAuthState.signedOut,
               email: null),
         ));
+    on<CancelButtonEvent>((event, emit) => emit(
+          const AuthState(
+              applicationAuthState: ApplicationAuthState.signedOut,
+              email: null),
+        ));
   }
 
   void _init() {
@@ -146,5 +151,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);
     }
+  }
+
+  void toSignedOut() {
+    add(CancelButtonEvent());
   }
 }
