@@ -1,0 +1,7 @@
+{
+    "signInUp": "Sign In/Up",
+    "email": "Email",
+    "next": "Next",
+    "cancel": "Cancel",
+    "invalidEmailString": "This an invalid email"
+}

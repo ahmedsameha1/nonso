@@ -8,8 +8,7 @@ main() {
     Text text = const Text("a text");
     MaterialApp skeletonWithAWidget = createWidgetInASkeleton(text);
     Scaffold? scaffold = skeletonWithAWidget.home as Scaffold?;
-    Center? body = scaffold!.body as Center;
-    Widget? child = body.child;
-    expect(child, text);
+    Text? body = scaffold!.body as Text;
+    expect(body, text);
   });
 }
