@@ -4,18 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nonso/nonso.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
-import 'package:nonso/src/widgets/password.dart';
-import 'package:nonso/src/widgets/register.dart';
 
 import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
-import 'email_test.mocks.dart';
-import 'password_test.mocks.dart';
 import 'skeleton_for_widget_testing.dart';
 
 abstract class SignInWithEmailAndPasswordFunction {
@@ -35,12 +30,23 @@ class FakeAuthBloc extends Fake implements AuthBloc {
         applicationAuthState: ApplicationAuthState.password, email: email));
     _authBloc.signInWithEmailAndPassword(email, password, errorCallback);
   }
+
+  @override
+  Stream<AuthState> get stream => _authBloc.stream;
+
+  @override
+  AuthState get state => const AuthState(
+      applicationAuthState: ApplicationAuthState.password,
+      email: "test@test.com");
+
+  @override
+  Future<void> close() {
+    return _authBloc.close();
+  }
 }
 
-const email = "test@test.com";
-
-@GenerateMocks([SignInWithEmailAndPasswordFunction])
 void main() {
+  const email = "test@test.com";
   late Widget widgetInSkeleton;
   const firebaseAuthExceptionCode = "code";
   final firebaseAuthException =
@@ -50,21 +56,23 @@ void main() {
   late BlocProvider widgetInSkeletonInBlocProvider;
   late FirebaseAuth firebaseAuth;
   late FakeAuthBloc authBloc;
-  final signInWithEmailAndPasswordFunctionCall =
-      MockSignInWithEmailAndPasswordFunction();
-  final toLogoutFunctionCall = MockToLogoutFunction();
+  UserCredential userCredential = MockUserCredential();
+  final nextElevatedButtonFinder = elevatedButtonFinder.at(0);
+
   setUp(() {
     firebaseAuth = MockFirebaseAuth();
     streamController = StreamController();
     when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
     streamController.sink.add(nullUser);
     authBloc = FakeAuthBloc(firebaseAuth);
-    widgetInSkeleton = createWidgetInASkeleton(Password(
-        email, signInWithEmailAndPasswordFunctionCall, toLogoutFunctionCall));
+    widgetInSkeleton = createWidgetInASkeleton(Password());
+    widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
+        create: (context) => authBloc, child: widgetInSkeleton);
   });
+
   testWidgets("Test the precense of the main widgets",
       (WidgetTester tester) async {
-    await tester.pumpWidget(widgetInSkeleton);
+    await tester.pumpWidget(widgetInSkeletonInBlocProvider);
     final passwordFinder = find.byType(Password);
     expect(passwordFinder, findsOneWidget);
     expect(find.descendant(of: passwordFinder, matching: formFinder),
@@ -87,57 +95,60 @@ void main() {
     expect(passwordTextField.enableSuggestions, false);
     expect(
         find.descendant(of: columnFinder, matching: rowFinder), findsOneWidget);
-    final nextTextButtonFinder =
-        find.descendant(of: rowFinder, matching: textButtonFinder.at(0));
-    expect(nextTextButtonFinder, findsOneWidget);
+    final nextElevatedButtonFinder =
+        find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(0));
+    expect(nextElevatedButtonFinder, findsOneWidget);
     expect(
-        ((tester.widget(nextTextButtonFinder) as TextButton).child as Text)
+        ((tester.widget(nextElevatedButtonFinder) as ElevatedButton).child
+                as Text)
             .data,
         Register.nextString);
-    final cancelTextButtonFinder =
-        find.descendant(of: rowFinder, matching: textButtonFinder.at(1));
-    expect(cancelTextButtonFinder, findsOneWidget);
+    final cancelElevatedButtonFinder =
+        find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(1));
+    expect(cancelElevatedButtonFinder, findsOneWidget);
     expect(
-        ((tester.widget(cancelTextButtonFinder) as TextButton).child as Text)
+        ((tester.widget(cancelElevatedButtonFinder) as ElevatedButton).child
+                as Text)
             .data,
         Register.cancelString);
+    ElevatedButton cancelElevatedButton =
+        tester.widget(cancelElevatedButtonFinder);
+    expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
   });
+
   testWidgets("Test password textfield validation",
       (WidgetTester tester) async {
-    await tester.pumpWidget(widgetInSkeleton);
+    const validPassword = "8*prt&3k";
+    when(firebaseAuth.signInWithEmailAndPassword(
+            email: email, password: validPassword))
+        .thenAnswer((realInvocation) => Future.value(userCredential));
+    await tester.pumpWidget(widgetInSkeletonInBlocProvider);
     final passwordTextFieldFinder = textFieldFinder.at(0);
-    await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
-    final nextTextButtonFinder = textButtonFinder.at(0);
-    await tester.tap(nextTextButtonFinder);
+    await tester.enterText(passwordTextFieldFinder, validPassword);
+    await tester.tap(nextElevatedButtonFinder);
     await tester.pumpAndSettle();
     final passwordValidationErrorTextFinder = find.descendant(
         of: textFormFieldFinder.at(0),
         matching: find.text(Register.passwordValidationErrorString));
     expect(passwordValidationErrorTextFinder, findsNothing);
     await tester.enterText(passwordTextFieldFinder, "");
-    await tester.tap(nextTextButtonFinder);
+    await tester.tap(nextElevatedButtonFinder);
     await tester.pumpAndSettle();
     expect(passwordValidationErrorTextFinder, findsOneWidget);
     await tester.enterText(passwordTextFieldFinder, " ");
-    await tester.tap(nextTextButtonFinder);
+    await tester.tap(nextElevatedButtonFinder);
     await tester.pumpAndSettle();
     final TextField passwordTextField = tester.widget(passwordTextFieldFinder);
     expect(passwordTextField.controller!.text, "");
     expect(passwordValidationErrorTextFinder, findsOneWidget);
     await tester.enterText(passwordTextFieldFinder, " gfh");
-    await tester.tap(nextTextButtonFinder);
+    await tester.tap(nextElevatedButtonFinder);
     await tester.pumpAndSettle();
     expect(passwordTextField.controller!.text, "gfh");
     expect(passwordValidationErrorTextFinder, findsOneWidget);
-    verify(signInWithEmailAndPasswordFunctionCall(any, any, any)).called(1);
   });
+
   group("nextButton action", () {
-    setUp(() {
-      widgetInSkeleton = createWidgetInASkeleton(Password(
-          email, authBloc.signInWithEmailAndPassword, toLogoutFunctionCall));
-      widgetInSkeletonInBlocProvider =
-          BlocProvider(create: (context) => authBloc, child: widgetInSkeleton);
-    });
     testWidgets(
         "Test that a SnackBar with an error text is shown when FirebaseAuthException is thrown",
         (WidgetTester tester) async {
@@ -147,7 +158,7 @@ void main() {
           .thenThrow(firebaseAuthException);
       await tester.pumpWidget(widgetInSkeletonInBlocProvider);
       await tester.enterText(textFieldFinder.at(0), password);
-      await tester.tap(textButtonFinder.at(0));
+      await tester.tap(nextElevatedButtonFinder);
       await tester.pumpAndSettle();
       expect(snackBarFinder, findsOneWidget);
       expect(
@@ -157,28 +168,19 @@ void main() {
                   .text("${Register.failedString}$firebaseAuthExceptionCode")),
           findsOneWidget);
     });
+
     testWidgets(
         "Test that no SnackBar is shown when NO FirebaseAuthException is thrown",
         (WidgetTester tester) async {
-      late UserCredential userCredential = MockUserCredential();
       const password = "oehgolewrbgowerb";
       when(firebaseAuth.signInWithEmailAndPassword(
               email: email, password: password))
           .thenAnswer((realInvocation) => Future.value(userCredential));
       await tester.pumpWidget(widgetInSkeletonInBlocProvider);
       await tester.enterText(textFieldFinder.at(0), password);
-      await tester.tap(textButtonFinder.at(0));
+      await tester.tap(nextElevatedButtonFinder);
       await tester.pumpAndSettle();
       expect(snackBarFinder, findsNothing);
     });
-  });
-  testWidgets(
-      "Test that the cancel function called when cancel Text Button clicked",
-      (WidgetTester tester) async {
-    when(toLogoutFunctionCall()).thenReturn(anything);
-    await tester.pumpWidget(widgetInSkeleton);
-    await tester.tap(textButtonFinder.at(1));
-    await tester.pumpAndSettle();
-    verify(toLogoutFunctionCall()).called(1);
   });
 }
