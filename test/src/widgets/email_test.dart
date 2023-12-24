@@ -83,9 +83,9 @@ void main() {
         (WidgetTester tester) async {
       AppLocalizations appLocalizations =
           await getLocalizations(tester, currentLocale);
-      String expectedEmailString = appLocalizations.email;
-      String expectedNextString = appLocalizations.next;
-      String expectedCancelString = appLocalizations.cancel;
+      String expectedEmailString = appLocalizations.nonso_email;
+      String expectedNextString = appLocalizations.nonso_next;
+      String expectedCancelString = appLocalizations.nonso_cancel;
       when(firebaseAuth.fetchSignInMethodsForEmail(validEmail))
           .thenAnswer((realInvocation) => Future.value(<String>["password"]));
       await tester.pumpWidget(widgetProviderLocalization);
@@ -122,7 +122,7 @@ void main() {
         (WidgetTester tester) async {
       AppLocalizations appLocalizations =
           await getLocalizations(tester, currentLocale);
-      String expectedInvalidEmailString = appLocalizations.invalidEmailString;
+      String expectedInvalidEmailString = appLocalizations.nonso_invalidEmail;
       when(firebaseAuth.fetchSignInMethodsForEmail(validEmail))
           .thenAnswer((realInvocation) => Future.value(<String>["password"]));
       await tester.pumpWidget(widgetProviderLocalization);
@@ -173,7 +173,7 @@ void main() {
           (WidgetTester tester) async {
         AppLocalizations appLocalizations =
             await getLocalizations(tester, currentLocale);
-        String expectedInvalidEmailString = appLocalizations.invalidEmailString;
+        String expectedInvalidEmailString = appLocalizations.nonso_invalidEmail;
         when(firebaseAuth.fetchSignInMethodsForEmail(validEmail))
             .thenAnswer((realInvocation) => Future.value(<String>["password"]));
         await tester.pumpWidget(widgetProviderLocalization);

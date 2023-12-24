@@ -43,7 +43,7 @@ void main() {
         (WidgetTester tester) async {
       AppLocalizations appLocalizations =
           await getLocalizations(tester, currentLocale);
-      String expectedSignInUpString = appLocalizations.signInUp;
+      String expectedSignInUpString = appLocalizations.nonso_signInUp;
       await tester.pumpWidget(Localizations(
           delegates: AppLocalizations.localizationsDelegates,
           locale: currentLocale,

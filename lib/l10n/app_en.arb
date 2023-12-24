@@ -1,7 +1,11 @@
 {
-    "signInUp": "Sign In/Up",
-    "email": "Email",
-    "next": "Next",
-    "cancel": "Cancel",
-    "invalidEmailString": "This an invalid email"
+    "nonso_signInUp": "Sign In/Up",
+    "nonso_email": "Email",
+    "nonso_next": "Next",
+    "nonso_cancel": "Cancel",
+    "nonso_invalidEmail": "This an invalid email",
+    "nonso_refresh": "Refresh account",
+    "nonso_verifyEmailAddress": "Check your email inbox to verify your email address",
+    "nonso_signOut": "Sign out",
+    "nonso_resendVerificationEmail": "Resend verification email"
 }

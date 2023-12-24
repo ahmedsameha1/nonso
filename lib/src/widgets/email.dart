@@ -19,7 +19,7 @@ class Email extends StatelessWidget {
         children: [
           TextFormField(
             decoration: InputDecoration(
-              label: Text(AppLocalizations.of(context)!.email),
+              label: Text(AppLocalizations.of(context)!.nonso_email),
             ),
             keyboardType: TextInputType.emailAddress,
             validator: (value) {
@@ -27,7 +27,7 @@ class Email extends StatelessWidget {
                   value.isEmpty ||
                   value.trim().isEmpty ||
                   !value.contains("@")) {
-                return AppLocalizations.of(context)!.invalidEmailString;
+                return AppLocalizations.of(context)!.nonso_invalidEmail;
               }
               return null;
             },
@@ -50,11 +50,11 @@ class Email extends StatelessWidget {
                                   "${Register.failedString}${exception.code}"))));
                 }
               },
-              child: Text(AppLocalizations.of(context)!.next),
+              child: Text(AppLocalizations.of(context)!.nonso_next),
             ),
             ElevatedButton(
               onPressed: authBloc.toSignedOut,
-              child: Text(AppLocalizations.of(context)!.cancel),
+              child: Text(AppLocalizations.of(context)!.nonso_cancel),
             )
           ]),
         ],

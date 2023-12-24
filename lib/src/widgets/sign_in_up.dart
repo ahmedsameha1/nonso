@@ -13,7 +13,7 @@ class SignInUp extends StatelessWidget {
     return Center(
       child: ElevatedButton(
           onPressed: authBloc.start,
-          child: Text(AppLocalizations.of(context)!.signInUp)),
+          child: Text(AppLocalizations.of(context)!.nonso_signInUp)),
     );
   }
 }

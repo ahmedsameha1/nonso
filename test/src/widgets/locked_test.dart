@@ -9,6 +9,7 @@ import 'package:nonso/src/state/auth_bloc.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/widgets/locked.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'skeleton_for_widget_testing.dart';
@@ -51,58 +52,74 @@ void main() {
     );
   });
 
-  testWidgets("Test the precense of the main widgets",
-      (WidgetTester tester) async {
-    await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-    final lockedFinder = find.byType(Locked);
-    expect(lockedFinder, findsOneWidget);
-    expect(find.descendant(of: lockedFinder, matching: columnFinder),
-        findsOneWidget);
-    expect(
-        find.descendant(
-            of: columnFinder, matching: find.text(Locked.verifyEmailAddress)),
-        findsOneWidget);
-    final refreshAccountElevatedButtonFinder = elevatedButtonFinder.at(0);
-    final sendVerificationEmailElevatedButtonFinder =
-        elevatedButtonFinder.at(1);
-    final logoutElevatedButtonFinder = elevatedButtonFinder.at(2);
-    expect(
-        find.descendant(
-            of: columnFinder, matching: refreshAccountElevatedButtonFinder),
-        findsOneWidget);
-    expect(
-        ((tester.widget(refreshAccountElevatedButtonFinder) as ElevatedButton)
-                .child as Text)
-            .data,
-        Locked.refreshString);
-    expect(
-        find.descendant(
-            of: columnFinder,
-            matching: sendVerificationEmailElevatedButtonFinder),
-        findsOneWidget);
-    expect(
-        ((tester.widget(sendVerificationEmailElevatedButtonFinder)
-                    as ElevatedButton)
-                .child as Text)
-            .data,
-        Locked.sendVerificationEmail);
-    expect(
-        find.descendant(of: columnFinder, matching: logoutElevatedButtonFinder),
-        findsOneWidget);
-    expect(
-        ((tester.widget(logoutElevatedButtonFinder) as ElevatedButton).child
-                as Text)
-            .data,
-        Locked.logout);
-    ElevatedButton refreshAccountElevatedButton =
-        tester.widget(refreshAccountElevatedButtonFinder);
-    ElevatedButton sendVerificationEmailElevatedButton =
-        tester.widget(sendVerificationEmailElevatedButtonFinder);
-    ElevatedButton logoutElevatedButton =
-        tester.widget(logoutElevatedButtonFinder);
-    expect(refreshAccountElevatedButton.onPressed, authBloc.updateUser);
-    expect(sendVerificationEmailElevatedButton.onPressed,
-        authBloc.sendEmailToVerifyEmailAddress);
-    expect(logoutElevatedButton.onPressed, authBloc.signOut);
+  group("English locale", () {
+    Locale currentLocale = const Locale("en");
+    testWidgets("Test the precense of the main widgets",
+        (WidgetTester tester) async {
+      AppLocalizations appLocalizations =
+          await getLocalizations(tester, currentLocale);
+      String expectedRefreshString = appLocalizations.nonso_refresh;
+      String expectedVerifyEmailAddressString =
+          appLocalizations.nonso_verifyEmailAddress;
+      String expectedSignOutString = appLocalizations.nonso_signOut;
+      String expectedResendVerificationEmailString =
+          appLocalizations.nonso_resendVerificationEmail;
+      await tester.pumpWidget(Localizations(
+          delegates: AppLocalizations.localizationsDelegates,
+          locale: currentLocale,
+          child: widgetInSkeletonInBlocProvider));
+      final lockedFinder = find.byType(Locked);
+      expect(lockedFinder, findsOneWidget);
+      expect(find.descendant(of: lockedFinder, matching: columnFinder),
+          findsOneWidget);
+      expect(
+          find.descendant(
+              of: columnFinder,
+              matching: find.text(expectedVerifyEmailAddressString)),
+          findsOneWidget);
+      final refreshAccountElevatedButtonFinder = elevatedButtonFinder.at(0);
+      final sendVerificationEmailElevatedButtonFinder =
+          elevatedButtonFinder.at(1);
+      final logoutElevatedButtonFinder = elevatedButtonFinder.at(2);
+      expect(
+          find.descendant(
+              of: columnFinder, matching: refreshAccountElevatedButtonFinder),
+          findsOneWidget);
+      expect(
+          ((tester.widget(refreshAccountElevatedButtonFinder) as ElevatedButton)
+                  .child as Text)
+              .data,
+          expectedRefreshString);
+      expect(
+          find.descendant(
+              of: columnFinder,
+              matching: sendVerificationEmailElevatedButtonFinder),
+          findsOneWidget);
+      expect(
+          ((tester.widget(sendVerificationEmailElevatedButtonFinder)
+                      as ElevatedButton)
+                  .child as Text)
+              .data,
+          expectedResendVerificationEmailString);
+      expect(
+          find.descendant(
+              of: columnFinder, matching: logoutElevatedButtonFinder),
+          findsOneWidget);
+      expect(
+          ((tester.widget(logoutElevatedButtonFinder) as ElevatedButton).child
+                  as Text)
+              .data,
+          expectedSignOutString);
+      ElevatedButton refreshAccountElevatedButton =
+          tester.widget(refreshAccountElevatedButtonFinder);
+      ElevatedButton sendVerificationEmailElevatedButton =
+          tester.widget(sendVerificationEmailElevatedButtonFinder);
+      ElevatedButton logoutElevatedButton =
+          tester.widget(logoutElevatedButtonFinder);
+      expect(refreshAccountElevatedButton.onPressed, authBloc.updateUser);
+      expect(sendVerificationEmailElevatedButton.onPressed,
+          authBloc.sendEmailToVerifyEmailAddress);
+      expect(logoutElevatedButton.onPressed, authBloc.signOut);
+    });
   });
 }
