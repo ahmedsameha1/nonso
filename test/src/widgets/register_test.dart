@@ -10,6 +10,7 @@ import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 import 'package:nonso/src/widgets/register.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'skeleton_for_widget_testing.dart';
@@ -76,214 +77,263 @@ void main() {
         create: (context) => authBloc, child: widgetInSkeleton);
   });
 
-  testWidgets("Test the precence of the main widgets",
-      (WidgetTester tester) async {
-    await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-    expect(find.byType(Register), findsOneWidget);
-    expect(find.descendant(of: find.byType(Register), matching: formFinder),
-        findsOneWidget);
-    expect(find.descendant(of: formFinder, matching: columnFinder),
-        findsOneWidget);
-    final emailTextFinder = find.byType(Text).at(0);
-    expect(find.descendant(of: columnFinder, matching: emailTextFinder),
-        findsOneWidget);
-    expect((tester.widget(emailTextFinder) as Text).data, email);
-    final displayNameTextFormFieldFinder = textFormFieldFinder.at(0);
-    expect(
-        find.descendant(
-            of: columnFinder, matching: displayNameTextFormFieldFinder),
-        findsOneWidget);
-    final TextField nameTextField = tester.widget(find.descendant(
-        of: displayNameTextFormFieldFinder,
-        matching: textFieldFinder.at(0))) as TextField;
-    expect((nameTextField.decoration!.label as Text).data, Register.nameString);
-    expect(nameTextField.keyboardType, TextInputType.text);
-    final passwordTextFormFieldFinder = textFormFieldFinder.at(1);
-    expect(
-        find.descendant(
-            of: columnFinder, matching: passwordTextFormFieldFinder),
-        findsOneWidget);
-    final TextField passwordTextField = tester.widget(find.descendant(
-        of: passwordTextFormFieldFinder,
-        matching: textFieldFinder.at(1))) as TextField;
-    expect((passwordTextField.decoration!.label as Text).data,
-        Register.passwordString);
-    expect(passwordTextField.keyboardType, TextInputType.text);
-    expect(passwordTextField.inputFormatters!.elementAt(0),
-        Register.noWhiteSpaceInputFormatter);
-    expect(passwordTextField.obscureText, true);
-    expect(passwordTextField.autocorrect, false);
-    expect(passwordTextField.enableSuggestions, false);
-    final confirmPasswordTextFormFieldFinder = textFormFieldFinder.at(2);
-    expect(
-        find.descendant(
-            of: columnFinder, matching: confirmPasswordTextFormFieldFinder),
-        findsOneWidget);
-    final confirmPasswordTextField = tester.widget(find.descendant(
-        of: confirmPasswordTextFormFieldFinder,
-        matching: textFieldFinder.at(2))) as TextField;
-    expect((confirmPasswordTextField.decoration!.label as Text).data,
-        Register.confirmPasswordString);
-    expect(confirmPasswordTextField.keyboardType, TextInputType.text);
-    expect(confirmPasswordTextField.inputFormatters!.elementAt(0),
-        Register.noWhiteSpaceInputFormatter);
-    expect(confirmPasswordTextField.obscureText, true);
-    expect(confirmPasswordTextField.autocorrect, false);
-    expect(confirmPasswordTextField.enableSuggestions, false);
-    expect(
-        find.descendant(of: columnFinder, matching: rowFinder), findsOneWidget);
-    final nextElevatedButtonFinder =
-        find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(0));
-    expect(nextElevatedButtonFinder, findsOneWidget);
-    expect(
-        ((tester.widget(nextElevatedButtonFinder) as ElevatedButton).child
-                as Text)
-            .data,
-        Register.nextString);
-    final cancelElevatedButtonFinder =
-        find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(1));
-    expect(cancelElevatedButtonFinder, findsOneWidget);
-    expect(
-        ((tester.widget(cancelElevatedButtonFinder) as ElevatedButton).child
-                as Text)
-            .data,
-        Register.cancelString);
-    ElevatedButton cancelElevatedButton =
-        tester.widget(cancelElevatedButtonFinder);
-    expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
-  });
-
-  group("Form validation", () {
-    testWidgets("name textfield validation", (WidgetTester tester) async {
-      await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-      final nameTextFieldFinder = textFieldFinder.at(0);
-      await tester.enterText(nameTextFieldFinder, "f");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      final nameValidationErrorTextFinder = find.descendant(
-          of: textFormFieldFinder.at(0),
-          matching: find.text(Register.nameValidationErrorString));
-      expect(nameValidationErrorTextFinder, findsNothing);
-      await tester.enterText(nameTextFieldFinder, "");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      expect(nameValidationErrorTextFinder, findsOneWidget);
-      await tester.enterText(nameTextFieldFinder, " ");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      expect(nameValidationErrorTextFinder, findsOneWidget);
-      expect(snackBarFinder, findsNothing);
-    });
-
-    testWidgets("password textfield validation", (WidgetTester tester) async {
-      await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-      final passwordTextFieldFinder = textFieldFinder.at(1);
-      await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      final passwordValidationErrorTextFinder = find.descendant(
-          of: textFormFieldFinder.at(1),
-          matching: find.text(Register.passwordValidationErrorString));
-      expect(passwordValidationErrorTextFinder, findsNothing);
-      await tester.enterText(passwordTextFieldFinder, "");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      expect(passwordValidationErrorTextFinder, findsOneWidget);
-      await tester.enterText(passwordTextFieldFinder, " ");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      final TextField passwordTextField =
-          tester.widget(passwordTextFieldFinder);
-      expect(passwordTextField.controller!.text, "");
-      expect(passwordValidationErrorTextFinder, findsOneWidget);
-      await tester.enterText(passwordTextFieldFinder, " gfh");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      expect(passwordTextField.controller!.text, "gfh");
-      expect(passwordValidationErrorTextFinder, findsOneWidget);
-      expect(snackBarFinder, findsNothing);
-    });
-
-    testWidgets("confirm password textfield validation",
+  group("English locale", () {
+    Locale currentLocale = const Locale("en");
+    testWidgets("Test the precence of the main widgets",
         (WidgetTester tester) async {
-      await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-      final passwordTextFieldFinder = textFieldFinder.at(1);
-      final confirmPasswordTextFieldFinder = textFieldFinder.at(2);
-      await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
-      await tester.enterText(confirmPasswordTextFieldFinder, "8*prt&3k");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      final confirmPasswordValidationErrorTextFinder = find.descendant(
-          of: textFormFieldFinder.at(2),
-          matching: find.text(Register.confirmPasswordValidationErrorString));
-      expect(confirmPasswordValidationErrorTextFinder, findsNothing);
-      await tester.enterText(passwordTextFieldFinder, "");
-      await tester.enterText(confirmPasswordTextFieldFinder, "");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      expect(confirmPasswordValidationErrorTextFinder, findsNothing);
-      await tester.enterText(passwordTextFieldFinder, "hbefr");
-      await tester.enterText(confirmPasswordTextFieldFinder, "r hg");
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
-      expect(
-          (tester.widget(confirmPasswordTextFieldFinder) as TextField)
-              .controller!
-              .text,
-          "rhg");
-      expect(snackBarFinder, findsNothing);
-    });
-  });
-
-  group("nextButton action", () {
-    const userDisplayName = "name";
-    testWidgets(
-        "Test that a SnackBar is shown when FirebaseAuthException is thrown",
-        (WidgetTester tester) async {
-      const password = "oehgolewrbgowerb";
-      when(notNullUser.updateDisplayName(userDisplayName))
-          .thenAnswer((realInvocation) => Completer<void>().future);
-      when(userCredential.user).thenReturn(notNullUser);
-      when(firebaseAuth.createUserWithEmailAndPassword(
-              email: email, password: password))
-          .thenThrow(firebaseAuthException);
-      await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-      await tester.enterText(textFieldFinder.at(0), userDisplayName);
-      await tester.enterText(textFieldFinder.at(1), password);
-      await tester.enterText(textFieldFinder.at(2), password);
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      expect(snackBarFinder, findsOneWidget);
+      AppLocalizations appLocalizations =
+          await getLocalizations(tester, currentLocale);
+      await tester.pumpWidget(Localizations(
+          delegates: AppLocalizations.localizationsDelegates,
+          locale: currentLocale,
+          child: widgetInSkeletonInBlocProvider));
+      String expectedNameString = appLocalizations.nonso_name;
+      String expectedPasswordString = appLocalizations.nonso_password;
+      String expectedConfirmPasswordString =
+          appLocalizations.nonso_confirmPassword;
+      String expectedNextString = appLocalizations.nonso_next;
+      String expectedCancelString = appLocalizations.nonso_cancel;
+      expect(find.byType(Register), findsOneWidget);
+      expect(find.descendant(of: find.byType(Register), matching: formFinder),
+          findsOneWidget);
+      expect(find.descendant(of: formFinder, matching: columnFinder),
+          findsOneWidget);
+      final emailTextFinder = find.byType(Text).at(0);
+      expect(find.descendant(of: columnFinder, matching: emailTextFinder),
+          findsOneWidget);
+      expect((tester.widget(emailTextFinder) as Text).data, email);
+      final displayNameTextFormFieldFinder = textFormFieldFinder.at(0);
       expect(
           find.descendant(
-              of: snackBarFinder,
-              matching: find
-                  .text("${Register.failedString}$firebaseAuthExceptionCode")),
+              of: columnFinder, matching: displayNameTextFormFieldFinder),
           findsOneWidget);
-    });
-
-    testWidgets(
-        "Test that a SnackBar is shown to guide user to check his email",
-        (WidgetTester tester) async {
-      const password = "oehgolewrbgowerb";
-      when(notNullUser.updateDisplayName(userDisplayName))
-          .thenAnswer((realInvocation) => Completer<void>().future);
-      when(userCredential.user).thenReturn(notNullUser);
-      when(firebaseAuth.createUserWithEmailAndPassword(
-              email: email, password: password))
-          .thenAnswer((realInvocation) => Future.value(userCredential));
-      await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-      await tester.enterText(textFieldFinder.at(0), userDisplayName);
-      await tester.enterText(textFieldFinder.at(1), password);
-      await tester.enterText(textFieldFinder.at(2), password);
-      await tester.tap(nextElevatedButtonFinder);
-      await tester.pumpAndSettle();
-      expect(snackBarFinder, findsOneWidget);
+      final TextField nameTextField = tester.widget(find.descendant(
+          of: displayNameTextFormFieldFinder,
+          matching: textFieldFinder.at(0))) as TextField;
+      expect(
+          (nameTextField.decoration!.label as Text).data, expectedNameString);
+      expect(nameTextField.keyboardType, TextInputType.text);
+      final passwordTextFormFieldFinder = textFormFieldFinder.at(1);
       expect(
           find.descendant(
-              of: snackBarFinder, matching: find.text(Register.successString)),
+              of: columnFinder, matching: passwordTextFormFieldFinder),
           findsOneWidget);
+      final TextField passwordTextField = tester.widget(find.descendant(
+          of: passwordTextFormFieldFinder,
+          matching: textFieldFinder.at(1))) as TextField;
+      expect((passwordTextField.decoration!.label as Text).data,
+          expectedPasswordString);
+      expect(passwordTextField.keyboardType, TextInputType.text);
+      expect(passwordTextField.inputFormatters!.elementAt(0),
+          Register.noWhiteSpaceInputFormatter);
+      expect(passwordTextField.obscureText, true);
+      expect(passwordTextField.autocorrect, false);
+      expect(passwordTextField.enableSuggestions, false);
+      final confirmPasswordTextFormFieldFinder = textFormFieldFinder.at(2);
+      expect(
+          find.descendant(
+              of: columnFinder, matching: confirmPasswordTextFormFieldFinder),
+          findsOneWidget);
+      final confirmPasswordTextField = tester.widget(find.descendant(
+          of: confirmPasswordTextFormFieldFinder,
+          matching: textFieldFinder.at(2))) as TextField;
+      expect((confirmPasswordTextField.decoration!.label as Text).data,
+          expectedConfirmPasswordString);
+      expect(confirmPasswordTextField.keyboardType, TextInputType.text);
+      expect(confirmPasswordTextField.inputFormatters!.elementAt(0),
+          Register.noWhiteSpaceInputFormatter);
+      expect(confirmPasswordTextField.obscureText, true);
+      expect(confirmPasswordTextField.autocorrect, false);
+      expect(confirmPasswordTextField.enableSuggestions, false);
+      expect(find.descendant(of: columnFinder, matching: rowFinder),
+          findsOneWidget);
+      final nextElevatedButtonFinder =
+          find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(0));
+      expect(nextElevatedButtonFinder, findsOneWidget);
+      expect(
+          ((tester.widget(nextElevatedButtonFinder) as ElevatedButton).child
+                  as Text)
+              .data,
+          expectedNextString);
+      final cancelElevatedButtonFinder =
+          find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(1));
+      expect(cancelElevatedButtonFinder, findsOneWidget);
+      expect(
+          ((tester.widget(cancelElevatedButtonFinder) as ElevatedButton).child
+                  as Text)
+              .data,
+          expectedCancelString);
+      ElevatedButton cancelElevatedButton =
+          tester.widget(cancelElevatedButtonFinder);
+      expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
+    });
+
+    group("Form validation", () {
+      testWidgets("name textfield validation", (WidgetTester tester) async {
+        AppLocalizations appLocalizations =
+            await getLocalizations(tester, currentLocale);
+        await tester.pumpWidget(Localizations(
+            delegates: AppLocalizations.localizationsDelegates,
+            locale: currentLocale,
+            child: widgetInSkeletonInBlocProvider));
+        String expectedNameValidationErrorString =
+            appLocalizations.nonso_nameValidationError;
+        final nameTextFieldFinder = textFieldFinder.at(0);
+        await tester.enterText(nameTextFieldFinder, "f");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        final nameValidationErrorTextFinder = find.descendant(
+            of: textFormFieldFinder.at(0),
+            matching: find.text(expectedNameValidationErrorString));
+        expect(nameValidationErrorTextFinder, findsNothing);
+        await tester.enterText(nameTextFieldFinder, "");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        expect(nameValidationErrorTextFinder, findsOneWidget);
+        await tester.enterText(nameTextFieldFinder, " ");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        expect(nameValidationErrorTextFinder, findsOneWidget);
+        expect(snackBarFinder, findsNothing);
+      });
+
+      testWidgets("password textfield validation", (WidgetTester tester) async {
+        AppLocalizations appLocalizations =
+            await getLocalizations(tester, currentLocale);
+        await tester.pumpWidget(Localizations(
+            delegates: AppLocalizations.localizationsDelegates,
+            locale: currentLocale,
+            child: widgetInSkeletonInBlocProvider));
+        String expectedPasswordValidationErrorString =
+            appLocalizations.nonso_passwordValidationError;
+        final passwordTextFieldFinder = textFieldFinder.at(1);
+        await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        final passwordValidationErrorTextFinder = find.descendant(
+            of: textFormFieldFinder.at(1),
+            matching: find.text(expectedPasswordValidationErrorString));
+        expect(passwordValidationErrorTextFinder, findsNothing);
+        await tester.enterText(passwordTextFieldFinder, "");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        expect(passwordValidationErrorTextFinder, findsOneWidget);
+        await tester.enterText(passwordTextFieldFinder, " ");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        final TextField passwordTextField =
+            tester.widget(passwordTextFieldFinder);
+        expect(passwordTextField.controller!.text, "");
+        expect(passwordValidationErrorTextFinder, findsOneWidget);
+        await tester.enterText(passwordTextFieldFinder, " gfh");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        expect(passwordTextField.controller!.text, "gfh");
+        expect(passwordValidationErrorTextFinder, findsOneWidget);
+        expect(snackBarFinder, findsNothing);
+      });
+
+      testWidgets("confirm password textfield validation",
+          (WidgetTester tester) async {
+        AppLocalizations appLocalizations =
+            await getLocalizations(tester, currentLocale);
+        await tester.pumpWidget(Localizations(
+            delegates: AppLocalizations.localizationsDelegates,
+            locale: currentLocale,
+            child: widgetInSkeletonInBlocProvider));
+        String expectedConfirmPasswordValidationErrorString =
+            appLocalizations.nonso_confirmPasswordValidationError;
+        final passwordTextFieldFinder = textFieldFinder.at(1);
+        final confirmPasswordTextFieldFinder = textFieldFinder.at(2);
+        await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
+        await tester.enterText(confirmPasswordTextFieldFinder, "8*prt&3k");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        final confirmPasswordValidationErrorTextFinder = find.descendant(
+            of: textFormFieldFinder.at(2),
+            matching: find.text(expectedConfirmPasswordValidationErrorString));
+        expect(confirmPasswordValidationErrorTextFinder, findsNothing);
+        await tester.enterText(passwordTextFieldFinder, "");
+        await tester.enterText(confirmPasswordTextFieldFinder, "");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        expect(confirmPasswordValidationErrorTextFinder, findsNothing);
+        await tester.enterText(passwordTextFieldFinder, "hbefr");
+        await tester.enterText(confirmPasswordTextFieldFinder, "r hg");
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
+        expect(
+            (tester.widget(confirmPasswordTextFieldFinder) as TextField)
+                .controller!
+                .text,
+            "rhg");
+        expect(snackBarFinder, findsNothing);
+      });
+    });
+
+    group("nextButton action", () {
+      const userDisplayName = "name";
+      testWidgets(
+          "Test that a SnackBar is shown when FirebaseAuthException is thrown",
+          (WidgetTester tester) async {
+        AppLocalizations appLocalizations =
+            await getLocalizations(tester, currentLocale);
+        await tester.pumpWidget(Localizations(
+            delegates: AppLocalizations.localizationsDelegates,
+            locale: currentLocale,
+            child: widgetInSkeletonInBlocProvider));
+        String expectedFailedString = appLocalizations.nonso_failed;
+        const password = "oehgolewrbgowerb";
+        when(notNullUser.updateDisplayName(userDisplayName))
+            .thenAnswer((realInvocation) => Completer<void>().future);
+        when(userCredential.user).thenReturn(notNullUser);
+        when(firebaseAuth.createUserWithEmailAndPassword(
+                email: email, password: password))
+            .thenThrow(firebaseAuthException);
+        await tester.enterText(textFieldFinder.at(0), userDisplayName);
+        await tester.enterText(textFieldFinder.at(1), password);
+        await tester.enterText(textFieldFinder.at(2), password);
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        expect(snackBarFinder, findsOneWidget);
+        expect(
+            find.descendant(
+                of: snackBarFinder,
+                matching: find
+                    .text("$expectedFailedString$firebaseAuthExceptionCode")),
+            findsOneWidget);
+      });
+
+      testWidgets(
+          "Test that a SnackBar is shown to guide user to check his email",
+          (WidgetTester tester) async {
+        AppLocalizations appLocalizations =
+            await getLocalizations(tester, currentLocale);
+        await tester.pumpWidget(Localizations(
+            delegates: AppLocalizations.localizationsDelegates,
+            locale: currentLocale,
+            child: widgetInSkeletonInBlocProvider));
+        String expectedSuccessString = appLocalizations.nonso_success;
+        const password = "oehgolewrbgowerb";
+        when(notNullUser.updateDisplayName(userDisplayName))
+            .thenAnswer((realInvocation) => Completer<void>().future);
+        when(userCredential.user).thenReturn(notNullUser);
+        when(firebaseAuth.createUserWithEmailAndPassword(
+                email: email, password: password))
+            .thenAnswer((realInvocation) => Future.value(userCredential));
+        await tester.enterText(textFieldFinder.at(0), userDisplayName);
+        await tester.enterText(textFieldFinder.at(1), password);
+        await tester.enterText(textFieldFinder.at(2), password);
+        await tester.tap(nextElevatedButtonFinder);
+        await tester.pumpAndSettle();
+        expect(snackBarFinder, findsOneWidget);
+        expect(
+            find.descendant(
+                of: snackBarFinder,
+                matching: find.text(expectedSuccessString)),
+            findsOneWidget);
+      });
     });
   });
 }
