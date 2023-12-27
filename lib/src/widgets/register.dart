@@ -95,7 +95,7 @@ class Register extends HookWidget {
                             nameTextEditingController.text,
                             ((exception) => scaffoldMessenger.showSnackBar(SnackBar(
                                 content: Text(
-                                    "${AppLocalizations.of(context)!.nonso_failed}${exception.code}")))));
+                                    "${AppLocalizations.of(context)!.nonso_failedd}${exception.code}")))));
                         scaffoldMessenger.showSnackBar(
                             SnackBar(content: Text(successString)));
                       }

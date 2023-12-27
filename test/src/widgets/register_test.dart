@@ -283,7 +283,7 @@ void main() {
             delegates: AppLocalizations.localizationsDelegates,
             locale: currentLocale,
             child: widgetInSkeletonInBlocProvider));
-        String expectedFailedString = appLocalizations.nonso_failed;
+        String expectedFailedString = appLocalizations.nonso_failedd;
         const password = "oehgolewrbgowerb";
         when(notNullUser.updateDisplayName(userDisplayName))
             .thenAnswer((realInvocation) => Completer<void>().future);
@@ -330,8 +330,7 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder,
-                matching: find.text(expectedSuccessString)),
+                of: snackBarFinder, matching: find.text(expectedSuccessString)),
             findsOneWidget);
       });
     });

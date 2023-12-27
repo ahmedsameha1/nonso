@@ -3,12 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../state/auth_bloc.dart';
-import 'register.dart';
 
 class Email extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey();
   String? _email;
-  Email({Key? key}) : super(key: key);
+  Email({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +45,8 @@ class Email extends StatelessWidget {
                       _email!,
                       (exception) => ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                              content: Text(
-                                  "${Register.failedString}${exception.code}"))));
+                              content: Text(AppLocalizations.of(context)!
+                                  .nonso_failed(exception.code)))));
                 }
               },
               child: Text(AppLocalizations.of(context)!.nonso_next),

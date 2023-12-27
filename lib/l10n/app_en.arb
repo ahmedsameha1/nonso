@@ -12,7 +12,15 @@
     "nonso_password": "Password",
     "nonso_confirmPassword": "Confirm Password",
     "nonso_nameValidationError": "Enter a name",
-    "nonso_failed": "Failure: ",
+    "nonso_failedd": "Failure: ",
+    "nonso_failed": "Failure: {exceptionCode}",
+    "@nonso_failed": {
+        "placeholders": {
+            "exceptionCode": {
+                "type": "String"
+            }
+        }
+    },
     "nonso_success": "Success: Check your email to verify your email address",
     "nonso_passwordValidationError": "Password needs to be at least $passwordMinimumLength characters",
     "nonso_confirmPasswordValidationError": "This doesn't match the above password"

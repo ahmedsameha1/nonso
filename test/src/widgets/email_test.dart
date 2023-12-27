@@ -9,7 +9,6 @@ import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/auth_bloc.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 import 'package:nonso/src/widgets/email.dart';
-import 'package:nonso/src/widgets/register.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../state/auth_bloc_test.mocks.dart';
@@ -70,6 +69,11 @@ void main() {
 
   group("English locale", () {
     Locale currentLocale = const Locale("en");
+    String expectedEmailString = "Email";
+    String expectedNextString = "Next";
+    String expectedCancelString = "Cancel";
+    String expectedInvalidEmailString = "This an invalid email";
+    String expectedFailedString = "Failure: code";
 
     setUp(() {
       widgetProviderLocalization = Localizations(
@@ -81,11 +85,6 @@ void main() {
 
     testWidgets("Test the precense of the main widgets",
         (WidgetTester tester) async {
-      AppLocalizations appLocalizations =
-          await getLocalizations(tester, currentLocale);
-      String expectedEmailString = appLocalizations.nonso_email;
-      String expectedNextString = appLocalizations.nonso_next;
-      String expectedCancelString = appLocalizations.nonso_cancel;
       when(firebaseAuth.fetchSignInMethodsForEmail(validEmail))
           .thenAnswer((realInvocation) => Future.value(<String>["password"]));
       await tester.pumpWidget(widgetProviderLocalization);
@@ -120,9 +119,6 @@ void main() {
 
     testWidgets("Test the TextFormField validation",
         (WidgetTester tester) async {
-      AppLocalizations appLocalizations =
-          await getLocalizations(tester, currentLocale);
-      String expectedInvalidEmailString = appLocalizations.nonso_invalidEmail;
       when(firebaseAuth.fetchSignInMethodsForEmail(validEmail))
           .thenAnswer((realInvocation) => Future.value(<String>["password"]));
       await tester.pumpWidget(widgetProviderLocalization);
@@ -162,18 +158,13 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder,
-                matching: find.text(
-                    "${Register.failedString}${firebaseAuthException.code}")),
+                of: snackBarFinder, matching: find.text(expectedFailedString)),
             findsOneWidget);
       });
 
       testWidgets(
           "Test that a SnackBar is NOT shown when NO FirebaseAuthException is thrown",
           (WidgetTester tester) async {
-        AppLocalizations appLocalizations =
-            await getLocalizations(tester, currentLocale);
-        String expectedInvalidEmailString = appLocalizations.nonso_invalidEmail;
         when(firebaseAuth.fetchSignInMethodsForEmail(validEmail))
             .thenAnswer((realInvocation) => Future.value(<String>["password"]));
         await tester.pumpWidget(widgetProviderLocalization);
