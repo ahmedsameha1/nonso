@@ -38,12 +38,10 @@ void main() {
 
   group("English locale", () {
     Locale currentLocale = const Locale("en");
+    String expectedSignInUpString = "Sign In/Up";
 
     testWidgets("Test the precense of the main widgets",
         (WidgetTester tester) async {
-      AppLocalizations appLocalizations =
-          await getLocalizations(tester, currentLocale);
-      String expectedSignInUpString = appLocalizations.nonso_signInUp;
       await tester.pumpWidget(Localizations(
           delegates: AppLocalizations.localizationsDelegates,
           locale: currentLocale,
