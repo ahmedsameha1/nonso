@@ -54,16 +54,13 @@ void main() {
 
   group("English locale", () {
     Locale currentLocale = const Locale("en");
+    String expectedRefreshString = "Refresh account";
+    String expectedVerifyEmailAddressString =
+        "Check your email inbox to verify your email address";
+    String expectedSignOutString = "Sign out";
+    String expectedResendVerificationEmailString = "Resend verification email";
     testWidgets("Test the precense of the main widgets",
         (WidgetTester tester) async {
-      AppLocalizations appLocalizations =
-          await getLocalizations(tester, currentLocale);
-      String expectedRefreshString = appLocalizations.nonso_refresh;
-      String expectedVerifyEmailAddressString =
-          appLocalizations.nonso_verifyEmailAddress;
-      String expectedSignOutString = appLocalizations.nonso_signOut;
-      String expectedResendVerificationEmailString =
-          appLocalizations.nonso_resendVerificationEmail;
       await tester.pumpWidget(Localizations(
           delegates: AppLocalizations.localizationsDelegates,
           locale: currentLocale,
