@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:nonso/src/state/auth_bloc.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
+import 'package:nonso/src/widgets/common.dart';
 import 'package:nonso/src/widgets/register.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -79,20 +80,25 @@ void main() {
 
   group("English locale", () {
     Locale currentLocale = const Locale("en");
+    String expectedNameString = "Name";
+    String expectedPasswordString = "Password";
+    String expectedConfirmPasswordString = "Confirm Password";
+    String expectedNextString = "Next";
+    String expectedCancelString = "Cancel";
+    String expectedNameValidationErrorString = "Enter a name";
+    String expectedPasswordValidationErrorString =
+        "Password needs to be at least 6 characters";
+    String expectedConfirmPasswordValidationErrorString =
+        "This doesn't match the above password";
+    String expectedSuccessString =
+        "Success: Check your email to verify your email address";
+    String expectedFailedString = "Failure: code";
     testWidgets("Test the precence of the main widgets",
         (WidgetTester tester) async {
-      AppLocalizations appLocalizations =
-          await getLocalizations(tester, currentLocale);
       await tester.pumpWidget(Localizations(
           delegates: AppLocalizations.localizationsDelegates,
           locale: currentLocale,
           child: widgetInSkeletonInBlocProvider));
-      String expectedNameString = appLocalizations.nonso_name;
-      String expectedPasswordString = appLocalizations.nonso_password;
-      String expectedConfirmPasswordString =
-          appLocalizations.nonso_confirmPassword;
-      String expectedNextString = appLocalizations.nonso_next;
-      String expectedCancelString = appLocalizations.nonso_cancel;
       expect(find.byType(Register), findsOneWidget);
       expect(find.descendant(of: find.byType(Register), matching: formFinder),
           findsOneWidget);
@@ -125,7 +131,7 @@ void main() {
           expectedPasswordString);
       expect(passwordTextField.keyboardType, TextInputType.text);
       expect(passwordTextField.inputFormatters!.elementAt(0),
-          Register.noWhiteSpaceInputFormatter);
+          noWhiteSpaceInputFormatter);
       expect(passwordTextField.obscureText, true);
       expect(passwordTextField.autocorrect, false);
       expect(passwordTextField.enableSuggestions, false);
@@ -141,7 +147,7 @@ void main() {
           expectedConfirmPasswordString);
       expect(confirmPasswordTextField.keyboardType, TextInputType.text);
       expect(confirmPasswordTextField.inputFormatters!.elementAt(0),
-          Register.noWhiteSpaceInputFormatter);
+          noWhiteSpaceInputFormatter);
       expect(confirmPasswordTextField.obscureText, true);
       expect(confirmPasswordTextField.autocorrect, false);
       expect(confirmPasswordTextField.enableSuggestions, false);
@@ -170,14 +176,10 @@ void main() {
 
     group("Form validation", () {
       testWidgets("name textfield validation", (WidgetTester tester) async {
-        AppLocalizations appLocalizations =
-            await getLocalizations(tester, currentLocale);
         await tester.pumpWidget(Localizations(
             delegates: AppLocalizations.localizationsDelegates,
             locale: currentLocale,
             child: widgetInSkeletonInBlocProvider));
-        String expectedNameValidationErrorString =
-            appLocalizations.nonso_nameValidationError;
         final nameTextFieldFinder = textFieldFinder.at(0);
         await tester.enterText(nameTextFieldFinder, "f");
         await tester.tap(nextElevatedButtonFinder);
@@ -198,14 +200,10 @@ void main() {
       });
 
       testWidgets("password textfield validation", (WidgetTester tester) async {
-        AppLocalizations appLocalizations =
-            await getLocalizations(tester, currentLocale);
         await tester.pumpWidget(Localizations(
             delegates: AppLocalizations.localizationsDelegates,
             locale: currentLocale,
             child: widgetInSkeletonInBlocProvider));
-        String expectedPasswordValidationErrorString =
-            appLocalizations.nonso_passwordValidationError;
         final passwordTextFieldFinder = textFieldFinder.at(1);
         await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
         await tester.tap(nextElevatedButtonFinder);
@@ -235,14 +233,10 @@ void main() {
 
       testWidgets("confirm password textfield validation",
           (WidgetTester tester) async {
-        AppLocalizations appLocalizations =
-            await getLocalizations(tester, currentLocale);
         await tester.pumpWidget(Localizations(
             delegates: AppLocalizations.localizationsDelegates,
             locale: currentLocale,
             child: widgetInSkeletonInBlocProvider));
-        String expectedConfirmPasswordValidationErrorString =
-            appLocalizations.nonso_confirmPasswordValidationError;
         final passwordTextFieldFinder = textFieldFinder.at(1);
         final confirmPasswordTextFieldFinder = textFieldFinder.at(2);
         await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
@@ -277,13 +271,10 @@ void main() {
       testWidgets(
           "Test that a SnackBar is shown when FirebaseAuthException is thrown",
           (WidgetTester tester) async {
-        AppLocalizations appLocalizations =
-            await getLocalizations(tester, currentLocale);
         await tester.pumpWidget(Localizations(
             delegates: AppLocalizations.localizationsDelegates,
             locale: currentLocale,
             child: widgetInSkeletonInBlocProvider));
-        String expectedFailedString = appLocalizations.nonso_failedd;
         const password = "oehgolewrbgowerb";
         when(notNullUser.updateDisplayName(userDisplayName))
             .thenAnswer((realInvocation) => Completer<void>().future);
@@ -299,22 +290,17 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder,
-                matching: find
-                    .text("$expectedFailedString$firebaseAuthExceptionCode")),
+                of: snackBarFinder, matching: find.text(expectedFailedString)),
             findsOneWidget);
       });
 
       testWidgets(
           "Test that a SnackBar is shown to guide user to check his email",
           (WidgetTester tester) async {
-        AppLocalizations appLocalizations =
-            await getLocalizations(tester, currentLocale);
         await tester.pumpWidget(Localizations(
             delegates: AppLocalizations.localizationsDelegates,
             locale: currentLocale,
             child: widgetInSkeletonInBlocProvider));
-        String expectedSuccessString = appLocalizations.nonso_success;
         const password = "oehgolewrbgowerb";
         when(notNullUser.updateDisplayName(userDisplayName))
             .thenAnswer((realInvocation) => Completer<void>().future);

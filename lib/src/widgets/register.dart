@@ -1,21 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:nonso/src/state/auth_bloc.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'common.dart';
+
 class Register extends HookWidget {
-  static const passwordString = "Password";
-  static const nextString = "Next";
-  static const cancelString = "Cancel";
-  static const failedString = "Failure: ";
-  static const passwordValidationErrorString =
-      "Password needs to be at least $passwordMinimumLength characters";
-  static const passwordMinimumLength = 6;
-  static final FilteringTextInputFormatter noWhiteSpaceInputFormatter =
-      FilteringTextInputFormatter.deny(RegExp(r'\s'));
   final GlobalKey<FormState> _formKey = GlobalKey();
   Register({super.key});
 
@@ -58,7 +50,7 @@ class Register extends HookWidget {
                 if (value == null ||
                     value.trim().length < passwordMinimumLength) {
                   return AppLocalizations.of(context)!
-                      .nonso_passwordValidationError;
+                      .nonso_passwordValidationError(passwordMinimumLength);
                 }
                 return null;
               },
@@ -93,9 +85,10 @@ class Register extends HookWidget {
                             state.email!,
                             passwordTextEditingController.text,
                             nameTextEditingController.text,
-                            ((exception) => scaffoldMessenger.showSnackBar(SnackBar(
-                                content: Text(
-                                    "${AppLocalizations.of(context)!.nonso_failedd}${exception.code}")))));
+                            ((exception) => scaffoldMessenger.showSnackBar(
+                                SnackBar(
+                                    content: Text(AppLocalizations.of(context)!
+                                        .nonso_failed(exception.code))))));
                         scaffoldMessenger.showSnackBar(
                             SnackBar(content: Text(successString)));
                       }
