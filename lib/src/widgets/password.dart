@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../state/auth_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../state/auth_state.dart';
-import 'register.dart';
+import 'common.dart';
 
 class Password extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey();
   String? _password;
-  Password({Key? key}) : super(key: key);
+  Password({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +20,18 @@ class Password extends StatelessWidget {
         child: Column(children: [
           Text(state.email!),
           TextFormField(
-            decoration:
-                const InputDecoration(label: Text(Register.passwordString)),
+            decoration: InputDecoration(
+                label: Text(AppLocalizations.of(context)!.nonso_password)),
             keyboardType: TextInputType.text,
-            inputFormatters: [Register.noWhiteSpaceInputFormatter],
+            inputFormatters: [noWhiteSpaceInputFormatter],
             obscureText: true,
             autocorrect: false,
             enableSuggestions: false,
             validator: (value) {
               if (value == null ||
-                  value.trim().length < Register.passwordMinimumLength) {
-                return Register.passwordValidationErrorString;
+                  value.trim().length < passwordMinimumLength) {
+                return AppLocalizations.of(context)!
+                    .nonso_passwordValidationError(passwordMinimumLength);
               }
               return null;
             },
@@ -48,16 +50,16 @@ class Password extends StatelessWidget {
                     await authBloc.signInWithEmailAndPassword(
                         state.email!, _password!, ((exception) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              "${Register.failedString}${exception.code}")));
+                          content: Text(AppLocalizations.of(context)!
+                              .nonso_failed(exception.code))));
                     }));
                   }
                 },
-                child: const Text(Register.nextString),
+                child: Text(AppLocalizations.of(context)!.nonso_next),
               ),
               ElevatedButton(
                 onPressed: authBloc.toSignedOut,
-                child: const Text(Register.cancelString),
+                child: Text(AppLocalizations.of(context)!.nonso_cancel),
               )
             ],
           ),
