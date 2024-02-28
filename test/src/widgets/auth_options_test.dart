@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nonso/src/state/auth_bloc.dart';
-import 'package:nonso/src/widgets/sign_in_up.dart';
+import 'package:nonso/src/widgets/auth_options.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../state/auth_bloc_test.dart';
@@ -29,7 +29,7 @@ void main() {
     when(mockAuthBloc.stream)
         .thenAnswer((realInvocation) => Stream.value(signedOutState));
     when(mockAuthBloc.state).thenReturn(signedOutState);
-    widgetInSkeleton = createWidgetInASkeleton(const SignInUp());
+    widgetInSkeleton = createWidgetInASkeleton(const AuthOptions());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
       child: widgetInSkeleton,
@@ -38,7 +38,7 @@ void main() {
 
   group("English locale", () {
     Locale currentLocale = const Locale("en");
-    String expectedSignInUpString = "Sign In/Up";
+    String expectedRegisterString = "Register";
 
     testWidgets("Test the precense of the main widgets",
         (WidgetTester tester) async {
@@ -48,15 +48,15 @@ void main() {
           child: widgetInSkeletonInBlocProvider));
       final centerFinder = find.byType(Center);
       expect(centerFinder, findsOneWidget);
-      final signInUpButtonFinder = elevatedButtonFinder;
-      expect(find.descendant(of: centerFinder, matching: signInUpButtonFinder),
+      final registerButtonFinder = elevatedButtonFinder;
+      expect(find.descendant(of: centerFinder, matching: registerButtonFinder),
           findsOneWidget);
       expect(
           find.descendant(
-              of: signInUpButtonFinder,
-              matching: find.text(expectedSignInUpString)),
+              of: registerButtonFinder,
+              matching: find.text(expectedRegisterString)),
           findsOneWidget);
-      await tester.tap(signInUpButtonFinder);
+      await tester.tap(registerButtonFinder);
       verify(mockAuthBloc.start()).called(1);
     });
   });

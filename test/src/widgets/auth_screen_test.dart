@@ -13,7 +13,7 @@ import 'package:nonso/src/widgets/email.dart';
 import 'package:nonso/src/widgets/locked.dart';
 import 'package:nonso/src/widgets/password.dart';
 import 'package:nonso/src/widgets/register.dart';
-import 'package:nonso/src/widgets/sign_in_up.dart';
+import 'package:nonso/src/widgets/auth_options.dart';
 import 'package:mockito/annotations.dart';
 
 import '../state/auth_bloc_test.dart';
@@ -67,7 +67,8 @@ void main() {
       child: widgetInSkeleton,
     );
     await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-    expect(find.descendant(of: scaffoldFinder, matching: find.byType(SignInUp)),
+    expect(
+        find.descendant(of: scaffoldFinder, matching: find.byType(AuthOptions)),
         findsOneWidget);
   });
 

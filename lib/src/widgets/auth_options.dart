@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nonso/nonso.dart';
 
-class SignInUp extends StatelessWidget {
-  const SignInUp({super.key});
+class AuthOptions extends StatelessWidget {
+  const AuthOptions({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class SignInUp extends StatelessWidget {
     return Center(
       child: ElevatedButton(
           onPressed: authBloc.start,
-          child: Text(AppLocalizations.of(context)!.nonso_signInUp)),
+          child: Text(AppLocalizations.of(context)!.nonso_register)),
     );
   }
 }

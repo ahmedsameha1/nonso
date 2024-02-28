@@ -5,7 +5,7 @@ import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 import 'package:nonso/src/widgets/locked.dart';
 import 'package:nonso/src/widgets/password.dart';
 import 'package:nonso/src/widgets/register.dart';
-import 'package:nonso/src/widgets/sign_in_up.dart';
+import 'package:nonso/src/widgets/auth_options.dart';
 
 import '../state/auth_state.dart';
 import 'email.dart';
@@ -20,7 +20,7 @@ class AuthScreen extends StatelessWidget {
       builder: (ctx, state) {
         switch (state.applicationAuthState) {
           case ApplicationAuthState.signedOut:
-            return const SignInUp();
+            return const AuthOptions();
           case ApplicationAuthState.emailAddress:
             return Email();
           case ApplicationAuthState.password:
