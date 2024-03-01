@@ -72,6 +72,19 @@ void main() {
         findsOneWidget);
   });
 
+  testWidgets("Test startRegistration state", (WidgetTester tester) async {
+    when(mockAuthBloc.stream)
+        .thenAnswer((realInvocation) => Stream.value(startRegistrationState));
+    when(mockAuthBloc.state).thenReturn(startRegistrationState);
+    widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
+      create: (context) => mockAuthBloc,
+      child: widgetInSkeleton,
+    );
+    await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+    expect(find.descendant(of: scaffoldFinder, matching: find.byType(Register)),
+        findsOneWidget);
+  });
+
   testWidgets("Test emailAddress state", (WidgetTester tester) async {
     when(mockAuthBloc.stream)
         .thenAnswer((realInvocation) => Stream.value(emailAddressState));
