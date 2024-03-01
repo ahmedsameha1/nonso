@@ -21,9 +21,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           applicationAuthState: ApplicationAuthState.locked,
           email: event.email)),
     );
-    on<EmailAddressEvent>(
+    on<StartRegistrationEvent>(
       (event, emit) => emit(const AuthState(
-          applicationAuthState: ApplicationAuthState.emailAddress,
+          applicationAuthState: ApplicationAuthState.startRegistration,
           email: null)),
     );
     on<PasswordEvent>(
@@ -67,8 +67,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  void start() {
-    add(EmailAddressEvent());
+  void startRegistration() {
+    add(StartRegistrationEvent());
   }
 
   Future<void> verifyEmail(String email,

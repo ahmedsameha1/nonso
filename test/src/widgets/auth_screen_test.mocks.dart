@@ -93,7 +93,7 @@ class MockAuthBloc extends _i1.Mock implements _i4.AuthBloc {
       ) as bool);
 
   @override
-  void start() => super.noSuchMethod(
+  void startRegistration() => super.noSuchMethod(
         Invocation.method(
           #start,
           [],

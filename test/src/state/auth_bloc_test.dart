@@ -49,6 +49,8 @@ const passwordState = AuthState(
     applicationAuthState: ApplicationAuthState.password, email: validEmail);
 const registerState = AuthState(
     applicationAuthState: ApplicationAuthState.register, email: validEmail);
+const startRegistrationState = AuthState(
+    applicationAuthState: ApplicationAuthState.startRegistration, email: null);
 late AuthBloc sut;
 final firebaseAuthExceptionCallback =
     MockFirebaseAuthExceptionErrorCallbackFunction();
@@ -118,14 +120,14 @@ main() {
     """
         $given $workingWithAuthBloc
           $and there is no signed in user
-        $wheN calling start()
-        $then $theResultStateIs $emailAddressState
+        $wheN calling startRegistration()
+        $then $theResultStateIs $startRegistrationState
       """,
     build: () => sut,
     act: (bloc) {
-      fromsignedOutToEmailAddress();
+      sut.startRegistration();
     },
-    expect: () => [emailAddressState],
+    expect: () => [startRegistrationState],
   );
 
   blocTest("""
@@ -938,10 +940,6 @@ void pushPreparedUserToUserChangesStream(User? user,
     when(user.email).thenReturn(validEmail);
   }
   streamController.sink.add(user);
-}
-
-void fromsignedOutToEmailAddress() {
-  sut.start();
 }
 
 void

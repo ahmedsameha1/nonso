@@ -57,7 +57,7 @@ void main() {
               matching: find.text(expectedRegisterString)),
           findsOneWidget);
       await tester.tap(registerButtonFinder);
-      verify(mockAuthBloc.start()).called(1);
+      verify(mockAuthBloc.startRegistration()).called(1);
     });
   });
 }

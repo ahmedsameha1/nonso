@@ -12,7 +12,7 @@ class AuthOptions extends StatelessWidget {
     AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
     return Center(
       child: ElevatedButton(
-          onPressed: authBloc.start,
+          onPressed: authBloc.startRegistration,
           child: Text(AppLocalizations.of(context)!.nonso_register)),
     );
   }
