@@ -11,7 +11,7 @@
     "nonso_name": "Name",
     "nonso_password": "Password",
     "nonso_confirmPassword": "Confirm Password",
-    "nonso_nameValidationError": "Enter a name",
+    "nonso_nameValidationError": "Enter your name",
     "nonso_failed": "Failure: {exceptionCode}",
     "@nonso_failed": {
         "placeholders": {

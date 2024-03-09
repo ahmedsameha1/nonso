@@ -85,7 +85,7 @@ void main() {
     String expectedConfirmPasswordString = "Confirm Password";
     String expectedNextString = "Next";
     String expectedCancelString = "Cancel";
-    String expectedNameValidationErrorString = "Enter a name";
+    String expectedNameValidationErrorString = "Enter your name";
     String expectedPasswordValidationErrorString =
         "Password needs to be at least 6 characters";
     String expectedConfirmPasswordValidationErrorString =
@@ -104,10 +104,6 @@ void main() {
           findsOneWidget);
       expect(find.descendant(of: formFinder, matching: columnFinder),
           findsOneWidget);
-      final emailTextFinder = find.byType(Text).at(0);
-      expect(find.descendant(of: columnFinder, matching: emailTextFinder),
-          findsOneWidget);
-      expect((tester.widget(emailTextFinder) as Text).data, email);
       final displayNameTextFormFieldFinder = textFormFieldFinder.at(0);
       expect(
           find.descendant(
@@ -182,18 +178,19 @@ void main() {
             child: widgetInSkeletonInBlocProvider));
         final nameTextFieldFinder = textFieldFinder.at(0);
         await tester.enterText(nameTextFieldFinder, "f");
-        await tester.tap(nextElevatedButtonFinder);
+        final aTextFieldFinder = textFieldFinder.at(1);
+        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
         final nameValidationErrorTextFinder = find.descendant(
             of: textFormFieldFinder.at(0),
             matching: find.text(expectedNameValidationErrorString));
         expect(nameValidationErrorTextFinder, findsNothing);
         await tester.enterText(nameTextFieldFinder, "");
-        await tester.tap(nextElevatedButtonFinder);
+        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsOneWidget);
         await tester.enterText(nameTextFieldFinder, " ");
-        await tester.tap(nextElevatedButtonFinder);
+        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsOneWidget);
         expect(snackBarFinder, findsNothing);

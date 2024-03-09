@@ -9,6 +9,7 @@ import 'common.dart';
 
 class Register extends HookWidget {
   final GlobalKey<FormState> _formKey = GlobalKey();
+  final _nameFormFieldKey = GlobalKey<FormFieldState>();
   Register({super.key});
 
   @override
@@ -23,18 +24,25 @@ class Register extends HookWidget {
         key: _formKey,
         child: Column(
           children: [
-            Text(state.email!),
-            TextFormField(
-              controller: nameTextEditingController,
-              decoration: InputDecoration(
-                  label: Text(AppLocalizations.of(context)!.nonso_name)),
-              keyboardType: TextInputType.text,
-              validator: (value) {
-                if (value == null || value.isEmpty || value.trim().isEmpty) {
-                  return AppLocalizations.of(context)!
-                      .nonso_nameValidationError;
+            Focus(
+              child: TextFormField(
+                key: _nameFormFieldKey,
+                controller: nameTextEditingController,
+                decoration: InputDecoration(
+                    label: Text(AppLocalizations.of(context)!.nonso_name)),
+                keyboardType: TextInputType.text,
+                validator: (value) {
+                  if (value == null || value.isEmpty || value.trim().isEmpty) {
+                    return AppLocalizations.of(context)!
+                        .nonso_nameValidationError;
+                  }
+                  return null;
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
+                  _nameFormFieldKey.currentState!.validate();
                 }
-                return null;
               },
             ),
             TextFormField(
