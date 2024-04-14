@@ -11,6 +11,7 @@ class Register extends HookWidget {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final _nameFormFieldKey = GlobalKey<FormFieldState>();
   final _emailFormFieldKey = GlobalKey<FormFieldState>();
+  final _passwordFormFieldKey = GlobalKey<FormFieldState>();
   Register({super.key});
 
   @override
@@ -66,22 +67,28 @@ class Register extends HookWidget {
                 _emailFormFieldKey.currentState!.validate();
               },
             ),
-            TextFormField(
-              controller: passwordTextEditingController,
-              inputFormatters: [noWhiteSpaceInputFormatter],
-              decoration: InputDecoration(
-                  label: Text(AppLocalizations.of(context)!.nonso_password)),
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              autocorrect: false,
-              enableSuggestions: false,
-              validator: (value) {
-                if (value == null ||
-                    value.trim().length < passwordMinimumLength) {
-                  return AppLocalizations.of(context)!
-                      .nonso_passwordValidationError(passwordMinimumLength);
-                }
-                return null;
+            Focus(
+              child: TextFormField(
+                key: _passwordFormFieldKey,
+                controller: passwordTextEditingController,
+                inputFormatters: [noWhiteSpaceInputFormatter],
+                decoration: InputDecoration(
+                    label: Text(AppLocalizations.of(context)!.nonso_password)),
+                keyboardType: TextInputType.text,
+                obscureText: true,
+                autocorrect: false,
+                enableSuggestions: false,
+                validator: (value) {
+                  if (value == null ||
+                      value.trim().length < passwordMinimumLength) {
+                    return AppLocalizations.of(context)!
+                        .nonso_passwordValidationError(passwordMinimumLength);
+                  }
+                  return null;
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                _passwordFormFieldKey.currentState!.validate();
               },
             ),
             TextFormField(

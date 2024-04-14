@@ -91,7 +91,7 @@ void main() {
     String expectedNameValidationErrorString = "Enter your name";
     String expectedInvalidEmailString = "This an invalid email";
     String expectedPasswordValidationErrorString =
-        "Password needs to be at least 6 characters";
+        "Password needs to be at least 8 characters";
     String expectedConfirmPasswordValidationErrorString =
         "This doesn't match the above password";
     String expectedSuccessString =
@@ -242,27 +242,28 @@ void main() {
         await tester.pumpWidget(widgetProviderLocalization);
         final passwordTextFieldFinder = textFieldFinder.at(2);
         await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
-        await tester.tap(nextElevatedButtonFinder);
+        final aTextFieldFinder = textFieldFinder.at(0);
+        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
         final passwordValidationErrorTextFinder = find.descendant(
             of: textFormFieldFinder.at(2),
             matching: find.text(expectedPasswordValidationErrorString));
         expect(passwordValidationErrorTextFinder, findsNothing);
         await tester.enterText(passwordTextFieldFinder, "");
-        await tester.tap(nextElevatedButtonFinder);
+        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
-        await tester.enterText(passwordTextFieldFinder, " ");
-        await tester.tap(nextElevatedButtonFinder);
-        await tester.pumpAndSettle();
         final TextField passwordTextField =
             tester.widget(passwordTextFieldFinder);
+        await tester.enterText(passwordTextFieldFinder, " ");
         expect(passwordTextField.controller!.text, "");
+        await tester.tap(aTextFieldFinder);
+        await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
         await tester.enterText(passwordTextFieldFinder, " gfh");
-        await tester.tap(nextElevatedButtonFinder);
-        await tester.pumpAndSettle();
         expect(passwordTextField.controller!.text, "gfh");
+        await tester.tap(aTextFieldFinder);
+        await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
         expect(snackBarFinder, findsNothing);
       });
