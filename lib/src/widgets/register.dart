@@ -10,6 +10,7 @@ import 'common.dart';
 class Register extends HookWidget {
   final GlobalKey<FormState> _formKey = GlobalKey();
   final _nameFormFieldKey = GlobalKey<FormFieldState>();
+  final _emailFormFieldKey = GlobalKey<FormFieldState>();
   Register({super.key});
 
   @override
@@ -43,6 +44,26 @@ class Register extends HookWidget {
                 if (!hasFocus) {
                   _nameFormFieldKey.currentState!.validate();
                 }
+              },
+            ),
+            Focus(
+              child: TextFormField(
+                key: _emailFormFieldKey,
+                decoration: InputDecoration(
+                    label: Text(AppLocalizations.of(context)!.nonso_email)),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().isEmpty ||
+                      !value.contains("@")) {
+                    return AppLocalizations.of(context)!.nonso_invalidEmail;
+                  }
+                  return null;
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                _emailFormFieldKey.currentState!.validate();
               },
             ),
             TextFormField(
