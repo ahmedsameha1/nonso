@@ -93,7 +93,7 @@ void main() {
     String expectedPasswordValidationErrorString =
         "Password needs to be at least 8 characters";
     String expectedConfirmPasswordValidationErrorString =
-        "This doesn't match the above password";
+        "This doesn't match the given password";
     String expectedSuccessString =
         "Success: Check your email to verify your email address";
     String expectedFailedString = "Failure: code";
@@ -273,9 +273,10 @@ void main() {
         await tester.pumpWidget(widgetProviderLocalization);
         final passwordTextFieldFinder = textFieldFinder.at(2);
         final confirmPasswordTextFieldFinder = textFieldFinder.at(3);
+        final aTextFieldFinder = textFieldFinder.at(0);
         await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
         await tester.enterText(confirmPasswordTextFieldFinder, "8*prt&3k");
-        await tester.tap(nextElevatedButtonFinder);
+        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
         final confirmPasswordValidationErrorTextFinder = find.descendant(
             of: textFormFieldFinder.at(3),
@@ -283,19 +284,19 @@ void main() {
         expect(confirmPasswordValidationErrorTextFinder, findsNothing);
         await tester.enterText(passwordTextFieldFinder, "");
         await tester.enterText(confirmPasswordTextFieldFinder, "");
-        await tester.tap(nextElevatedButtonFinder);
+        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
         expect(confirmPasswordValidationErrorTextFinder, findsNothing);
-        await tester.enterText(passwordTextFieldFinder, "hbefr");
-        await tester.enterText(confirmPasswordTextFieldFinder, "r hg");
-        await tester.tap(nextElevatedButtonFinder);
+        await tester.enterText(passwordTextFieldFinder, "hbefrf23g293g");
+        await tester.enterText(confirmPasswordTextFieldFinder, "r hghanady667");
+        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
         expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
         expect(
             (tester.widget(confirmPasswordTextFieldFinder) as TextField)
                 .controller!
                 .text,
-            "rhg");
+            "rhghanady667");
         expect(snackBarFinder, findsNothing);
       });
     });

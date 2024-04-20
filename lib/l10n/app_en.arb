@@ -29,5 +29,5 @@
             }
         }
     },
-    "nonso_confirmPasswordValidationError": "This doesn't match the above password"
+    "nonso_confirmPasswordValidationError": "This doesn't match the given password"
 }

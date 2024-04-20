@@ -12,6 +12,7 @@ class Register extends HookWidget {
   final _nameFormFieldKey = GlobalKey<FormFieldState>();
   final _emailFormFieldKey = GlobalKey<FormFieldState>();
   final _passwordFormFieldKey = GlobalKey<FormFieldState>();
+  final _confirmPasswordFormFieldKey = GlobalKey<FormFieldState>();
   Register({super.key});
 
   @override
@@ -91,22 +92,28 @@ class Register extends HookWidget {
                 _passwordFormFieldKey.currentState!.validate();
               },
             ),
-            TextFormField(
-              inputFormatters: [noWhiteSpaceInputFormatter],
-              decoration: InputDecoration(
-                  label: Text(
-                      AppLocalizations.of(context)!.nonso_confirmPassword)),
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              autocorrect: false,
-              enableSuggestions: false,
-              validator: (value) {
-                if (value == null ||
-                    value != passwordTextEditingController.text) {
-                  return AppLocalizations.of(context)!
-                      .nonso_confirmPasswordValidationError;
-                }
-                return null;
+            Focus(
+              child: TextFormField(
+                key: _confirmPasswordFormFieldKey,
+                inputFormatters: [noWhiteSpaceInputFormatter],
+                decoration: InputDecoration(
+                    label: Text(
+                        AppLocalizations.of(context)!.nonso_confirmPassword)),
+                keyboardType: TextInputType.text,
+                obscureText: true,
+                autocorrect: false,
+                enableSuggestions: false,
+                validator: (value) {
+                  if (value == null ||
+                      value != passwordTextEditingController.text) {
+                    return AppLocalizations.of(context)!
+                        .nonso_confirmPasswordValidationError;
+                  }
+                  return null;
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                _confirmPasswordFormFieldKey.currentState!.validate();
               },
             ),
             Row(
