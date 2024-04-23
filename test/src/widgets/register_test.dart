@@ -191,22 +191,31 @@ void main() {
 
     group("Form validation", () {
       testWidgets("name textfield validation", (WidgetTester tester) async {
-        await tester.pumpWidget(widgetProviderLocalization);
-        final nameTextFieldFinder = textFieldFinder.at(0);
-        await tester.enterText(nameTextFieldFinder, "f");
-        final aTextFieldFinder = textFieldFinder.at(1);
-        await tester.tap(aTextFieldFinder);
-        await tester.pumpAndSettle();
         final nameValidationErrorTextFinder = find.descendant(
             of: textFormFieldFinder.at(0),
             matching: find.text(expectedNameValidationErrorString));
+        await tester.pumpWidget(widgetProviderLocalization);
         expect(nameValidationErrorTextFinder, findsNothing);
-        await tester.enterText(nameTextFieldFinder, "");
-        await tester.tap(aTextFieldFinder);
+        final nameTextFieldFinder = textFieldFinder.at(0);
+        await tester.enterText(nameTextFieldFinder, "f");
+        await tester.pumpAndSettle();
+        expect(nameValidationErrorTextFinder, findsNothing);
+        await tester.enterText(nameTextFieldFinder, "David");
+        await tester.pumpAndSettle();
+        expect(nameValidationErrorTextFinder, findsNothing);
+        await tester.enterText(nameTextFieldFinder, "foo bar");
+        await tester.pumpAndSettle();
+        expect(nameValidationErrorTextFinder, findsNothing);
+        await tester.enterText(nameTextFieldFinder, " حسن حسان ");
+        await tester.pumpAndSettle();
+        expect(nameValidationErrorTextFinder, findsNothing);
+        await tester.enterText(nameTextFieldFinder, "س");
+        await tester.pumpAndSettle();
+        expect(nameValidationErrorTextFinder, findsNothing);
+        await tester.enterText(nameTextFieldFinder, " ");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsOneWidget);
-        await tester.enterText(nameTextFieldFinder, " ");
-        await tester.tap(aTextFieldFinder);
+        await tester.enterText(nameTextFieldFinder, "~");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsOneWidget);
         expect(snackBarFinder, findsNothing);

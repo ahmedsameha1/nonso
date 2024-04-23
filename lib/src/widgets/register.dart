@@ -9,7 +9,6 @@ import 'common.dart';
 
 class Register extends HookWidget {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final _nameFormFieldKey = GlobalKey<FormFieldState>();
   final _emailFormFieldKey = GlobalKey<FormFieldState>();
   final _passwordFormFieldKey = GlobalKey<FormFieldState>();
   final _confirmPasswordFormFieldKey = GlobalKey<FormFieldState>();
@@ -27,25 +26,19 @@ class Register extends HookWidget {
         key: _formKey,
         child: Column(
           children: [
-            Focus(
-              child: TextFormField(
-                key: _nameFormFieldKey,
-                controller: nameTextEditingController,
-                decoration: InputDecoration(
-                    label: Text(AppLocalizations.of(context)!.nonso_name)),
-                keyboardType: TextInputType.text,
-                validator: (value) {
-                  if (value == null || value.isEmpty || value.trim().isEmpty) {
-                    return AppLocalizations.of(context)!
-                        .nonso_nameValidationError;
-                  }
-                  return null;
-                },
-              ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus) {
-                  _nameFormFieldKey.currentState!.validate();
+            TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: nameTextEditingController,
+              decoration: InputDecoration(
+                  label: Text(AppLocalizations.of(context)!.nonso_name)),
+              keyboardType: TextInputType.text,
+              validator: (value) {
+                final regexp = RegExp(r"\s*\p{L}+\s*", unicode: true);
+                if (value == null || !regexp.hasMatch(value)) {
+                  return AppLocalizations.of(context)!
+                      .nonso_nameValidationError;
                 }
+                return null;
               },
             ),
             Focus(
