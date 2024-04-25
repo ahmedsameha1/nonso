@@ -41,24 +41,18 @@ class Register extends HookWidget {
                 return null;
               },
             ),
-            Focus(
-              child: TextFormField(
-                key: _emailFormFieldKey,
-                decoration: InputDecoration(
-                    label: Text(AppLocalizations.of(context)!.nonso_email)),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().isEmpty ||
-                      !value.contains("@")) {
-                    return AppLocalizations.of(context)!.nonso_invalidEmail;
-                  }
-                  return null;
-                },
-              ),
-              onFocusChange: (hasFocus) {
-                _emailFormFieldKey.currentState!.validate();
+            TextFormField(
+              key: _emailFormFieldKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              decoration: InputDecoration(
+                  label: Text(AppLocalizations.of(context)!.nonso_email)),
+              keyboardType: TextInputType.emailAddress,
+              validator: (value) {
+                final regexp = RegExp(r"^\S+@\S+$", unicode: true);
+                if (value == null || !regexp.hasMatch(value)) {
+                  return AppLocalizations.of(context)!.nonso_invalidEmail;
+                }
+                return null;
               },
             ),
             Focus(

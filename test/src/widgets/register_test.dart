@@ -222,27 +222,26 @@ void main() {
       });
 
       testWidgets("email textfield validation", (WidgetTester tester) async {
-        const validEmail = "test@test.com";
-        await tester.pumpWidget(widgetProviderLocalization);
-        final emailTextFieldFinder = textFieldFinder.at(1);
-        await tester.enterText(emailTextFieldFinder, validEmail);
-        final aTextFieldFinder = textFieldFinder.at(2);
-        await tester.tap(aTextFieldFinder);
-        await tester.pumpAndSettle();
         final emailValidationErrorTextFinder = find.descendant(
             of: textFormFieldFinder.at(1),
             matching: find.text(expectedInvalidEmailString));
+        const validEmail = "test@test.com";
+        await tester.pumpWidget(widgetProviderLocalization);
         expect(emailValidationErrorTextFinder, findsNothing);
-        await tester.enterText(emailTextFieldFinder, "");
-        await tester.tap(aTextFieldFinder);
+        final emailTextFieldFinder = textFieldFinder.at(1);
+        await tester.enterText(emailTextFieldFinder, validEmail);
         await tester.pumpAndSettle();
-        expect(emailValidationErrorTextFinder, findsOneWidget);
-        await tester.enterText(emailTextFieldFinder, " ");
-        await tester.tap(aTextFieldFinder);
+        expect(emailValidationErrorTextFinder, findsNothing);
+        await tester.enterText(emailTextFieldFinder, "test@شبكة.com");
+        await tester.pumpAndSettle();
+        expect(emailValidationErrorTextFinder, findsNothing);
+        await tester.enterText(emailTextFieldFinder, "f");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
         await tester.enterText(emailTextFieldFinder, "test");
-        await tester.tap(aTextFieldFinder);
+        await tester.pumpAndSettle();
+        expect(emailValidationErrorTextFinder, findsOneWidget);
+        await tester.enterText(emailTextFieldFinder, "test@");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
       });
