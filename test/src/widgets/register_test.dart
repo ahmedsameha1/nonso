@@ -197,6 +197,12 @@ void main() {
         await tester.pumpWidget(widgetProviderLocalization);
         expect(nameValidationErrorTextFinder, findsNothing);
         final nameTextFieldFinder = textFieldFinder.at(0);
+        await tester.enterText(nameTextFieldFinder, " ");
+        await tester.pumpAndSettle();
+        expect(nameValidationErrorTextFinder, findsOneWidget);
+        await tester.enterText(nameTextFieldFinder, "~");
+        await tester.pumpAndSettle();
+        expect(nameValidationErrorTextFinder, findsOneWidget);
         await tester.enterText(nameTextFieldFinder, "f");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsNothing);
@@ -212,13 +218,6 @@ void main() {
         await tester.enterText(nameTextFieldFinder, "س");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsNothing);
-        await tester.enterText(nameTextFieldFinder, " ");
-        await tester.pumpAndSettle();
-        expect(nameValidationErrorTextFinder, findsOneWidget);
-        await tester.enterText(nameTextFieldFinder, "~");
-        await tester.pumpAndSettle();
-        expect(nameValidationErrorTextFinder, findsOneWidget);
-        expect(snackBarFinder, findsNothing);
       });
 
       testWidgets("email textfield validation", (WidgetTester tester) async {
@@ -229,12 +228,6 @@ void main() {
         await tester.pumpWidget(widgetProviderLocalization);
         expect(emailValidationErrorTextFinder, findsNothing);
         final emailTextFieldFinder = textFieldFinder.at(1);
-        await tester.enterText(emailTextFieldFinder, validEmail);
-        await tester.pumpAndSettle();
-        expect(emailValidationErrorTextFinder, findsNothing);
-        await tester.enterText(emailTextFieldFinder, "test@شبكة.com");
-        await tester.pumpAndSettle();
-        expect(emailValidationErrorTextFinder, findsNothing);
         await tester.enterText(emailTextFieldFinder, "f");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
@@ -244,36 +237,37 @@ void main() {
         await tester.enterText(emailTextFieldFinder, "test@");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
+        await tester.enterText(emailTextFieldFinder, validEmail);
+        await tester.pumpAndSettle();
+        expect(emailValidationErrorTextFinder, findsNothing);
+        await tester.enterText(emailTextFieldFinder, "test@شبكة.com");
+        await tester.pumpAndSettle();
+        expect(emailValidationErrorTextFinder, findsNothing);
       });
 
       testWidgets("password textfield validation", (WidgetTester tester) async {
-        await tester.pumpWidget(widgetProviderLocalization);
-        final passwordTextFieldFinder = textFieldFinder.at(2);
-        await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
-        final aTextFieldFinder = textFieldFinder.at(0);
-        await tester.tap(aTextFieldFinder);
-        await tester.pumpAndSettle();
         final passwordValidationErrorTextFinder = find.descendant(
             of: textFormFieldFinder.at(2),
             matching: find.text(expectedPasswordValidationErrorString));
+        await tester.pumpWidget(widgetProviderLocalization);
         expect(passwordValidationErrorTextFinder, findsNothing);
-        await tester.enterText(passwordTextFieldFinder, "");
-        await tester.tap(aTextFieldFinder);
-        await tester.pumpAndSettle();
-        expect(passwordValidationErrorTextFinder, findsOneWidget);
+        final passwordTextFieldFinder = textFieldFinder.at(2);
         final TextField passwordTextField =
             tester.widget(passwordTextFieldFinder);
         await tester.enterText(passwordTextFieldFinder, " ");
         expect(passwordTextField.controller!.text, "");
-        await tester.tap(aTextFieldFinder);
+        await tester.pumpAndSettle();
+        await tester.enterText(passwordTextFieldFinder, "x b ");
+        expect(passwordTextField.controller!.text, "xb");
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
         await tester.enterText(passwordTextFieldFinder, " gfh");
         expect(passwordTextField.controller!.text, "gfh");
-        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
-        expect(snackBarFinder, findsNothing);
+        await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
+        await tester.pumpAndSettle();
+        expect(passwordValidationErrorTextFinder, findsNothing);
       });
 
       testWidgets("confirm password textfield validation",

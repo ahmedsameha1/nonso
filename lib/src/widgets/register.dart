@@ -9,8 +9,6 @@ import 'common.dart';
 
 class Register extends HookWidget {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final _emailFormFieldKey = GlobalKey<FormFieldState>();
-  final _passwordFormFieldKey = GlobalKey<FormFieldState>();
   final _confirmPasswordFormFieldKey = GlobalKey<FormFieldState>();
   Register({super.key});
 
@@ -42,7 +40,6 @@ class Register extends HookWidget {
               },
             ),
             TextFormField(
-              key: _emailFormFieldKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
                   label: Text(AppLocalizations.of(context)!.nonso_email)),
@@ -55,28 +52,23 @@ class Register extends HookWidget {
                 return null;
               },
             ),
-            Focus(
-              child: TextFormField(
-                key: _passwordFormFieldKey,
-                controller: passwordTextEditingController,
-                inputFormatters: [noWhiteSpaceInputFormatter],
-                decoration: InputDecoration(
-                    label: Text(AppLocalizations.of(context)!.nonso_password)),
-                keyboardType: TextInputType.text,
-                obscureText: true,
-                autocorrect: false,
-                enableSuggestions: false,
-                validator: (value) {
-                  if (value == null ||
-                      value.trim().length < passwordMinimumLength) {
-                    return AppLocalizations.of(context)!
-                        .nonso_passwordValidationError(passwordMinimumLength);
-                  }
-                  return null;
-                },
-              ),
-              onFocusChange: (hasFocus) {
-                _passwordFormFieldKey.currentState!.validate();
+            TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: passwordTextEditingController,
+              inputFormatters: [noWhiteSpaceInputFormatter],
+              decoration: InputDecoration(
+                  label: Text(AppLocalizations.of(context)!.nonso_password)),
+              keyboardType: TextInputType.text,
+              obscureText: true,
+              autocorrect: false,
+              enableSuggestions: false,
+              validator: (value) {
+                if (value == null ||
+                    value.trim().length < passwordMinimumLength) {
+                  return AppLocalizations.of(context)!
+                      .nonso_passwordValidationError(passwordMinimumLength);
+                }
+                return null;
               },
             ),
             Focus(
