@@ -9,7 +9,6 @@ import 'common.dart';
 
 class Register extends HookWidget {
   final GlobalKey<FormState> _formKey = GlobalKey();
-  final _confirmPasswordFormFieldKey = GlobalKey<FormFieldState>();
   Register({super.key});
 
   @override
@@ -71,28 +70,23 @@ class Register extends HookWidget {
                 return null;
               },
             ),
-            Focus(
-              child: TextFormField(
-                key: _confirmPasswordFormFieldKey,
-                inputFormatters: [noWhiteSpaceInputFormatter],
-                decoration: InputDecoration(
-                    label: Text(
-                        AppLocalizations.of(context)!.nonso_confirmPassword)),
-                keyboardType: TextInputType.text,
-                obscureText: true,
-                autocorrect: false,
-                enableSuggestions: false,
-                validator: (value) {
-                  if (value == null ||
-                      value != passwordTextEditingController.text) {
-                    return AppLocalizations.of(context)!
-                        .nonso_confirmPasswordValidationError;
-                  }
-                  return null;
-                },
-              ),
-              onFocusChange: (hasFocus) {
-                _confirmPasswordFormFieldKey.currentState!.validate();
+            TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              inputFormatters: [noWhiteSpaceInputFormatter],
+              decoration: InputDecoration(
+                  label: Text(
+                      AppLocalizations.of(context)!.nonso_confirmPassword)),
+              keyboardType: TextInputType.text,
+              obscureText: true,
+              autocorrect: false,
+              enableSuggestions: false,
+              validator: (value) {
+                if (value == null ||
+                    value != passwordTextEditingController.text) {
+                  return AppLocalizations.of(context)!
+                      .nonso_confirmPasswordValidationError;
+                }
+                return null;
               },
             ),
             Row(

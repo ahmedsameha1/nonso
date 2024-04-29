@@ -272,34 +272,43 @@ void main() {
 
       testWidgets("confirm password textfield validation",
           (WidgetTester tester) async {
-        await tester.pumpWidget(widgetProviderLocalization);
-        final passwordTextFieldFinder = textFieldFinder.at(2);
-        final confirmPasswordTextFieldFinder = textFieldFinder.at(3);
-        final aTextFieldFinder = textFieldFinder.at(0);
-        await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
-        await tester.enterText(confirmPasswordTextFieldFinder, "8*prt&3k");
-        await tester.tap(aTextFieldFinder);
-        await tester.pumpAndSettle();
         final confirmPasswordValidationErrorTextFinder = find.descendant(
             of: textFormFieldFinder.at(3),
             matching: find.text(expectedConfirmPasswordValidationErrorString));
+        await tester.pumpWidget(widgetProviderLocalization);
         expect(confirmPasswordValidationErrorTextFinder, findsNothing);
-        await tester.enterText(passwordTextFieldFinder, "");
-        await tester.enterText(confirmPasswordTextFieldFinder, "");
-        await tester.tap(aTextFieldFinder);
-        await tester.pumpAndSettle();
-        expect(confirmPasswordValidationErrorTextFinder, findsNothing);
+        final passwordTextFieldFinder = textFieldFinder.at(2);
+        final confirmPasswordTextFieldFinder = textFieldFinder.at(3);
         await tester.enterText(passwordTextFieldFinder, "hbefrf23g293g");
         await tester.enterText(confirmPasswordTextFieldFinder, "r hghanady667");
-        await tester.tap(aTextFieldFinder);
         await tester.pumpAndSettle();
-        expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
         expect(
             (tester.widget(confirmPasswordTextFieldFinder) as TextField)
                 .controller!
                 .text,
             "rhghanady667");
-        expect(snackBarFinder, findsNothing);
+        expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
+        await tester.enterText(passwordTextFieldFinder, "hbefrf23g293g");
+        await tester.enterText(confirmPasswordTextFieldFinder, " rhghanady667");
+        await tester.pumpAndSettle();
+        expect(
+            (tester.widget(confirmPasswordTextFieldFinder) as TextField)
+                .controller!
+                .text,
+            "rhghanady667");
+        expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
+        await tester.enterText(confirmPasswordTextFieldFinder, "rhghanady667 ");
+        await tester.pumpAndSettle();
+        expect(
+            (tester.widget(confirmPasswordTextFieldFinder) as TextField)
+                .controller!
+                .text,
+            "rhghanady667");
+        expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
+        await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
+        await tester.enterText(confirmPasswordTextFieldFinder, "8*prt&3k");
+        await tester.pumpAndSettle();
+        expect(confirmPasswordValidationErrorTextFinder, findsNothing);
       });
     });
 
