@@ -18,6 +18,8 @@ class Register extends HookWidget {
         useTextEditingController();
     final TextEditingController nameTextEditingController =
         useTextEditingController();
+    final TextEditingController emailTextEditingController =
+        useTextEditingController();
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
       return Form(
         key: _formKey,
@@ -39,6 +41,7 @@ class Register extends HookWidget {
               },
             ),
             TextFormField(
+              controller: emailTextEditingController,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
                   label: Text(AppLocalizations.of(context)!.nonso_email)),
@@ -98,7 +101,7 @@ class Register extends HookWidget {
                         final successString =
                             AppLocalizations.of(context)!.nonso_success;
                         await authBloc.registerAccount(
-                            state.email!,
+                            emailTextEditingController.text,
                             passwordTextEditingController.text,
                             nameTextEditingController.text,
                             ((exception) => scaffoldMessenger.showSnackBar(

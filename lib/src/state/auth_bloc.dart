@@ -21,20 +21,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           applicationAuthState: ApplicationAuthState.locked,
           email: event.email)),
     );
-    on<StartRegistrationEvent>(
-      (event, emit) => emit(const AuthState(
-          applicationAuthState: ApplicationAuthState.startRegistration,
-          email: null)),
-    );
     on<PasswordEvent>(
       (event, emit) => emit(AuthState(
           applicationAuthState: ApplicationAuthState.password,
           email: event.email)),
     );
     on<RegisterEvent>(
-      (event, emit) => emit(AuthState(
+      (event, emit) => emit(const AuthState(
           applicationAuthState: ApplicationAuthState.register,
-          email: event.email)),
+          email: null)),
     );
     on<CancelRegistrationEvent>(
       (event, emit) => emit(const AuthState(
@@ -68,7 +63,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void startRegistration() {
-    add(StartRegistrationEvent());
+    add(RegisterEvent());
   }
 
   Future<void> verifyEmail(String email,
@@ -82,7 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (methods.contains("password")) {
         add(PasswordEvent(email));
       } else {
-        add(RegisterEvent(email));
+        add(RegisterEvent());
       }
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);

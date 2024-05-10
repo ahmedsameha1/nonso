@@ -21,8 +21,6 @@ class AuthScreen extends StatelessWidget {
         switch (state.applicationAuthState) {
           case ApplicationAuthState.signedOut:
             return const AuthOptions();
-          case ApplicationAuthState.startRegistration:
-            return Register();
           case ApplicationAuthState.emailAddress:
             return Email();
           case ApplicationAuthState.password:

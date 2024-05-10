@@ -12,7 +12,6 @@ import 'package:nonso/src/widgets/common.dart';
 import 'package:nonso/src/widgets/register.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../state/auth_bloc_test.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'skeleton_for_widget_testing.dart';
@@ -44,7 +43,7 @@ class FakeAuthBloc extends Fake implements AuthBloc {
   @override
   AuthState get state => const AuthState(
       applicationAuthState: ApplicationAuthState.register,
-      email: "test@test.com");
+      email: null);
 
   @override
   Future<void> close() {
@@ -53,7 +52,7 @@ class FakeAuthBloc extends Fake implements AuthBloc {
 }
 
 void main() {
-  const email = "test@test.com";
+  const validEmail = "test@test.com";
   late Widget widgetInSkeleton;
   const firebaseAuthExceptionCode = "code";
   final firebaseAuthException =
@@ -224,7 +223,6 @@ void main() {
         final emailValidationErrorTextFinder = find.descendant(
             of: textFormFieldFinder.at(1),
             matching: find.text(expectedInvalidEmailString));
-        const validEmail = "test@test.com";
         await tester.pumpWidget(widgetProviderLocalization);
         expect(emailValidationErrorTextFinder, findsNothing);
         final emailTextFieldFinder = textFieldFinder.at(1);
@@ -323,7 +321,7 @@ void main() {
             .thenAnswer((realInvocation) => Completer<void>().future);
         when(userCredential.user).thenReturn(notNullUser);
         when(firebaseAuth.createUserWithEmailAndPassword(
-                email: email, password: password))
+                email: validEmail, password: password))
             .thenThrow(firebaseAuthException);
         await tester.enterText(textFieldFinder.at(0), userDisplayName);
         await tester.enterText(textFieldFinder.at(1), validEmail);
@@ -347,7 +345,7 @@ void main() {
             .thenAnswer((realInvocation) => Completer<void>().future);
         when(userCredential.user).thenReturn(notNullUser);
         when(firebaseAuth.createUserWithEmailAndPassword(
-                email: email, password: password))
+                email: validEmail, password: password))
             .thenAnswer((realInvocation) => Future.value(userCredential));
         await tester.enterText(textFieldFinder.at(0), userDisplayName);
         await tester.enterText(textFieldFinder.at(1), validEmail);

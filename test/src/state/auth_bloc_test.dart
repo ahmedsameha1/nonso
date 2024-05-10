@@ -48,9 +48,7 @@ const signedInState = AuthState(
 const passwordState = AuthState(
     applicationAuthState: ApplicationAuthState.password, email: validEmail);
 const registerState = AuthState(
-    applicationAuthState: ApplicationAuthState.register, email: validEmail);
-const startRegistrationState = AuthState(
-    applicationAuthState: ApplicationAuthState.startRegistration, email: null);
+    applicationAuthState: ApplicationAuthState.register, email: null);
 late AuthBloc sut;
 final firebaseAuthExceptionCallback =
     MockFirebaseAuthExceptionErrorCallbackFunction();
@@ -121,13 +119,13 @@ main() {
         $given $workingWithAuthBloc
           $and there is no signed in user
         $wheN calling startRegistration()
-        $then $theResultStateIs $startRegistrationState
+        $then $theResultStateIs $registerState
       """,
     build: () => sut,
     act: (bloc) {
       sut.startRegistration();
     },
-    expect: () => [startRegistrationState],
+    expect: () => [registerState],
   );
 
   blocTest("""

@@ -59,8 +59,6 @@ void main() {
   });
 
   testWidgets("Test signedOut state", (WidgetTester tester) async {
-    when(mockAuthBloc.stream)
-        .thenAnswer((realInvocation) => Stream.value(signedOutState));
     when(mockAuthBloc.state).thenReturn(signedOutState);
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
@@ -73,9 +71,7 @@ void main() {
   });
 
   testWidgets("Test startRegistration state", (WidgetTester tester) async {
-    when(mockAuthBloc.stream)
-        .thenAnswer((realInvocation) => Stream.value(startRegistrationState));
-    when(mockAuthBloc.state).thenReturn(startRegistrationState);
+    when(mockAuthBloc.state).thenReturn(registerState);
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
       child: widgetInSkeleton,
@@ -86,8 +82,6 @@ void main() {
   });
 
   testWidgets("Test emailAddress state", (WidgetTester tester) async {
-    when(mockAuthBloc.stream)
-        .thenAnswer((realInvocation) => Stream.value(emailAddressState));
     when(mockAuthBloc.state).thenReturn(emailAddressState);
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
@@ -99,8 +93,6 @@ void main() {
   });
 
   testWidgets("Test passwrord state", (WidgetTester tester) async {
-    when(mockAuthBloc.stream)
-        .thenAnswer((realInvocation) => Stream.value(passwordState));
     when(mockAuthBloc.state).thenReturn(passwordState);
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
@@ -112,8 +104,6 @@ void main() {
   });
 
   testWidgets("Test register state", (WidgetTester tester) async {
-    when(mockAuthBloc.stream)
-        .thenAnswer((realInvocation) => Stream.value(registerState));
     when(mockAuthBloc.state).thenReturn(registerState);
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
@@ -125,8 +115,6 @@ void main() {
   });
 
   testWidgets("Test locked state", (WidgetTester tester) async {
-    when(mockAuthBloc.stream)
-        .thenAnswer((realInvocation) => Stream.value(lockedState));
     when(mockAuthBloc.state).thenReturn(lockedState);
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
@@ -138,8 +126,6 @@ void main() {
   });
 
   testWidgets("Test signedIn state", (WidgetTester tester) async {
-    when(mockAuthBloc.stream)
-        .thenAnswer((realInvocation) => Stream.value(signedInState));
     when(mockAuthBloc.state).thenReturn(signedInState);
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
