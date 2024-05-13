@@ -112,7 +112,7 @@ class Register extends HookWidget {
                             SnackBar(content: Text(successString)));
                       }
                     },
-                    child: Text(AppLocalizations.of(context)!.nonso_next)),
+                    child: Text(AppLocalizations.of(context)!.nonso_register)),
                 ElevatedButton(
                   onPressed: authBloc.toSignedOut,
                   child: Text(AppLocalizations.of(context)!.nonso_cancel),

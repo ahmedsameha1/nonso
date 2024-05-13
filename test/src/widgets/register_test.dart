@@ -42,8 +42,7 @@ class FakeAuthBloc extends Fake implements AuthBloc {
 
   @override
   AuthState get state => const AuthState(
-      applicationAuthState: ApplicationAuthState.register,
-      email: null);
+      applicationAuthState: ApplicationAuthState.register, email: null);
 
   @override
   Future<void> close() {
@@ -85,7 +84,7 @@ void main() {
     String expectedEmailString = "Email";
     String expectedPasswordString = "Password";
     String expectedConfirmPasswordString = "Confirm Password";
-    String expectedNextString = "Next";
+    String expectedNextString = "Register";
     String expectedCancelString = "Cancel";
     String expectedNameValidationErrorString = "Enter your name";
     String expectedInvalidEmailString = "This an invalid email";
