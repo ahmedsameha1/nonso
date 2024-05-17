@@ -7,6 +7,7 @@
     "nonso_refresh": "Refresh account",
     "nonso_verifyEmailAddress": "Check your email inbox to verify your email address",
     "nonso_signOut": "Sign out",
+    "nonso_signIn": "Sign in",
     "nonso_resendVerificationEmail": "Resend verification email",
     "nonso_name": "Name",
     "nonso_password": "Password",

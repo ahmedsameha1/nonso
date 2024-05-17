@@ -18,7 +18,6 @@ class Password extends StatelessWidget {
       return Form(
         key: _formKey,
         child: Column(children: [
-          Text(state.email!),
           TextFormField(
             decoration: InputDecoration(
                 label: Text(AppLocalizations.of(context)!.nonso_password)),

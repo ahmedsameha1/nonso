@@ -70,7 +70,7 @@ void main() {
         findsOneWidget);
   });
 
-  testWidgets("Test startRegistration state", (WidgetTester tester) async {
+  testWidgets("Test register state", (WidgetTester tester) async {
     when(mockAuthBloc.state).thenReturn(registerState);
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
@@ -78,6 +78,17 @@ void main() {
     );
     await tester.pumpWidget(widgetInSkeletonInBlocProvider);
     expect(find.descendant(of: scaffoldFinder, matching: find.byType(Register)),
+        findsOneWidget);
+  });
+
+  testWidgets("Test password state", (WidgetTester tester) async {
+    when(mockAuthBloc.state).thenReturn(passwordState);
+    widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
+      create: (context) => mockAuthBloc,
+      child: widgetInSkeleton,
+    );
+    await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+    expect(find.descendant(of: scaffoldFinder, matching: find.byType(Password)),
         findsOneWidget);
   });
 

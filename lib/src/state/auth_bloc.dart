@@ -22,14 +22,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           email: event.email)),
     );
     on<PasswordEvent>(
-      (event, emit) => emit(AuthState(
+      (event, emit) => emit(const AuthState(
           applicationAuthState: ApplicationAuthState.password,
-          email: event.email)),
+          email: null)),
     );
     on<RegisterEvent>(
       (event, emit) => emit(const AuthState(
-          applicationAuthState: ApplicationAuthState.register,
-          email: null)),
+          applicationAuthState: ApplicationAuthState.register, email: null)),
     );
     on<CancelRegistrationEvent>(
       (event, emit) => emit(const AuthState(
@@ -66,6 +65,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     add(RegisterEvent());
   }
 
+  void startSigningIn() {
+    add(PasswordEvent());
+  }
+
   Future<void> verifyEmail(String email,
       void Function(FirebaseAuthException exception) errorCallback) async {
     if (state.applicationAuthState != ApplicationAuthState.emailAddress) {
@@ -75,7 +78,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
       if (methods.contains("password")) {
-        add(PasswordEvent(email));
+        add(PasswordEvent());
       } else {
         add(RegisterEvent());
       }

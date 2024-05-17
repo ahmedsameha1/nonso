@@ -93,8 +93,6 @@ void main() {
           findsOneWidget);
       expect(find.descendant(of: formFinder, matching: columnFinder),
           findsOneWidget);
-      expect(find.descendant(of: columnFinder, matching: find.text(email)),
-          findsOneWidget);
       expect(find.descendant(of: columnFinder, matching: textFormFieldFinder),
           findsOneWidget);
       final TextField passwordTextField = tester.widget(

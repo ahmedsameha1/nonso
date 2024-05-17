@@ -29,6 +29,7 @@ void main() {
     when(mockAuthBloc.stream)
         .thenAnswer((realInvocation) => Stream.value(signedOutState));
     when(mockAuthBloc.state).thenReturn(signedOutState);
+    when(mockAuthBloc.startSigningIn()).thenReturn(() {});
     widgetInSkeleton = createWidgetInASkeleton(const AuthOptions());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
@@ -39,6 +40,7 @@ void main() {
   group("English locale", () {
     Locale currentLocale = const Locale("en");
     String expectedRegisterString = "Register";
+    String expectedSignInString = "Sign in";
 
     testWidgets("Test the precense of the main widgets",
         (WidgetTester tester) async {
@@ -48,16 +50,25 @@ void main() {
           child: widgetInSkeletonInBlocProvider));
       final centerFinder = find.byType(Center);
       expect(centerFinder, findsOneWidget);
-      final registerButtonFinder = elevatedButtonFinder;
-      expect(find.descendant(of: centerFinder, matching: registerButtonFinder),
+      final columnFinder = find.byType(Column);
+      expect(find.descendant(of: centerFinder, matching: columnFinder),
           findsOneWidget);
-      expect(
-          find.descendant(
-              of: registerButtonFinder,
-              matching: find.text(expectedRegisterString)),
+      final registerButtonFinder = elevatedButtonFinder.at(0);
+      final registerTextFinder = find.text(expectedRegisterString);
+      expect(find.descendant(of: registerButtonFinder, matching: registerTextFinder),
+          findsOneWidget);
+      final signInButtonFinder = elevatedButtonFinder.at(1);
+      final signInTextFinder = find.text(expectedSignInString);
+      expect(find.descendant(of: signInButtonFinder, matching: signInTextFinder),
+          findsOneWidget);
+      expect(find.descendant(of: columnFinder, matching: registerButtonFinder),
           findsOneWidget);
       await tester.tap(registerButtonFinder);
       verify(mockAuthBloc.startRegistration()).called(1);
+      expect(find.descendant(of: columnFinder, matching: signInButtonFinder),
+          findsOneWidget);
+      await tester.tap(signInButtonFinder);
+      verify(mockAuthBloc.startSigningIn()).called(1);
     });
   });
 }

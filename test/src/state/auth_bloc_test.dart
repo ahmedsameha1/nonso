@@ -46,7 +46,7 @@ const signedOutState = AuthState(
 const signedInState = AuthState(
     applicationAuthState: ApplicationAuthState.signedIn, email: validEmail);
 const passwordState = AuthState(
-    applicationAuthState: ApplicationAuthState.password, email: validEmail);
+    applicationAuthState: ApplicationAuthState.password, email: null);
 const registerState = AuthState(
     applicationAuthState: ApplicationAuthState.register, email: null);
 late AuthBloc sut;
@@ -126,6 +126,20 @@ main() {
       sut.startRegistration();
     },
     expect: () => [registerState],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+          $and there is no signed in user
+        $wheN calling startSigningIn()
+        $then $theResultStateIs $passwordState
+      """,
+    build: () => sut,
+    act: (bloc) {
+      sut.startSigningIn();
+    },
+    expect: () => [passwordState],
   );
 
   blocTest("""
