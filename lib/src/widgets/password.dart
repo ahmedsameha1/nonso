@@ -20,6 +20,14 @@ class Password extends StatelessWidget {
         child: Column(children: [
           TextFormField(
             decoration: InputDecoration(
+                label: Text(AppLocalizations.of(context)!.nonso_email)),
+            keyboardType: TextInputType.emailAddress,
+            inputFormatters: [noWhiteSpaceInputFormatter],
+            autocorrect: false,
+            enableSuggestions: false,
+          ),
+          TextFormField(
+            decoration: InputDecoration(
                 label: Text(AppLocalizations.of(context)!.nonso_password)),
             keyboardType: TextInputType.text,
             inputFormatters: [noWhiteSpaceInputFormatter],

@@ -74,6 +74,7 @@ void main() {
 
   group("English locale", () {
     Locale currentLocale = const Locale("en");
+    String expectedEmailString = "Email";
     String expectedPasswordString = "Password";
     String expectedNextString = "Next";
     String expectedCancelString = "Cancel";
@@ -93,10 +94,17 @@ void main() {
           findsOneWidget);
       expect(find.descendant(of: formFinder, matching: columnFinder),
           findsOneWidget);
-      expect(find.descendant(of: columnFinder, matching: textFormFieldFinder),
-          findsOneWidget);
-      final TextField passwordTextField = tester.widget(
-          find.descendant(of: textFormFieldFinder, matching: textFieldFinder));
+      final TextField emailTextField = tester.widget(find.descendant(
+          of: textFormFieldFinder.at(0), matching: textFieldFinder));
+      expect(
+          (emailTextField.decoration!.label as Text).data, expectedEmailString);
+      expect(emailTextField.keyboardType, TextInputType.emailAddress);
+      expect(emailTextField.inputFormatters!.elementAt(0),
+          noWhiteSpaceInputFormatter);
+      expect(emailTextField.autocorrect, false);
+      expect(emailTextField.enableSuggestions, false);
+      final TextField passwordTextField = tester.widget(find.descendant(
+          of: textFormFieldFinder.at(1), matching: textFieldFinder));
       expect((passwordTextField.decoration!.label as Text).data,
           expectedPasswordString);
       expect(passwordTextField.keyboardType, TextInputType.text);
@@ -138,12 +146,12 @@ void main() {
           delegates: AppLocalizations.localizationsDelegates,
           locale: currentLocale,
           child: widgetInSkeletonInBlocProvider));
-      final passwordTextFieldFinder = textFieldFinder.at(0);
+      final passwordTextFieldFinder = textFieldFinder.at(1);
       await tester.enterText(passwordTextFieldFinder, validPassword);
       await tester.tap(nextElevatedButtonFinder);
       await tester.pumpAndSettle();
       final passwordValidationErrorTextFinder = find.descendant(
-          of: textFormFieldFinder.at(0),
+          of: textFormFieldFinder.at(1),
           matching: find.text(expectedPasswordValidationErrorString));
       expect(passwordValidationErrorTextFinder, findsNothing);
       await tester.enterText(passwordTextFieldFinder, "");
@@ -176,7 +184,7 @@ void main() {
             delegates: AppLocalizations.localizationsDelegates,
             locale: currentLocale,
             child: widgetInSkeletonInBlocProvider));
-        await tester.enterText(textFieldFinder.at(0), password);
+        await tester.enterText(textFieldFinder.at(1), password);
         await tester.tap(nextElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);
@@ -194,7 +202,7 @@ void main() {
                 email: email, password: password))
             .thenAnswer((realInvocation) => Future.value(userCredential));
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-        await tester.enterText(textFieldFinder.at(0), password);
+        await tester.enterText(textFieldFinder.at(1), password);
         await tester.tap(nextElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsNothing);
