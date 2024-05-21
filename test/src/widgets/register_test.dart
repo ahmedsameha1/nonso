@@ -64,7 +64,7 @@ void main() {
   late FirebaseAuth firebaseAuth;
   late FakeAuthBloc authBloc;
   late UserCredential userCredential;
-  final nextElevatedButtonFinder = elevatedButtonFinder.at(0);
+  final registerElevatedButtonFinder = elevatedButtonFinder.at(0);
 
   setUp(() {
     firebaseAuth = MockFirebaseAuth();
@@ -84,7 +84,7 @@ void main() {
     String expectedEmailString = "Email";
     String expectedPasswordString = "Password";
     String expectedConfirmPasswordString = "Confirm Password";
-    String expectedNextString = "Register";
+    String expectedRegisterString = "Register";
     String expectedCancelString = "Cancel";
     String expectedNameValidationErrorString = "Enter your name";
     String expectedInvalidEmailString = "This an invalid email";
@@ -173,7 +173,7 @@ void main() {
           ((tester.widget(nextElevatedButtonFinder) as ElevatedButton).child
                   as Text)
               .data,
-          expectedNextString);
+          expectedRegisterString);
       final cancelElevatedButtonFinder =
           find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(1));
       expect(cancelElevatedButtonFinder, findsOneWidget);
@@ -326,7 +326,7 @@ void main() {
         await tester.enterText(textFieldFinder.at(1), validEmail);
         await tester.enterText(textFieldFinder.at(2), password);
         await tester.enterText(textFieldFinder.at(3), password);
-        await tester.tap(nextElevatedButtonFinder);
+        await tester.tap(registerElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);
         expect(
@@ -350,7 +350,7 @@ void main() {
         await tester.enterText(textFieldFinder.at(1), validEmail);
         await tester.enterText(textFieldFinder.at(2), password);
         await tester.enterText(textFieldFinder.at(3), password);
-        await tester.tap(nextElevatedButtonFinder);
+        await tester.tap(registerElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);
         expect(

@@ -19,12 +19,20 @@ class Password extends StatelessWidget {
         key: _formKey,
         child: Column(children: [
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: InputDecoration(
                 label: Text(AppLocalizations.of(context)!.nonso_email)),
             keyboardType: TextInputType.emailAddress,
             inputFormatters: [noWhiteSpaceInputFormatter],
             autocorrect: false,
             enableSuggestions: false,
+            validator: (value) {
+              final regexp = RegExp(r"^\S+@\S+$", unicode: true);
+              if (value == null || !regexp.hasMatch(value)) {
+                return AppLocalizations.of(context)!.nonso_invalidEmail;
+              }
+              return null;
+            },
           ),
           TextFormField(
             decoration: InputDecoration(
@@ -62,7 +70,7 @@ class Password extends StatelessWidget {
                     }));
                   }
                 },
-                child: Text(AppLocalizations.of(context)!.nonso_next),
+                child: Text(AppLocalizations.of(context)!.nonso_signIn),
               ),
               ElevatedButton(
                 onPressed: authBloc.toSignedOut,
