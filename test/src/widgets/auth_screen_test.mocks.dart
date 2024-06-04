@@ -95,28 +95,20 @@ class MockAuthBloc extends _i1.Mock implements _i4.AuthBloc {
   @override
   void startRegistration() => super.noSuchMethod(
         Invocation.method(
-          #start,
+          #startRegistration,
           [],
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  _i5.Future<void> verifyEmail(
-    String? email,
-    void Function(_i2.FirebaseAuthException)? errorCallback,
-  ) =>
-      (super.noSuchMethod(
+  void startSigningIn() => super.noSuchMethod(
         Invocation.method(
-          #verifyEmail,
-          [
-            email,
-            errorCallback,
-          ],
+          #startSigningIn,
+          [],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValueForMissingStub: null,
+      );
 
   @override
   _i5.Future<void> signInWithEmailAndPassword(
@@ -151,15 +143,6 @@ class MockAuthBloc extends _i1.Mock implements _i4.AuthBloc {
   void updateUser() => super.noSuchMethod(
         Invocation.method(
           #updateUser,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
-
-  @override
-  void cancelRegistration() => super.noSuchMethod(
-        Invocation.method(
-          #cancelRegistration,
           [],
         ),
         returnValueForMissingStub: null,

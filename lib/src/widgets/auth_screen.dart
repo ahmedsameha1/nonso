@@ -8,7 +8,6 @@ import 'package:nonso/src/widgets/register.dart';
 import 'package:nonso/src/widgets/auth_options.dart';
 
 import '../state/auth_state.dart';
-import 'email.dart';
 
 class AuthScreen extends StatelessWidget {
   final Widget child;
@@ -21,8 +20,6 @@ class AuthScreen extends StatelessWidget {
         switch (state.applicationAuthState) {
           case ApplicationAuthState.signedOut:
             return const AuthOptions();
-          case ApplicationAuthState.emailAddress:
-            return Email();
           case ApplicationAuthState.password:
             return Password();
           case ApplicationAuthState.register:

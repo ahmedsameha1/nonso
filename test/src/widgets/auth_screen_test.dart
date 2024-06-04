@@ -9,7 +9,6 @@ import 'package:nonso/src/state/auth_bloc.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 import 'package:nonso/src/widgets/auth_screen.dart';
-import 'package:nonso/src/widgets/email.dart';
 import 'package:nonso/src/widgets/locked.dart';
 import 'package:nonso/src/widgets/password.dart';
 import 'package:nonso/src/widgets/register.dart';
@@ -26,8 +25,6 @@ import 'skeleton_for_widget_testing.dart';
 void main() {
   const signedOutState = AuthState(
       applicationAuthState: ApplicationAuthState.signedOut, email: null);
-  const emailAddressState = AuthState(
-      applicationAuthState: ApplicationAuthState.emailAddress, email: null);
   late Widget widgetInSkeleton;
   late FirebaseAuth firebaseAuth;
   late BlocProvider widgetInSkeletonInBlocProvider;
@@ -44,8 +41,8 @@ void main() {
     widgetInSkeleton = createWidgetInASkeleton(AuthScreen(someWidget));
     mockAuthBloc = MockAuthBloc();
     when(mockAuthBloc.stream)
-        .thenAnswer((realInvocation) => Stream.value(emailAddressState));
-    when(mockAuthBloc.state).thenReturn(emailAddressState);
+        .thenAnswer((realInvocation) => Stream.value(signedOutState));
+    when(mockAuthBloc.state).thenReturn(signedOutState);
   });
 
   testWidgets("Test the precense of the main widgets",
@@ -89,17 +86,6 @@ void main() {
     );
     await tester.pumpWidget(widgetInSkeletonInBlocProvider);
     expect(find.descendant(of: scaffoldFinder, matching: find.byType(Password)),
-        findsOneWidget);
-  });
-
-  testWidgets("Test emailAddress state", (WidgetTester tester) async {
-    when(mockAuthBloc.state).thenReturn(emailAddressState);
-    widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
-      create: (context) => mockAuthBloc,
-      child: widgetInSkeleton,
-    );
-    await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-    expect(find.descendant(of: scaffoldFinder, matching: find.byType(Email)),
         findsOneWidget);
   });
 

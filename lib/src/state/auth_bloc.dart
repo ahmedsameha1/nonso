@@ -23,17 +23,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     on<PasswordEvent>(
       (event, emit) => emit(const AuthState(
-          applicationAuthState: ApplicationAuthState.password,
-          email: null)),
+          applicationAuthState: ApplicationAuthState.password, email: null)),
     );
     on<RegisterEvent>(
       (event, emit) => emit(const AuthState(
           applicationAuthState: ApplicationAuthState.register, email: null)),
-    );
-    on<CancelRegistrationEvent>(
-      (event, emit) => emit(const AuthState(
-          applicationAuthState: ApplicationAuthState.emailAddress,
-          email: null)),
     );
     on<SignOutEvent>((event, emit) => emit(
           const AuthState(
@@ -49,14 +43,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _init() {
     firebaseAuth.userChanges().listen((user) {
-      if (user != null) {
-        if (user.email != null && user.emailVerified) {
-          add(SignInEvent(user.email!));
-        } else if (user.email != null && !user.emailVerified) {
-          add(LockedEvent(user.email!));
+      if (!isClosed) {
+        if (user != null) {
+          if (user.email != null && user.emailVerified) {
+            add(SignInEvent(user.email!));
+          } else if (user.email != null && !user.emailVerified) {
+            add(LockedEvent(user.email!));
+          }
+        } else {
+          add(SignOutEvent());
         }
-      } else {
-        add(SignOutEvent());
       }
     });
   }
@@ -67,24 +63,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void startSigningIn() {
     add(PasswordEvent());
-  }
-
-  Future<void> verifyEmail(String email,
-      void Function(FirebaseAuthException exception) errorCallback) async {
-    if (state.applicationAuthState != ApplicationAuthState.emailAddress) {
-      throw StateError(
-          "To verify the email you need to be at emailAddress stage!");
-    }
-    try {
-      final methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
-      if (methods.contains("password")) {
-        add(PasswordEvent());
-      } else {
-        add(RegisterEvent());
-      }
-    } on FirebaseAuthException catch (exception) {
-      errorCallback(exception);
-    }
   }
 
   Future<void> signInWithEmailAndPassword(String email, String password,
@@ -106,14 +84,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void updateUser() {
     firebaseAuth.currentUser!.reload();
-  }
-
-  void cancelRegistration() {
-    if (state.applicationAuthState != ApplicationAuthState.register) {
-      throw StateError(
-          "To cancel registration you need to be at register stage!");
-    }
-    add(CancelRegistrationEvent());
   }
 
   Future<void> registerAccount(

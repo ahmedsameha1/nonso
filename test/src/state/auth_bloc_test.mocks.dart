@@ -163,6 +163,15 @@ class MockFirebaseAuth extends _i1.Mock implements _i3.FirebaseAuth {
       );
 
   @override
+  set customAuthDomain(String? customAuthDomain) => super.noSuchMethod(
+        Invocation.setter(
+          #customAuthDomain,
+          customAuthDomain,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   Map<dynamic, dynamic> get pluginConstants => (super.noSuchMethod(
         Invocation.getter(#pluginConstants),
         returnValue: <dynamic, dynamic>{},
