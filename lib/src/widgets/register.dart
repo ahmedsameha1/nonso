@@ -26,8 +26,8 @@ class Register extends HookWidget {
         child: Column(
           children: [
             TextFormField(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: nameTextEditingController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
                   label: Text(AppLocalizations.of(context)!.nonso_name)),
               keyboardType: TextInputType.text,
@@ -55,8 +55,8 @@ class Register extends HookWidget {
               },
             ),
             TextFormField(
-              autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: passwordTextEditingController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               inputFormatters: [noWhiteSpaceInputFormatter],
               decoration: InputDecoration(
                   label: Text(AppLocalizations.of(context)!.nonso_password)),

@@ -79,16 +79,20 @@ void main() {
     String expectedSignInString = "Sign in";
     String expectedCancelString = "Cancel";
     String expectedPasswordValidationErrorString =
-        "Password needs to be at least 6 characters";
+        "Password needs to be at least 8 characters";
     String expectedFailedString = "Failure: code";
     String expectedInvalidEmailString = "This an invalid email";
 
+    setUp(() {
+      widgetProviderLocalization = Localizations(
+          locale: currentLocale,
+          delegates: AppLocalizations.localizationsDelegates,
+          child: widgetInSkeletonInBlocProvider);
+    });
+
     testWidgets("Test the precense of the main widgets",
         (WidgetTester tester) async {
-      await tester.pumpWidget(Localizations(
-          delegates: AppLocalizations.localizationsDelegates,
-          locale: currentLocale,
-          child: widgetInSkeletonInBlocProvider));
+      await tester.pumpWidget(widgetProviderLocalization);
       final passwordFinder = find.byType(Password);
       expect(passwordFinder, findsOneWidget);
       expect(find.descendant(of: passwordFinder, matching: formFinder),
@@ -138,12 +142,6 @@ void main() {
     });
 
     group("Form validation", () {
-      setUp(() {
-        widgetProviderLocalization = Localizations(
-            locale: currentLocale,
-            delegates: AppLocalizations.localizationsDelegates,
-            child: widgetInSkeletonInBlocProvider);
-      });
       testWidgets("Test email textfield validation",
           (WidgetTester tester) async {
         final emailTextFormFieldFinder = textFormFieldFinder.at(0);
@@ -171,36 +169,29 @@ void main() {
 
       testWidgets("Test password textfield validation",
           (WidgetTester tester) async {
-        final signInElevatedButtonFinder = elevatedButtonFinder.at(0);
+        final passwordValidationErrorTextFinder = find.descendant(
+            of: textFormFieldFinder.at(1),
+            matching: find.text(expectedPasswordValidationErrorString));
         const validPassword = "8*prt&3k";
         when(firebaseAuth.signInWithEmailAndPassword(
                 email: validEmail, password: validPassword))
             .thenAnswer((realInvocation) => Future.value(userCredential));
-        await tester.pumpWidget(Localizations(
-            delegates: AppLocalizations.localizationsDelegates,
-            locale: currentLocale,
-            child: widgetInSkeletonInBlocProvider));
+        await tester.pumpWidget(widgetProviderLocalization);
+        expect(passwordValidationErrorTextFinder, findsNothing);
         final passwordTextFieldFinder = textFieldFinder.at(1);
         await tester.enterText(passwordTextFieldFinder, validPassword);
-        await tester.tap(signInElevatedButtonFinder);
         await tester.pumpAndSettle();
-        final passwordValidationErrorTextFinder = find.descendant(
-            of: textFormFieldFinder.at(1),
-            matching: find.text(expectedPasswordValidationErrorString));
         expect(passwordValidationErrorTextFinder, findsNothing);
         await tester.enterText(passwordTextFieldFinder, "");
-        await tester.tap(signInElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
         await tester.enterText(passwordTextFieldFinder, " ");
-        await tester.tap(signInElevatedButtonFinder);
         await tester.pumpAndSettle();
         final TextField passwordTextField =
             tester.widget(passwordTextFieldFinder);
         expect(passwordTextField.controller!.text, "");
         expect(passwordValidationErrorTextFinder, findsOneWidget);
         await tester.enterText(passwordTextFieldFinder, " gfh");
-        await tester.tap(signInElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(passwordTextField.controller!.text, "gfh");
         expect(passwordValidationErrorTextFinder, findsOneWidget);
@@ -216,10 +207,7 @@ void main() {
         when(firebaseAuth.signInWithEmailAndPassword(
                 email: validEmail, password: password))
             .thenThrow(firebaseAuthException);
-        await tester.pumpWidget(Localizations(
-            delegates: AppLocalizations.localizationsDelegates,
-            locale: currentLocale,
-            child: widgetInSkeletonInBlocProvider));
+        await tester.pumpWidget(widgetInSkeletonInBlocProvider);
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.enterText(textFieldFinder.at(1), password);
         await tester.tap(signInElevatedButtonFinder);
@@ -239,6 +227,7 @@ void main() {
                 email: validEmail, password: password))
             .thenAnswer((realInvocation) => Future.value(userCredential));
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+        await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.enterText(textFieldFinder.at(1), password);
         await tester.tap(signInElevatedButtonFinder);
         await tester.pumpAndSettle();
