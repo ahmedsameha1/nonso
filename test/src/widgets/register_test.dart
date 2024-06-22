@@ -193,29 +193,39 @@ void main() {
             of: textFormFieldFinder.at(0),
             matching: find.text(expectedNameValidationErrorString));
         await tester.pumpWidget(widgetProviderLocalization);
+        ElevatedButton registerElevatedButton =
+            tester.widget<ElevatedButton>(registerElevatedButtonFinder);
         expect(nameValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
         final nameTextFieldFinder = textFieldFinder.at(0);
         await tester.enterText(nameTextFieldFinder, " ");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(nameTextFieldFinder, "~");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(nameTextFieldFinder, "f");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(nameTextFieldFinder, "David");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(nameTextFieldFinder, "foo bar");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(nameTextFieldFinder, " حسن حسان ");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(nameTextFieldFinder, "س");
         await tester.pumpAndSettle();
         expect(nameValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
       });
 
       testWidgets("email textfield validation", (WidgetTester tester) async {
@@ -223,23 +233,31 @@ void main() {
             of: textFormFieldFinder.at(1),
             matching: find.text(expectedInvalidEmailString));
         await tester.pumpWidget(widgetProviderLocalization);
+        ElevatedButton registerElevatedButton =
+            tester.widget<ElevatedButton>(registerElevatedButtonFinder);
         expect(emailValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
         final emailTextFieldFinder = textFieldFinder.at(1);
         await tester.enterText(emailTextFieldFinder, "f");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFieldFinder, "test");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFieldFinder, "test@");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFieldFinder, validEmail);
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFieldFinder, "test@شبكة.com");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
       });
 
       testWidgets("password textfield validation", (WidgetTester tester) async {
@@ -247,7 +265,10 @@ void main() {
             of: textFormFieldFinder.at(2),
             matching: find.text(expectedPasswordValidationErrorString));
         await tester.pumpWidget(widgetProviderLocalization);
+        ElevatedButton registerElevatedButton =
+            tester.widget<ElevatedButton>(registerElevatedButtonFinder);
         expect(passwordValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
         final passwordTextFieldFinder = textFieldFinder.at(2);
         final TextField passwordTextField =
             tester.widget(passwordTextFieldFinder);
@@ -258,13 +279,16 @@ void main() {
         expect(passwordTextField.controller!.text, "xb");
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, " gfh");
         expect(passwordTextField.controller!.text, "gfh");
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
       });
 
       testWidgets("confirm password textfield validation",
@@ -273,7 +297,10 @@ void main() {
             of: textFormFieldFinder.at(3),
             matching: find.text(expectedConfirmPasswordValidationErrorString));
         await tester.pumpWidget(widgetProviderLocalization);
+        ElevatedButton registerElevatedButton =
+            tester.widget<ElevatedButton>(registerElevatedButtonFinder);
         expect(confirmPasswordValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
         final passwordTextFieldFinder = textFieldFinder.at(2);
         final confirmPasswordTextFieldFinder = textFieldFinder.at(3);
         await tester.enterText(passwordTextFieldFinder, "hbefrf23g293g");
@@ -285,6 +312,7 @@ void main() {
                 .text,
             "rhghanady667");
         expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, "hbefrf23g293g");
         await tester.enterText(confirmPasswordTextFieldFinder, " rhghanady667");
         await tester.pumpAndSettle();
@@ -294,6 +322,7 @@ void main() {
                 .text,
             "rhghanady667");
         expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(confirmPasswordTextFieldFinder, "rhghanady667 ");
         await tester.pumpAndSettle();
         expect(
@@ -302,10 +331,12 @@ void main() {
                 .text,
             "rhghanady667");
         expect(confirmPasswordValidationErrorTextFinder, findsOneWidget);
+        expect(registerElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, "8*prt&3k");
         await tester.enterText(confirmPasswordTextFieldFinder, "8*prt&3k");
         await tester.pumpAndSettle();
         expect(confirmPasswordValidationErrorTextFinder, findsNothing);
+        expect(registerElevatedButton.enabled, isFalse);
       });
     });
 
@@ -326,6 +357,7 @@ void main() {
         await tester.enterText(textFieldFinder.at(1), validEmail);
         await tester.enterText(textFieldFinder.at(2), password);
         await tester.enterText(textFieldFinder.at(3), password);
+        await tester.pumpAndSettle();
         await tester.tap(registerElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);
@@ -350,6 +382,7 @@ void main() {
         await tester.enterText(textFieldFinder.at(1), validEmail);
         await tester.enterText(textFieldFinder.at(2), password);
         await tester.enterText(textFieldFinder.at(3), password);
+        await tester.pumpAndSettle();
         await tester.tap(registerElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);

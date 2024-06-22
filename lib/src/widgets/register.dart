@@ -8,12 +8,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'common.dart';
 
 class Register extends HookWidget {
-  final GlobalKey<FormState> _formKey = GlobalKey();
-  Register({super.key});
+  const Register({super.key});
 
   @override
   Widget build(BuildContext context) {
     AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    final GlobalKey<FormState> formKey = GlobalKey();
+    final isValid = useState<bool>(false);
     final TextEditingController passwordTextEditingController =
         useTextEditingController();
     final TextEditingController nameTextEditingController =
@@ -22,7 +23,7 @@ class Register extends HookWidget {
         useTextEditingController();
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
       return Form(
-        key: _formKey,
+        key: formKey,
         child: Column(
           children: [
             TextFormField(
@@ -95,23 +96,25 @@ class Register extends HookWidget {
             Row(
               children: [
                 ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        final scaffoldMessenger = ScaffoldMessenger.of(context);
-                        final successString =
-                            AppLocalizations.of(context)!.nonso_success;
-                        await authBloc.registerAccount(
-                            emailTextEditingController.text,
-                            passwordTextEditingController.text,
-                            nameTextEditingController.text,
-                            ((exception) => scaffoldMessenger.showSnackBar(
-                                SnackBar(
-                                    content: Text(AppLocalizations.of(context)!
-                                        .nonso_failed(exception.code))))));
-                        scaffoldMessenger.showSnackBar(
-                            SnackBar(content: Text(successString)));
-                      }
-                    },
+                    onPressed: !isValid.value
+                        ? null
+                        : () async {
+                            final scaffoldMessenger =
+                                ScaffoldMessenger.of(context);
+                            final successString =
+                                AppLocalizations.of(context)!.nonso_success;
+                            await authBloc.registerAccount(
+                                emailTextEditingController.text,
+                                passwordTextEditingController.text,
+                                nameTextEditingController.text,
+                                ((exception) => scaffoldMessenger.showSnackBar(
+                                    SnackBar(
+                                        content: Text(AppLocalizations.of(
+                                                context)!
+                                            .nonso_failed(exception.code))))));
+                            scaffoldMessenger.showSnackBar(
+                                SnackBar(content: Text(successString)));
+                          },
                     child: Text(AppLocalizations.of(context)!.nonso_register)),
                 ElevatedButton(
                   onPressed: authBloc.toSignedOut,
@@ -121,6 +124,8 @@ class Register extends HookWidget {
             ),
           ],
         ),
+        onChanged: () => isValid.value =
+            formKey.currentState != null && formKey.currentState!.validate(),
       );
     });
   }
