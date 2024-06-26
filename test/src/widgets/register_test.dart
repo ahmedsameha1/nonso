@@ -73,7 +73,7 @@ void main() {
     when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
     streamController.sink.add(nullUser);
     authBloc = FakeAuthBloc(firebaseAuth);
-    widgetInSkeleton = createWidgetInASkeleton(Register());
+    widgetInSkeleton = createWidgetInASkeleton(const Register());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
         create: (context) => authBloc, child: widgetInSkeleton);
   });
@@ -340,7 +340,7 @@ void main() {
       });
     });
 
-    group("nextButton action", () {
+    group("register button action", () {
       const userDisplayName = "name";
       testWidgets(
           "Test that a SnackBar is shown when FirebaseAuthException is thrown",

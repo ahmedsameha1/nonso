@@ -60,6 +60,7 @@ void main() {
   late FakeAuthBloc authBloc;
   UserCredential userCredential = MockUserCredential();
   late Widget widgetProviderLocalization;
+  final signInElevatedButtonFinder = elevatedButtonFinder.at(0);
 
   setUp(() {
     firebaseAuth = MockFirebaseAuth();
@@ -67,7 +68,7 @@ void main() {
     when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
     streamController.sink.add(nullUser);
     authBloc = FakeAuthBloc(firebaseAuth);
-    widgetInSkeleton = createWidgetInASkeleton(Password());
+    widgetInSkeleton = createWidgetInASkeleton(const Password());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
         create: (context) => authBloc, child: widgetInSkeleton);
   });
@@ -149,22 +150,30 @@ void main() {
             of: emailTextFormFieldFinder,
             matching: find.text(expectedInvalidEmailString));
         await tester.pumpWidget(widgetProviderLocalization);
+        ElevatedButton signInElevatedButton =
+            tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        expect(signInElevatedButton.enabled, isFalse);
         expect(emailValidationErrorTextFinder, findsNothing);
         await tester.enterText(emailTextFormFieldFinder, "f");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
+        expect(signInElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFormFieldFinder, "test");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
+        expect(signInElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFormFieldFinder, "test@");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsOneWidget);
+        expect(signInElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFormFieldFinder, validEmail);
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsNothing);
+        expect(signInElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFormFieldFinder, "test@شبكة.com");
         await tester.pumpAndSettle();
         expect(emailValidationErrorTextFinder, findsNothing);
+        expect(signInElevatedButton.enabled, isFalse);
       });
 
       testWidgets("Test password textfield validation",
@@ -177,29 +186,35 @@ void main() {
                 email: validEmail, password: validPassword))
             .thenAnswer((realInvocation) => Future.value(userCredential));
         await tester.pumpWidget(widgetProviderLocalization);
+        ElevatedButton signInElevatedButton =
+            tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        expect(signInElevatedButton.enabled, isFalse);
         expect(passwordValidationErrorTextFinder, findsNothing);
         final passwordTextFieldFinder = textFieldFinder.at(1);
         await tester.enterText(passwordTextFieldFinder, validPassword);
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsNothing);
+        expect(signInElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, "");
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
+        expect(signInElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, " ");
         await tester.pumpAndSettle();
         final TextField passwordTextField =
             tester.widget(passwordTextFieldFinder);
         expect(passwordTextField.controller!.text, "");
         expect(passwordValidationErrorTextFinder, findsOneWidget);
+        expect(signInElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, " gfh");
         await tester.pumpAndSettle();
         expect(passwordTextField.controller!.text, "gfh");
         expect(passwordValidationErrorTextFinder, findsOneWidget);
+        expect(signInElevatedButton.enabled, isFalse);
       });
     });
 
-    group("nextButton action", () {
-      final signInElevatedButtonFinder = elevatedButtonFinder.at(0);
+    group("signIn button action", () {
       testWidgets(
           "Test that a SnackBar with an error text is shown when FirebaseAuthException is thrown",
           (WidgetTester tester) async {
@@ -210,6 +225,7 @@ void main() {
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.enterText(textFieldFinder.at(1), password);
+        await tester.pumpAndSettle();
         await tester.tap(signInElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);
@@ -229,6 +245,7 @@ void main() {
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.enterText(textFieldFinder.at(1), password);
+        await tester.pumpAndSettle();
         await tester.tap(signInElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsNothing);

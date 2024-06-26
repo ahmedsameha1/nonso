@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -8,19 +10,20 @@ import '../state/auth_state.dart';
 import 'common.dart';
 
 class Password extends HookWidget {
-  final GlobalKey<FormState> _formKey = GlobalKey();
-  Password({super.key});
+  const Password({super.key});
 
   @override
   Widget build(BuildContext context) {
     AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+    final GlobalKey<FormState> formKey = GlobalKey();
+    final isValid = useState<bool>(false);
     final TextEditingController emailTextEditingController =
         useTextEditingController();
     final TextEditingController passwordTextEditingController =
         useTextEditingController();
     return BlocBuilder<AuthBloc, AuthState>(builder: (ctx, state) {
       return Form(
-        key: _formKey,
+        key: formKey,
         child: Column(children: [
           TextFormField(
             controller: emailTextEditingController,
@@ -61,18 +64,21 @@ class Password extends HookWidget {
           Row(
             children: [
               ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final scaffoldMessenger = ScaffoldMessenger.of(context);
-                    await authBloc.signInWithEmailAndPassword(
-                        emailTextEditingController.text,
-                        passwordTextEditingController.text, ((exception) {
-                      scaffoldMessenger.showSnackBar(SnackBar(
-                          content: Text(AppLocalizations.of(context)!
-                              .nonso_failed(exception.code))));
-                    }));
-                  }
-                },
+                onPressed: !isValid.value
+                    ? null
+                    : () async {
+                        if (formKey.currentState!.validate()) {
+                          final scaffoldMessenger =
+                              ScaffoldMessenger.of(context);
+                          await authBloc.signInWithEmailAndPassword(
+                              emailTextEditingController.text,
+                              passwordTextEditingController.text, ((exception) {
+                            scaffoldMessenger.showSnackBar(SnackBar(
+                                content: Text(AppLocalizations.of(context)!
+                                    .nonso_failed(exception.code))));
+                          }));
+                        }
+                      },
                 child: Text(AppLocalizations.of(context)!.nonso_signIn),
               ),
               ElevatedButton(
@@ -82,6 +88,8 @@ class Password extends HookWidget {
             ],
           ),
         ]),
+        onChanged: () => isValid.value =
+            formKey.currentState != null && formKey.currentState!.validate(),
       );
     });
   }
