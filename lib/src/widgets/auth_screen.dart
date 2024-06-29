@@ -21,12 +21,12 @@ class AuthScreen extends StatelessWidget {
           case ApplicationAuthState.signedOut:
             return const AuthOptions();
           case ApplicationAuthState.password:
-            return Password();
+            return const Password();
           case ApplicationAuthState.register:
-            return Register();
+            return const Register();
           case ApplicationAuthState.locked:
             return const Locked();
-          default:
+          case ApplicationAuthState.signedIn:
             return child;
         }
       },
