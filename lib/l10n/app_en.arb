@@ -12,6 +12,7 @@
     "nonso_name": "Name",
     "nonso_password": "Password",
     "nonso_confirmPassword": "Confirm Password",
+    "nonso_forgotPassword": "Forgot password?",
     "nonso_nameValidationError": "Enter your name",
     "nonso_failed": "Failure: {exceptionCode}",
     "@nonso_failed": {

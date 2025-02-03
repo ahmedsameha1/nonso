@@ -60,7 +60,10 @@ void main() {
   late FakeAuthBloc authBloc;
   UserCredential userCredential = MockUserCredential();
   late Widget widgetProviderLocalization;
-  final signInElevatedButtonFinder = elevatedButtonFinder.at(0);
+  final signInElevatedButtonFinder =
+      find.widgetWithText(ElevatedButton, "Sign in");
+  final forgotPasswordButtonFinder =
+      find.widgetWithText(ElevatedButton, "Forgot password?");
 
   setUp(() {
     firebaseAuth = MockFirebaseAuth();
@@ -68,7 +71,7 @@ void main() {
     when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
     streamController.sink.add(nullUser);
     authBloc = FakeAuthBloc(firebaseAuth);
-    widgetInSkeleton = createWidgetInASkeleton(const Password());
+    widgetInSkeleton = createWidgetInASkeleton(Password());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
         create: (context) => authBloc, child: widgetInSkeleton);
   });
@@ -78,6 +81,7 @@ void main() {
     String expectedEmailString = "Email";
     String expectedPasswordString = "Password";
     String expectedSignInString = "Sign in";
+    String expectedForgotPasswordString = "Forgot password?";
     String expectedCancelString = "Cancel";
     String expectedPasswordValidationErrorString =
         "Password needs to be at least 8 characters";
@@ -96,12 +100,18 @@ void main() {
       await tester.pumpWidget(widgetProviderLocalization);
       final passwordFinder = find.byType(Password);
       expect(passwordFinder, findsOneWidget);
-      expect(find.descendant(of: passwordFinder, matching: formFinder),
+      expect(find.descendant(of: passwordFinder, matching: columnFinder),
           findsOneWidget);
-      expect(find.descendant(of: formFinder, matching: columnFinder),
-          findsOneWidget);
+      expect(find.descendant(of: columnFinder, matching: formFinder),
+          findsNWidgets(2));
+      final emailFormFinder = formFinder.at(0);
+      final passwordFormFinder = formFinder.at(1);
       final TextField emailTextField = tester.widget(find.descendant(
           of: textFormFieldFinder.at(0), matching: textFieldFinder));
+      expect(
+          find.descendant(
+              of: emailFormFinder, matching: find.byWidget(emailTextField)),
+          findsOneWidget);
       expect(
           (emailTextField.decoration!.label as Text).data, expectedEmailString);
       expect(emailTextField.keyboardType, TextInputType.emailAddress);
@@ -111,6 +121,11 @@ void main() {
       expect(emailTextField.enableSuggestions, false);
       final TextField passwordTextField = tester.widget(find.descendant(
           of: textFormFieldFinder.at(1), matching: textFieldFinder));
+      expect(
+          find.descendant(
+              of: passwordFormFinder,
+              matching: find.byWidget(passwordTextField)),
+          findsOneWidget);
       expect((passwordTextField.decoration!.label as Text).data,
           expectedPasswordString);
       expect(passwordTextField.keyboardType, TextInputType.text);
@@ -119,30 +134,38 @@ void main() {
       expect(passwordTextField.obscureText, true);
       expect(passwordTextField.autocorrect, false);
       expect(passwordTextField.enableSuggestions, false);
-      expect(find.descendant(of: columnFinder, matching: rowFinder),
+      expect(find.descendant(of: columnFinder.at(0), matching: rowFinder.at(0)),
           findsOneWidget);
-      final signInElevatedButtonFinder =
-          find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(0));
-      expect(signInElevatedButtonFinder, findsOneWidget);
+      final signInElevatedButtonInARowFinder = find.descendant(
+          of: rowFinder.at(0), matching: signInElevatedButtonFinder);
+      expect(signInElevatedButtonInARowFinder, findsOneWidget);
       expect(
-          ((tester.widget(signInElevatedButtonFinder) as ElevatedButton).child
-                  as Text)
+          ((tester.widget(signInElevatedButtonInARowFinder) as ElevatedButton)
+                  .child as Text)
               .data,
           expectedSignInString);
-      final cancelElevatedButtonFinder =
-          find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(1));
+      final cancelElevatedButtonFinder = find.descendant(
+          of: rowFinder.at(0), matching: elevatedButtonFinder.at(1));
       expect(cancelElevatedButtonFinder, findsOneWidget);
       expect(
           ((tester.widget(cancelElevatedButtonFinder) as ElevatedButton).child
                   as Text)
               .data,
           expectedCancelString);
+      final forgotPasswordButtonInARowFinder = find.descendant(
+          of: rowFinder.at(0), matching: forgotPasswordButtonFinder);
+      expect(forgotPasswordButtonInARowFinder, findsOneWidget);
+      expect(
+          ((tester.widget(forgotPasswordButtonInARowFinder) as ElevatedButton)
+                  .child as Text)
+              .data,
+          expectedForgotPasswordString);
       ElevatedButton cancelElevatedButton =
           tester.widget(cancelElevatedButtonFinder);
       expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
     });
 
-    group("Form validation", () {
+    group("Forms validation", () {
       testWidgets("Test email textfield validation",
           (WidgetTester tester) async {
         final emailTextFormFieldFinder = textFormFieldFinder.at(0);
@@ -152,28 +175,58 @@ void main() {
         await tester.pumpWidget(widgetProviderLocalization);
         ElevatedButton signInElevatedButton =
             tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        ElevatedButton forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isFalse);
         expect(emailValidationErrorTextFinder, findsNothing);
         await tester.enterText(emailTextFormFieldFinder, "f");
         await tester.pumpAndSettle();
+        signInElevatedButton =
+            tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
         expect(emailValidationErrorTextFinder, findsOneWidget);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFormFieldFinder, "test");
         await tester.pumpAndSettle();
+        signInElevatedButton =
+            tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
         expect(emailValidationErrorTextFinder, findsOneWidget);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFormFieldFinder, "test@");
         await tester.pumpAndSettle();
+        signInElevatedButton =
+            tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
         expect(emailValidationErrorTextFinder, findsOneWidget);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isFalse);
         await tester.enterText(emailTextFormFieldFinder, validEmail);
         await tester.pumpAndSettle();
+        signInElevatedButton =
+            tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
+        forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
         expect(emailValidationErrorTextFinder, findsNothing);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isTrue);
         await tester.enterText(emailTextFormFieldFinder, "test@شبكة.com");
         await tester.pumpAndSettle();
+        signInElevatedButton =
+            tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
         expect(emailValidationErrorTextFinder, findsNothing);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isTrue);
       });
 
       testWidgets("Test password textfield validation",
@@ -188,17 +241,22 @@ void main() {
         await tester.pumpWidget(widgetProviderLocalization);
         ElevatedButton signInElevatedButton =
             tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        ElevatedButton forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isFalse);
         expect(passwordValidationErrorTextFinder, findsNothing);
         final passwordTextFieldFinder = textFieldFinder.at(1);
         await tester.enterText(passwordTextFieldFinder, validPassword);
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsNothing);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, "");
         await tester.pumpAndSettle();
         expect(passwordValidationErrorTextFinder, findsOneWidget);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, " ");
         await tester.pumpAndSettle();
         final TextField passwordTextField =
@@ -206,11 +264,13 @@ void main() {
         expect(passwordTextField.controller!.text, "");
         expect(passwordValidationErrorTextFinder, findsOneWidget);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isFalse);
         await tester.enterText(passwordTextFieldFinder, " gfh");
         await tester.pumpAndSettle();
         expect(passwordTextField.controller!.text, "gfh");
         expect(passwordValidationErrorTextFinder, findsOneWidget);
         expect(signInElevatedButton.enabled, isFalse);
+        expect(forgotPasswordElevatedButton.enabled, isFalse);
       });
     });
 
@@ -226,6 +286,9 @@ void main() {
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.enterText(textFieldFinder.at(1), password);
         await tester.pumpAndSettle();
+        ElevatedButton signInElevatedButton =
+            tester.widget<ElevatedButton>(signInElevatedButtonFinder);
+        expect(signInElevatedButton.enabled, isTrue);
         await tester.tap(signInElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);
