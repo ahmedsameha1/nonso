@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-
 MaterialApp createWidgetInASkeleton(Widget widget) {
   return MaterialApp(
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-    body: widget,
-  ));
+        body: widget,
+      ));
+}
+
+MaterialApp createWidgetInASkeletonWithoutScaffold(Widget widget) {
+  return MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: widget);
 }
 
 Future<AppLocalizations> getLocalizations(WidgetTester t, Locale locale) async {

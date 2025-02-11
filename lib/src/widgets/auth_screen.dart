@@ -17,17 +17,21 @@ class AuthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (ctx, state) {
-        switch (state.applicationAuthState) {
-          case ApplicationAuthState.signedOut:
-            return const AuthOptions();
-          case ApplicationAuthState.password:
-            return  Password();
-          case ApplicationAuthState.register:
-            return const Register();
-          case ApplicationAuthState.locked:
-            return const Locked();
-          case ApplicationAuthState.signedIn:
-            return child;
+        if (state.applicationAuthState != ApplicationAuthState.signedIn) {
+          late Widget notSignedInChild;
+          switch (state.applicationAuthState) {
+            case ApplicationAuthState.locked:
+              notSignedInChild = const Locked();
+            case ApplicationAuthState.password:
+              notSignedInChild = Password();
+            case ApplicationAuthState.register:
+              notSignedInChild = const Register();
+            default:
+              notSignedInChild = const AuthOptions();
+          }
+          return Scaffold(body: notSignedInChild);
+        } else {
+          return child;
         }
       },
     );

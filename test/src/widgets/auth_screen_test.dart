@@ -38,7 +38,7 @@ void main() {
     streamController = StreamController();
     when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
     streamController.sink.add(nullUser);
-    widgetInSkeleton = createWidgetInASkeleton(AuthScreen(someWidget));
+    widgetInSkeleton = createWidgetInASkeletonWithoutScaffold(AuthScreen(someWidget));
     mockAuthBloc = MockAuthBloc();
     when(mockAuthBloc.stream)
         .thenAnswer((realInvocation) => Stream.value(signedOutState));
@@ -123,6 +123,7 @@ void main() {
   });
 
   testWidgets("Test signedIn state", (WidgetTester tester) async {
+    widgetInSkeleton = createWidgetInASkeleton(AuthScreen(someWidget));
     when(mockAuthBloc.state).thenReturn(signedInState);
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
       create: (context) => mockAuthBloc,
