@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nonso/nonso.dart';
-import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -31,6 +30,12 @@ class FakeAuthBloc extends Fake implements AuthBloc {
     _authBloc.emit(AuthState(
         applicationAuthState: ApplicationAuthState.password, email: email));
     _authBloc.signInWithEmailAndPassword(email, password, errorCallback);
+  }
+
+  @override
+  Future<void> resetPassword(String email,
+      void Function(FirebaseAuthException exception) errorCallback) async {
+    _authBloc.resetPassword(email, errorCallback);
   }
 
   @override
@@ -87,6 +92,8 @@ void main() {
         "Password needs to be at least 8 characters";
     String expectedFailedString = "Failure: code";
     String expectedInvalidEmailString = "This an invalid email";
+    String expectedResetCodeSet =
+        "Check your email inbox to get the reset code";
 
     setUp(() {
       widgetProviderLocalization = Localizations(
@@ -312,6 +319,47 @@ void main() {
         await tester.tap(signInElevatedButtonFinder);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsNothing);
+      });
+    });
+
+    group("forgot password button action", () {
+      testWidgets(
+          "Test that a SnackBar with an error text is shown when FirebaseAuthException is thrown",
+          (WidgetTester tester) async {
+        when(firebaseAuth.sendPasswordResetEmail(email: validEmail))
+            .thenThrow(firebaseAuthException);
+        await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+        await tester.enterText(textFieldFinder.at(0), validEmail);
+        await tester.pumpAndSettle();
+        ElevatedButton forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
+        expect(forgotPasswordElevatedButton.enabled, isTrue);
+        await tester.tap(forgotPasswordButtonFinder);
+        await tester.pumpAndSettle();
+        expect(snackBarFinder, findsOneWidget);
+        expect(
+            find.descendant(
+                of: snackBarFinder, matching: find.text(expectedFailedString)),
+            findsOneWidget);
+      });
+
+      testWidgets(
+          "Test that a SnackBar with that directs user to check his email inbox is displayed",
+          (WidgetTester tester) async {
+        when(firebaseAuth.sendPasswordResetEmail(email: validEmail));
+        await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+        await tester.enterText(textFieldFinder.at(0), validEmail);
+        await tester.pumpAndSettle();
+        ElevatedButton forgotPasswordElevatedButton =
+            tester.widget<ElevatedButton>(forgotPasswordButtonFinder);
+        expect(forgotPasswordElevatedButton.enabled, isTrue);
+        await tester.tap(forgotPasswordButtonFinder);
+        await tester.pumpAndSettle();
+        expect(snackBarFinder, findsOneWidget);
+        expect(
+            find.descendant(
+                of: snackBarFinder, matching: find.text(expectedResetCodeSet)),
+            findsOneWidget);
       });
     });
   });

@@ -13,6 +13,7 @@
     "nonso_password": "Password",
     "nonso_confirmPassword": "Confirm Password",
     "nonso_forgotPassword": "Forgot password?",
+    "nonso_resetCodeSent": "Check your email inbox to get the reset code",
     "nonso_nameValidationError": "Enter your name",
     "nonso_failed": "Failure: {exceptionCode}",
     "@nonso_failed": {

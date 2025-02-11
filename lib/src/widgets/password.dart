@@ -21,7 +21,8 @@ class Password extends HookWidget {
         useTextEditingController();
     final TextEditingController passwordTextEditingController =
         useTextEditingController();
-    return BlocBuilder<AuthBloc, AuthState>(builder: (ctx, state) {
+    return Scaffold(
+        body: BlocBuilder<AuthBloc, AuthState>(builder: (ctx, state) {
       return Column(
         children: [
           Form(
@@ -94,13 +95,29 @@ class Password extends HookWidget {
                 child: Text(AppLocalizations.of(context)!.nonso_cancel),
               ),
               ElevatedButton(
-                onPressed: !isEmailValid.value ? null : () {},
+                onPressed: !isEmailValid.value
+                    ? null
+                    : () async {
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        await authBloc.resetPassword(
+                            emailTextEditingController.text, ((exception) {
+                          scaffoldMessenger.showSnackBar(SnackBar(
+                            content: Text(AppLocalizations.of(context)!
+                                .nonso_failed(exception.code)),
+                          ));
+                        }));
+                        if (context.mounted) {
+                          scaffoldMessenger.showSnackBar(SnackBar(
+                              content: Text(AppLocalizations.of(context)!
+                                  .nonso_resetCodeSent)));
+                        }
+                      },
                 child: Text(AppLocalizations.of(context)!.nonso_forgotPassword),
               )
             ],
           ),
         ],
       );
-    });
+    }));
   }
 }
