@@ -50,25 +50,44 @@ void main() {
           child: widgetInSkeletonInBlocProvider));
       final centerFinder = find.byType(Center);
       expect(centerFinder, findsOneWidget);
-      final columnFinder = find.byType(Column);
-      expect(find.descendant(of: centerFinder, matching: columnFinder),
+      final Column column = tester
+          .widget(find.descendant(of: centerFinder, matching: columnFinder));
+      expect(find.descendant(of: centerFinder, matching: find.byWidget(column)),
           findsOneWidget);
+      expect(column.mainAxisAlignment, MainAxisAlignment.center);
+      expect(column.crossAxisAlignment, CrossAxisAlignment.center);
       final registerButtonFinder = elevatedButtonFinder.at(0);
       final registerTextFinder = find.text(expectedRegisterString);
-      expect(find.descendant(of: registerButtonFinder, matching: registerTextFinder),
-          findsOneWidget);
-      final signInButtonFinder = elevatedButtonFinder.at(1);
-      final signInTextFinder = find.text(expectedSignInString);
-      expect(find.descendant(of: signInButtonFinder, matching: signInTextFinder),
-          findsOneWidget);
-      expect(find.descendant(of: columnFinder, matching: registerButtonFinder),
+      expect(
+          find.descendant(
+              of: registerButtonFinder, matching: registerTextFinder),
           findsOneWidget);
       await tester.tap(registerButtonFinder);
       verify(mockAuthBloc.startRegistration()).called(1);
-      expect(find.descendant(of: columnFinder, matching: signInButtonFinder),
+      final signInButtonFinder = elevatedButtonFinder.at(1);
+      final signInTextFinder = find.text(expectedSignInString);
+      expect(
+          find.descendant(of: signInButtonFinder, matching: signInTextFinder),
           findsOneWidget);
       await tester.tap(signInButtonFinder);
       verify(mockAuthBloc.startSigningIn()).called(1);
+      final SizedBox sizedBox = tester.widget(find.descendant(
+          of: columnFinder, matching: find.byType(SizedBox))) as SizedBox;
+      expect(sizedBox.height, 20);
+      expect(find.descendant(of: columnFinder, matching: registerButtonFinder),
+          findsOneWidget);
+      final List<Widget> widgetsInsideColumn = tester
+          .widgetList(find.descendant(
+              of: columnFinder, matching: find.bySubtype<Widget>()))
+          .toList();
+      expect(widgetsInsideColumn.indexOf(tester.widget(registerButtonFinder)),
+          lessThan(widgetsInsideColumn.indexOf(sizedBox)));
+      expect(
+          widgetsInsideColumn.indexOf(sizedBox),
+          lessThan(
+              widgetsInsideColumn.indexOf(tester.widget(signInButtonFinder))));
+      expect(find.descendant(of: columnFinder, matching: signInButtonFinder),
+          findsOneWidget);
     });
   });
 }
