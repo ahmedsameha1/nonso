@@ -25,7 +25,7 @@ class AuthScreen extends StatelessWidget {
             case ApplicationAuthState.password:
               notSignedInChild = Password();
             case ApplicationAuthState.register:
-              notSignedInChild = const Register();
+              notSignedInChild = Register();
             default:
               notSignedInChild = const AuthOptions();
           }

@@ -73,7 +73,7 @@ void main() {
     when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
     streamController.sink.add(nullUser);
     authBloc = FakeAuthBloc(firebaseAuth);
-    widgetInSkeleton = createWidgetInASkeleton(const Register());
+    widgetInSkeleton = createWidgetInASkeleton(Register());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
         create: (context) => authBloc, child: widgetInSkeleton);
   });
@@ -106,40 +106,44 @@ void main() {
     testWidgets("Test the precence of the main widgets",
         (WidgetTester tester) async {
       await tester.pumpWidget(widgetProviderLocalization);
-      expect(find.byType(Register), findsOneWidget);
-      expect(find.descendant(of: find.byType(Register), matching: formFinder),
+      final registerFinder = find.byType(Register);
+      expect(registerFinder, findsOneWidget);
+      expect(find.descendant(of: registerFinder, matching: columnFinder),
           findsOneWidget);
-      expect(find.descendant(of: formFinder, matching: columnFinder),
-          findsOneWidget);
-      final displayNameTextFormFieldFinder = textFormFieldFinder.at(0);
+      expect(find.descendant(of: columnFinder, matching: formFinder),
+          findsNWidgets(4));
+      final nameFormFinder = formFinder.at(0);
+      final emailFormFinder = formFinder.at(1);
+      final passwordFormFinder = formFinder.at(2);
+      final confirmPasswordFormFinder = formFinder.at(3);
+      final TextField nameTextField = tester.widget(find.descendant(
+          of: textFormFieldFinder.at(0),
+          matching: textFieldFinder.at(0))) as TextField;
       expect(
           find.descendant(
-              of: columnFinder, matching: displayNameTextFormFieldFinder),
+              of: nameFormFinder, matching: find.byWidget(nameTextField)),
           findsOneWidget);
-      final TextField nameTextField = tester.widget(find.descendant(
-          of: displayNameTextFormFieldFinder,
-          matching: textFieldFinder.at(0))) as TextField;
       expect(
           (nameTextField.decoration!.label as Text).data, expectedNameString);
       expect(nameTextField.keyboardType, TextInputType.text);
-      final emailTextFormFieldFinder = textFormFieldFinder.at(1);
-      expect(
-          find.descendant(of: columnFinder, matching: emailTextFormFieldFinder),
-          findsOneWidget);
       final TextField emailTextField = tester.widget(find.descendant(
-          of: emailTextFormFieldFinder,
+          of: textFormFieldFinder.at(1),
           matching: textFieldFinder.at(1))) as TextField;
+      expect(
+          find.descendant(
+              of: emailFormFinder, matching: find.byWidget(emailTextField)),
+          findsOneWidget);
       expect(
           (emailTextField.decoration!.label as Text).data, expectedEmailString);
       expect(emailTextField.keyboardType, TextInputType.emailAddress);
-      final passwordTextFormFieldFinder = textFormFieldFinder.at(2);
+      final TextField passwordTextField = tester.widget(find.descendant(
+          of: textFormFieldFinder.at(2),
+          matching: textFieldFinder.at(2))) as TextField;
       expect(
           find.descendant(
-              of: columnFinder, matching: passwordTextFormFieldFinder),
+              of: passwordFormFinder,
+              matching: find.byWidget(passwordTextField)),
           findsOneWidget);
-      final TextField passwordTextField = tester.widget(find.descendant(
-          of: passwordTextFormFieldFinder,
-          matching: textFieldFinder.at(2))) as TextField;
       expect((passwordTextField.decoration!.label as Text).data,
           expectedPasswordString);
       expect(passwordTextField.keyboardType, TextInputType.text);
@@ -148,14 +152,14 @@ void main() {
       expect(passwordTextField.obscureText, true);
       expect(passwordTextField.autocorrect, false);
       expect(passwordTextField.enableSuggestions, false);
-      final confirmPasswordTextFormFieldFinder = textFormFieldFinder.at(3);
+      final TextField confirmPasswordTextField = tester.widget(find.descendant(
+          of: textFormFieldFinder.at(3),
+          matching: textFieldFinder.at(3))) as TextField;
       expect(
           find.descendant(
-              of: columnFinder, matching: confirmPasswordTextFormFieldFinder),
+              of: confirmPasswordFormFinder,
+              matching: find.byWidget(confirmPasswordTextField)),
           findsOneWidget);
-      final confirmPasswordTextField = tester.widget(find.descendant(
-          of: confirmPasswordTextFormFieldFinder,
-          matching: textFieldFinder.at(3))) as TextField;
       expect((confirmPasswordTextField.decoration!.label as Text).data,
           expectedConfirmPasswordString);
       expect(confirmPasswordTextField.keyboardType, TextInputType.text);
