@@ -19,7 +19,7 @@ import '../state/auth_bloc_test.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'auth_screen_test.mocks.dart';
 import 'common_finders.dart';
-import 'skeleton_for_widget_testing.dart';
+import 'widget_testing_helper.dart';
 
 @GenerateMocks([AuthBloc])
 void main() {

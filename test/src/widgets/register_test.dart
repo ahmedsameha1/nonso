@@ -14,7 +14,7 @@ import 'package:nonso/src/widgets/register.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
-import 'skeleton_for_widget_testing.dart';
+import 'widget_testing_helper.dart';
 
 abstract class RegisterAccountFunction {
   Future<void> call(String email, String password, String displayName,

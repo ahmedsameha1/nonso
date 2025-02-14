@@ -16,11 +16,22 @@ class AuthOptions extends StatelessWidget {
         children: [
           ElevatedButton(
               onPressed: authBloc.startRegistration,
-              child: Text(AppLocalizations.of(context)!.nonso_register)),
-          const SizedBox(height: 20),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.app_registration),
+                const SizedBox(key: Key("registerGap"), width: 8),
+                Text(AppLocalizations.of(context)!.nonso_register),
+              ])),
+          const SizedBox(key: Key("gapBetweenButtons"), height: 20),
           ElevatedButton(
               onPressed: authBloc.startSigningIn,
-              child: Text(AppLocalizations.of(context)!.nonso_signIn))
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.login),
+                  const SizedBox(key: Key("signInGap"), width: 8),
+                  Text(AppLocalizations.of(context)!.nonso_signIn)
+                ],
+              ))
         ],
       ),
     );

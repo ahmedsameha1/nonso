@@ -12,7 +12,7 @@ import 'package:nonso/src/widgets/locked.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
-import 'skeleton_for_widget_testing.dart';
+import 'widget_testing_helper.dart';
 
 class FakeAuthBloc extends Fake implements AuthBloc {
   final AuthBloc _authBloc;

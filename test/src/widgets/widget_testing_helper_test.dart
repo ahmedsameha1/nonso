@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'skeleton_for_widget_testing.dart';
+import 'widget_testing_helper.dart';
 
 main() {
   test("test creating a skeleton for widget testing", () {

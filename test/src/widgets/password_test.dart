@@ -12,7 +12,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nonso/src/widgets/common.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
-import 'skeleton_for_widget_testing.dart';
+import 'widget_testing_helper.dart';
 
 abstract class SignInWithEmailAndPasswordFunction {
   Future<void> call(String email, String password,

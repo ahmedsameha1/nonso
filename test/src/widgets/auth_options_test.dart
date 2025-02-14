@@ -13,7 +13,7 @@ import '../state/auth_bloc_test.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'auth_screen_test.mocks.dart';
 import 'common_finders.dart';
-import 'skeleton_for_widget_testing.dart';
+import 'widget_testing_helper.dart';
 
 void main() {
   late FirebaseAuth firebaseAuth;
@@ -48,7 +48,7 @@ void main() {
           delegates: AppLocalizations.localizationsDelegates,
           locale: currentLocale,
           child: widgetInSkeletonInBlocProvider));
-      final centerFinder = find.byType(Center);
+      final centerFinder = find.byType(Center).at(0);
       expect(centerFinder, findsOneWidget);
       final Column column = tester
           .widget(find.descendant(of: centerFinder, matching: columnFinder));
@@ -58,36 +58,64 @@ void main() {
       expect(column.crossAxisAlignment, CrossAxisAlignment.center);
       final registerButtonFinder = elevatedButtonFinder.at(0);
       final registerTextFinder = find.text(expectedRegisterString);
+      final registerRowFinder =
+          find.descendant(of: registerButtonFinder, matching: rowFinder);
+      expect(registerRowFinder, findsOneWidget);
+      Row registerRow = tester.widget(registerRowFinder);
+      expect(registerRow.mainAxisSize, MainAxisSize.min);
+      Icon registerIcon = tester.widget(find.byIcon(Icons.app_registration));
+      SizedBox registerSizedBox =
+          tester.widget(find.byKey(const Key("registerGap")));
+      expect(registerSizedBox.width, 8);
+      Text registerText = tester.widget(registerTextFinder);
       expect(
-          find.descendant(
-              of: registerButtonFinder, matching: registerTextFinder),
-          findsOneWidget);
+          checkWidgetsOrder(
+              tester
+                  .widgetList(find.descendant(
+                      of: registerRowFinder,
+                      matching: find.bySubtype<Widget>()))
+                  .toList(),
+              [registerIcon, registerSizedBox, registerText]),
+          isTrue);
       await tester.tap(registerButtonFinder);
       verify(mockAuthBloc.startRegistration()).called(1);
       final signInButtonFinder = elevatedButtonFinder.at(1);
       final signInTextFinder = find.text(expectedSignInString);
+      final signInRowFinder =
+          find.descendant(of: signInButtonFinder, matching: rowFinder);
+      expect(signInRowFinder, findsOneWidget);
+      Row signInRow = tester.widget(signInRowFinder);
+      expect(signInRow.mainAxisSize, MainAxisSize.min);
+      Icon signInIcon = tester.widget(find.byIcon(Icons.login));
+      SizedBox signInSizedBox =
+          tester.widget(find.byKey(const Key("signInGap")));
+      expect(signInSizedBox.width, 8);
+      Text signInText = tester.widget(signInTextFinder);
       expect(
-          find.descendant(of: signInButtonFinder, matching: signInTextFinder),
-          findsOneWidget);
+          checkWidgetsOrder(
+              tester
+                  .widgetList(find.descendant(
+                      of: signInRowFinder, matching: find.bySubtype<Widget>()))
+                  .toList(),
+              [signInIcon, signInSizedBox, signInText]),
+          isTrue);
       await tester.tap(signInButtonFinder);
       verify(mockAuthBloc.startSigningIn()).called(1);
-      final SizedBox sizedBox = tester.widget(find.descendant(
-          of: columnFinder, matching: find.byType(SizedBox))) as SizedBox;
-      expect(sizedBox.height, 20);
-      expect(find.descendant(of: columnFinder, matching: registerButtonFinder),
-          findsOneWidget);
-      final List<Widget> widgetsInsideColumn = tester
-          .widgetList(find.descendant(
-              of: columnFinder, matching: find.bySubtype<Widget>()))
-          .toList();
-      expect(widgetsInsideColumn.indexOf(tester.widget(registerButtonFinder)),
-          lessThan(widgetsInsideColumn.indexOf(sizedBox)));
+      final SizedBox gapBetweenButtonsSizedBox =
+          tester.widget(find.byKey(const Key("gapBetweenButtons")));
+      expect(gapBetweenButtonsSizedBox.height, 20);
       expect(
-          widgetsInsideColumn.indexOf(sizedBox),
-          lessThan(
-              widgetsInsideColumn.indexOf(tester.widget(signInButtonFinder))));
-      expect(find.descendant(of: columnFinder, matching: signInButtonFinder),
-          findsOneWidget);
+          checkWidgetsOrder(
+              tester
+                  .widgetList(find.descendant(
+                      of: columnFinder, matching: find.bySubtype<Widget>()))
+                  .toList(),
+              [
+                tester.widget(registerButtonFinder),
+                gapBetweenButtonsSizedBox,
+                tester.widget(signInButtonFinder)
+              ]),
+          isTrue);
     });
   });
 }
