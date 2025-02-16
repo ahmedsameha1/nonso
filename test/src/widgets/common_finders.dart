@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final scaffoldFinder = find.byType(Scaffold);
+final centerFinder = find.byType(Center);
+final cardFinder = find.byType(Card);
+final singleChildScrollViewFinder = find.byType(SingleChildScrollView);
+final paddingFinder = find.byType(Padding);
 final formFinder = find.byType(Form);
 final columnFinder = find.byType(Column);
 final textFormFieldFinder = find.byType(TextFormField);

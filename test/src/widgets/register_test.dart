@@ -108,8 +108,28 @@ void main() {
       await tester.pumpWidget(widgetProviderLocalization);
       final registerFinder = find.byType(Register);
       expect(registerFinder, findsOneWidget);
-      expect(find.descendant(of: registerFinder, matching: columnFinder),
+      expect(find.descendant(of: registerFinder, matching: centerFinder),
           findsOneWidget);
+      Card card = tester.widget(
+        find.descendant(of: centerFinder, matching: cardFinder),
+      );
+      expect(card.margin!.horizontal, 40);
+      expect(card.margin!.vertical, 40);
+      expect(
+          find.descendant(
+              of: find.byWidget(card), matching: singleChildScrollViewFinder),
+          findsOneWidget);
+      Padding padding = tester.widget(
+        find.descendant(
+            of: singleChildScrollViewFinder,
+            matching: find.byKey(const Key("paddingAroundColumn"))),
+      );
+      expect(padding.padding.horizontal, 32);
+      expect(padding.padding.vertical, 32);
+      Column column = tester.widget(
+        find.descendant(of: find.byWidget(padding), matching: columnFinder),
+      );
+      expect(column.mainAxisAlignment, MainAxisAlignment.center);
       expect(find.descendant(of: columnFinder, matching: formFinder),
           findsNWidgets(4));
       final nameFormFinder = formFinder.at(0);
@@ -168,13 +188,15 @@ void main() {
       expect(confirmPasswordTextField.obscureText, true);
       expect(confirmPasswordTextField.autocorrect, false);
       expect(confirmPasswordTextField.enableSuggestions, false);
+      Row row = tester.widget(find.descendant(of: columnFinder, matching: rowFinder));
+      expect(row.mainAxisAlignment, MainAxisAlignment.spaceEvenly);
       expect(find.descendant(of: columnFinder, matching: rowFinder),
           findsOneWidget);
-      final nextElevatedButtonFinder =
+      final registerElevatedButtonFinder =
           find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(0));
-      expect(nextElevatedButtonFinder, findsOneWidget);
+      expect(registerElevatedButtonFinder, findsOneWidget);
       expect(
-          ((tester.widget(nextElevatedButtonFinder) as ElevatedButton).child
+          ((tester.widget(registerElevatedButtonFinder) as ElevatedButton).child
                   as Text)
               .data,
           expectedRegisterString);
@@ -189,6 +211,21 @@ void main() {
       ElevatedButton cancelElevatedButton =
           tester.widget(cancelElevatedButtonFinder);
       expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
+      SizedBox sizedBox = tester
+          .widget(find.byKey(const Key("gapBetweenTextFieldsAndButtons")));
+      expect(sizedBox.height, 15);
+      expect(
+          checkWidgetsOrder(
+              tester
+                  .widgetList(find.descendant(
+                      of: columnFinder, matching: find.bySubtype<Widget>()))
+                  .toList(),
+              [
+                tester.widget(confirmPasswordFormFinder),
+                sizedBox,
+                row
+              ]),
+          isTrue);
     });
 
     group("Form validation", () {
