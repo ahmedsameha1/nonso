@@ -107,9 +107,29 @@ void main() {
       await tester.pumpWidget(widgetProviderLocalization);
       final passwordFinder = find.byType(Password);
       expect(passwordFinder, findsOneWidget);
-      expect(find.descendant(of: passwordFinder, matching: columnFinder),
+      expect(find.descendant(of: passwordFinder, matching: centerFinder),
           findsOneWidget);
-      expect(find.descendant(of: columnFinder, matching: formFinder),
+      Card card = tester.widget(
+        find.descendant(of: centerFinder, matching: cardFinder),
+      );
+      expect(card.margin!.horizontal, 40);
+      expect(card.margin!.vertical, 40);
+      expect(
+          find.descendant(
+              of: find.byWidget(card), matching: singleChildScrollViewFinder),
+          findsOneWidget);
+      Padding padding = tester.widget(
+        find.descendant(
+            of: singleChildScrollViewFinder,
+            matching: find.byKey(const Key("paddingAroundColumn"))),
+      );
+      expect(padding.padding.horizontal, 32);
+      expect(padding.padding.vertical, 32);
+      Column column = tester.widget(
+        find.descendant(of: find.byWidget(padding), matching: columnFinder),
+      );
+      expect(column.mainAxisAlignment, MainAxisAlignment.center);
+      expect(find.descendant(of: find.byWidget(column), matching: formFinder),
           findsNWidgets(2));
       final emailFormFinder = formFinder.at(0);
       final passwordFormFinder = formFinder.at(1);
@@ -141,10 +161,14 @@ void main() {
       expect(passwordTextField.obscureText, true);
       expect(passwordTextField.autocorrect, false);
       expect(passwordTextField.enableSuggestions, false);
-      expect(find.descendant(of: columnFinder.at(0), matching: rowFinder.at(0)),
-          findsOneWidget);
+      SizedBox firstSizedBox = tester
+          .widget(find.byKey(const Key("gapBetweenTextFieldsAndButtons")));
+      expect(firstSizedBox.height, 15);
+      Row firstRow = tester
+          .widget(find.descendant(of: columnFinder, matching: rowFinder.at(0)));
+      expect(firstRow.mainAxisAlignment, MainAxisAlignment.spaceEvenly);
       final signInElevatedButtonInARowFinder = find.descendant(
-          of: rowFinder.at(0), matching: signInElevatedButtonFinder);
+          of: find.byWidget(firstRow), matching: signInElevatedButtonFinder);
       expect(signInElevatedButtonInARowFinder, findsOneWidget);
       expect(
           ((tester.widget(signInElevatedButtonInARowFinder) as ElevatedButton)
@@ -152,15 +176,21 @@ void main() {
               .data,
           expectedSignInString);
       final cancelElevatedButtonFinder = find.descendant(
-          of: rowFinder.at(0), matching: elevatedButtonFinder.at(1));
+          of: find.byWidget(firstRow), matching: elevatedButtonFinder.at(1));
       expect(cancelElevatedButtonFinder, findsOneWidget);
       expect(
           ((tester.widget(cancelElevatedButtonFinder) as ElevatedButton).child
                   as Text)
               .data,
           expectedCancelString);
+      SizedBox secondSizedBox = tester
+          .widget(find.byKey(const Key("gapBetweenButtons")));
+      expect(secondSizedBox.height, 5);
+      Row secondRow = tester
+          .widget(find.descendant(of: columnFinder, matching: rowFinder.at(1)));
+      expect(secondRow.mainAxisAlignment, MainAxisAlignment.center);
       final forgotPasswordButtonInARowFinder = find.descendant(
-          of: rowFinder.at(0), matching: forgotPasswordButtonFinder);
+          of: find.byWidget(secondRow), matching: forgotPasswordButtonFinder);
       expect(forgotPasswordButtonInARowFinder, findsOneWidget);
       expect(
           ((tester.widget(forgotPasswordButtonInARowFinder) as ElevatedButton)
@@ -170,6 +200,20 @@ void main() {
       ElevatedButton cancelElevatedButton =
           tester.widget(cancelElevatedButtonFinder);
       expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
+      expect(
+          checkWidgetsOrder(
+              tester
+                  .widgetList(find.descendant(
+                      of: columnFinder, matching: find.bySubtype<Widget>()))
+                  .toList(),
+              [
+                tester.widget(passwordFormFinder),
+                firstSizedBox,
+                firstRow,
+                secondSizedBox,
+                secondRow
+              ]),
+          isTrue);
     });
 
     group("Forms validation", () {
