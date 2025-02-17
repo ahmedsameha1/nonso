@@ -149,7 +149,7 @@ class Register extends HookWidget {
                                     ScaffoldMessenger.of(context);
                                 final successString =
                                     AppLocalizations.of(context)!.nonso_success;
-                                await authBloc.registerAccount(
+                                final result = await authBloc.registerAccount(
                                     emailTextEditingController.text,
                                     passwordTextEditingController.text,
                                     nameTextEditingController.text,
@@ -159,8 +159,10 @@ class Register extends HookWidget {
                                                 AppLocalizations.of(context)!
                                                     .nonso_failed(
                                                         exception.code))))));
-                                scaffoldMessenger.showSnackBar(
-                                    SnackBar(content: Text(successString)));
+                                if (result) {
+                                  scaffoldMessenger.showSnackBar(
+                                      SnackBar(content: Text(successString)));
+                                }
                               },
                         child:
                             Text(AppLocalizations.of(context)!.nonso_register)),

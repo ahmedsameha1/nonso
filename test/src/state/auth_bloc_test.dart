@@ -325,8 +325,9 @@ main() {
       build: () => sut,
       seed: () => registerState,
       act: (bloc) async {
-        await sut.registerAccount(validEmail, password, displayName,
-            firebaseAuthExceptionCallback.call);
+        final result = await sut.registerAccount(validEmail, password,
+            displayName, firebaseAuthExceptionCallback.call);
+        expect(result, false);
       },
       verify: (bloc) {
         verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
@@ -352,9 +353,10 @@ main() {
     build: () => sut,
     seed: () => registerState,
     act: (bloc) async {
-      await sut.registerAccount(validEmail, password, displayName,
-          firebaseAuthExceptionCallback.call);
+      final result = await sut.registerAccount(validEmail, password,
+          displayName, firebaseAuthExceptionCallback.call);
       pushPreparedUserToUserChangesStream(notNullUser, false);
+      expect(result, true);
     },
     verify: (bloc) {
       verify(firebaseAuth.createUserWithEmailAndPassword(
@@ -388,9 +390,10 @@ main() {
     seed: () => registerState,
     act: (bloc) async {
       await bloc.close();
-      await sut.registerAccount(validEmail, password, displayName,
-          firebaseAuthExceptionCallback.call);
+      final result = await sut.registerAccount(validEmail, password,
+          displayName, firebaseAuthExceptionCallback.call);
       pushPreparedUserToUserChangesStream(notNullUser, false);
+      expect(result, true);
     },
     verify: (bloc) {
       verify(firebaseAuth.createUserWithEmailAndPassword(
@@ -749,11 +752,11 @@ main() {
   );
 }
 
-  void pushPreparedUserToUserChangesStream(User? user,
-      [bool emailVerified = false]) {
-    if (user != null) {
-      when(user.emailVerified).thenReturn(emailVerified);
-      when(user.email).thenReturn(validEmail);
-    }
-    streamController.sink.add(user);
+void pushPreparedUserToUserChangesStream(User? user,
+    [bool emailVerified = false]) {
+  if (user != null) {
+    when(user.emailVerified).thenReturn(emailVerified);
+    when(user.email).thenReturn(validEmail);
   }
+  streamController.sink.add(user);
+}

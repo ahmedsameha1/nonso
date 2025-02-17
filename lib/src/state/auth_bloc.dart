@@ -86,7 +86,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     firebaseAuth.currentUser!.reload();
   }
 
-  Future<void> registerAccount(
+  Future<bool> registerAccount(
       String email,
       String password,
       String displayName,
@@ -99,8 +99,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           email: email, password: password);
       userCredential.user!.updateDisplayName(displayName);
       await userCredential.user!.sendEmailVerification();
+      return true;
     } on FirebaseAuthException catch (exception) {
       errorCallback(exception);
+      return false;
     }
   }
 

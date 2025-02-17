@@ -27,14 +27,15 @@ class FakeAuthBloc extends Fake implements AuthBloc {
   FakeAuthBloc(FirebaseAuth firebaseAuth) : _authBloc = AuthBloc(firebaseAuth);
 
   @override
-  Future<void> registerAccount(
+  Future<bool> registerAccount(
       String email,
       String password,
       String displayName,
       void Function(FirebaseAuthException exception) errorCallback) async {
     _authBloc.emit(AuthState(
         applicationAuthState: ApplicationAuthState.register, email: email));
-    _authBloc.registerAccount(email, password, displayName, errorCallback);
+    return _authBloc.registerAccount(
+        email, password, displayName, errorCallback);
   }
 
   @override
@@ -188,7 +189,8 @@ void main() {
       expect(confirmPasswordTextField.obscureText, true);
       expect(confirmPasswordTextField.autocorrect, false);
       expect(confirmPasswordTextField.enableSuggestions, false);
-      Row row = tester.widget(find.descendant(of: columnFinder, matching: rowFinder));
+      Row row =
+          tester.widget(find.descendant(of: columnFinder, matching: rowFinder));
       expect(row.mainAxisAlignment, MainAxisAlignment.spaceEvenly);
       expect(find.descendant(of: columnFinder, matching: rowFinder),
           findsOneWidget);
@@ -220,11 +222,7 @@ void main() {
                   .widgetList(find.descendant(
                       of: columnFinder, matching: find.bySubtype<Widget>()))
                   .toList(),
-              [
-                tester.widget(confirmPasswordFormFinder),
-                sizedBox,
-                row
-              ]),
+              [tester.widget(confirmPasswordFormFinder), sizedBox, row]),
           isTrue);
     });
 
@@ -406,6 +404,8 @@ void main() {
             find.descendant(
                 of: snackBarFinder, matching: find.text(expectedFailedString)),
             findsOneWidget);
+        await tester.pumpAndSettle(const Duration(seconds: 4));
+        expect(snackBarFinder, findsNothing);
       });
 
       testWidgets(
