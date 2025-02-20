@@ -67,13 +67,32 @@ void main() {
           child: widgetInSkeletonInBlocProvider));
       final lockedFinder = find.byType(Locked);
       expect(lockedFinder, findsOneWidget);
-      expect(find.descendant(of: lockedFinder, matching: columnFinder),
-          findsOneWidget);
-      expect(
-          find.descendant(
-              of: columnFinder,
-              matching: find.text(expectedVerifyEmailAddressString)),
-          findsOneWidget);
+      final centerFinder =
+          find.descendant(of: lockedFinder, matching: find.byType(Center));
+      expect(centerFinder, findsOneWidget);
+      final Column column = tester
+          .widget(find.descendant(of: centerFinder, matching: columnFinder));
+      expect(find.byWidget(column), findsOneWidget);
+      expect(column.mainAxisAlignment, MainAxisAlignment.center);
+      expect(column.crossAxisAlignment, CrossAxisAlignment.center);
+      Container container = tester.widget(
+          find.descendant(of: columnFinder, matching: find.byType(Container)));
+      expect(container.padding!.vertical, 20);
+      expect(container.padding!.horizontal, 20);
+      expect(container.margin!.horizontal, 40);
+      BoxDecoration boxDecoration = container.decoration as BoxDecoration;
+      expect(boxDecoration.border, Border.all(color: Colors.black));
+      expect(boxDecoration.borderRadius, BorderRadius.circular(10));
+      Text text = tester.widget(find.descendant(
+          of: find.byWidget(container),
+          matching: find.text(expectedVerifyEmailAddressString)));
+      expect(text.textAlign, TextAlign.center);
+      expect(text.style!.fontWeight, FontWeight.w400);
+      expect(text.style!.letterSpacing, 0.5);
+      expect(text.style!.fontSize, 16.0);
+      expect(text.style!.height, 1.5);
+      SizedBox firstSizedBox = tester.widget(SizedBoxFinder.at(0));
+      expect(firstSizedBox.height, 10);
       final refreshAccountElevatedButtonFinder = elevatedButtonFinder.at(0);
       final sendVerificationEmailElevatedButtonFinder =
           elevatedButtonFinder.at(1);
@@ -109,14 +128,35 @@ void main() {
           expectedSignOutString);
       ElevatedButton refreshAccountElevatedButton =
           tester.widget(refreshAccountElevatedButtonFinder);
+      SizedBox secondSizedBox = tester.widget(SizedBoxFinder.at(1));
+      expect(secondSizedBox.height, 5);
       ElevatedButton sendVerificationEmailElevatedButton =
           tester.widget(sendVerificationEmailElevatedButtonFinder);
+      SizedBox thirdSizedBox = tester.widget(SizedBoxFinder.at(2));
+      expect(thirdSizedBox.height, 5);
       ElevatedButton logoutElevatedButton =
           tester.widget(logoutElevatedButtonFinder);
       expect(refreshAccountElevatedButton.onPressed, authBloc.updateUser);
       expect(sendVerificationEmailElevatedButton.onPressed,
           authBloc.sendEmailToVerifyEmailAddress);
       expect(logoutElevatedButton.onPressed, authBloc.signOut);
+      expect(
+          checkWidgetsOrder(
+              tester
+                  .widgetList(find.descendant(
+                      of: find.byWidget(column),
+                      matching: find.bySubtype<Widget>()))
+                  .toList(),
+              [
+                container,
+                firstSizedBox,
+                refreshAccountElevatedButton,
+                secondSizedBox,
+                sendVerificationEmailElevatedButton,
+                thirdSizedBox,
+                logoutElevatedButton
+              ]),
+          isTrue);
     });
   });
 }

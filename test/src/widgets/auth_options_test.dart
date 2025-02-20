@@ -48,7 +48,10 @@ void main() {
           delegates: AppLocalizations.localizationsDelegates,
           locale: currentLocale,
           child: widgetInSkeletonInBlocProvider));
-      final centerFinder = find.byType(Center).at(0);
+      final authOptionsFinder = find.byType(AuthOptions);
+      expect(authOptionsFinder, findsOneWidget);
+      final centerFinder = find.descendant(
+          of: authOptionsFinder, matching: find.byType(Center).at(0));
       expect(centerFinder, findsOneWidget);
       final Column column = tester
           .widget(find.descendant(of: centerFinder, matching: columnFinder));

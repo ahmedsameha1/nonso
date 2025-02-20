@@ -21,3 +21,4 @@ final bySubtypeFinder = find.bySubtype();
 final appBarFinder = find.byType(AppBar);
 final circularProgressIndicatorFinder = find.byType(CircularProgressIndicator);
 final floatingActionButtonFinder = find.byType(FloatingActionButton);
+final SizedBoxFinder = find.byType(SizedBox);
