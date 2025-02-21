@@ -386,18 +386,23 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(widgetProviderLocalization);
         const password = "oehgolewrbgowerb";
-        when(notNullUser.updateDisplayName(userDisplayName))
-            .thenAnswer((realInvocation) => Completer<void>().future);
-        when(userCredential.user).thenReturn(notNullUser);
         when(firebaseAuth.createUserWithEmailAndPassword(
                 email: validEmail, password: password))
-            .thenThrow(firebaseAuthException);
+            .thenAnswer((invodcation) async {
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+          throw firebaseAuthException;
+        });
         await tester.enterText(textFieldFinder.at(0), userDisplayName);
         await tester.enterText(textFieldFinder.at(1), validEmail);
         await tester.enterText(textFieldFinder.at(2), password);
         await tester.enterText(textFieldFinder.at(3), password);
         await tester.pumpAndSettle();
         await tester.tap(registerElevatedButtonFinder);
+        await tester.pump();
+        expect(
+            find.descendant(
+                of: centerFinder, matching: circularProgressIndicatorFinder),
+            findsOneWidget);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);
         expect(
@@ -418,13 +423,21 @@ void main() {
         when(userCredential.user).thenReturn(notNullUser);
         when(firebaseAuth.createUserWithEmailAndPassword(
                 email: validEmail, password: password))
-            .thenAnswer((realInvocation) => Future.value(userCredential));
+            .thenAnswer((realInvocation) async {
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+          return Future.value(userCredential);
+        });
         await tester.enterText(textFieldFinder.at(0), userDisplayName);
         await tester.enterText(textFieldFinder.at(1), validEmail);
         await tester.enterText(textFieldFinder.at(2), password);
         await tester.enterText(textFieldFinder.at(3), password);
         await tester.pumpAndSettle();
         await tester.tap(registerElevatedButtonFinder);
+        await tester.pump();
+        expect(
+            find.descendant(
+                of: centerFinder, matching: circularProgressIndicatorFinder),
+            findsOneWidget);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);
         expect(

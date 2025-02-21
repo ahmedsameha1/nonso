@@ -91,7 +91,7 @@ void main() {
       expect(text.style!.letterSpacing, 0.5);
       expect(text.style!.fontSize, 16.0);
       expect(text.style!.height, 1.5);
-      SizedBox firstSizedBox = tester.widget(SizedBoxFinder.at(0));
+      SizedBox firstSizedBox = tester.widget(sizedBoxFinder.at(0));
       expect(firstSizedBox.height, 10);
       final refreshAccountElevatedButtonFinder = elevatedButtonFinder.at(0);
       final sendVerificationEmailElevatedButtonFinder =
@@ -128,11 +128,11 @@ void main() {
           expectedSignOutString);
       ElevatedButton refreshAccountElevatedButton =
           tester.widget(refreshAccountElevatedButtonFinder);
-      SizedBox secondSizedBox = tester.widget(SizedBoxFinder.at(1));
+      SizedBox secondSizedBox = tester.widget(sizedBoxFinder.at(1));
       expect(secondSizedBox.height, 5);
       ElevatedButton sendVerificationEmailElevatedButton =
           tester.widget(sendVerificationEmailElevatedButtonFinder);
-      SizedBox thirdSizedBox = tester.widget(SizedBoxFinder.at(2));
+      SizedBox thirdSizedBox = tester.widget(sizedBoxFinder.at(2));
       expect(thirdSizedBox.height, 5);
       ElevatedButton logoutElevatedButton =
           tester.widget(logoutElevatedButtonFinder);
