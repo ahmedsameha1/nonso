@@ -112,7 +112,7 @@ class MockAuthBloc extends _i1.Mock implements _i4.AuthBloc {
       );
 
   @override
-  _i5.Future<void> signInWithEmailAndPassword(
+  _i5.Future<bool> signInWithEmailAndPassword(
     String? email,
     String? password,
     void Function(_i2.FirebaseAuthException)? errorCallback,
@@ -126,9 +126,8 @@ class MockAuthBloc extends _i1.Mock implements _i4.AuthBloc {
             errorCallback,
           ],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
 
   @override
   _i5.Future<void> sendEmailToVerifyEmailAddress() => (super.noSuchMethod(

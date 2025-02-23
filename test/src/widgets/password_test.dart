@@ -25,11 +25,11 @@ class FakeAuthBloc extends Fake implements AuthBloc {
   FakeAuthBloc(FirebaseAuth firebaseAuth) : _authBloc = AuthBloc(firebaseAuth);
 
   @override
-  Future<void> signInWithEmailAndPassword(String email, String password,
+  Future<bool> signInWithEmailAndPassword(String email, String password,
       void Function(FirebaseAuthException exception) errorCallback) async {
     _authBloc.emit(AuthState(
         applicationAuthState: ApplicationAuthState.password, email: email));
-    _authBloc.signInWithEmailAndPassword(email, password, errorCallback);
+    return _authBloc.signInWithEmailAndPassword(email, password, errorCallback);
   }
 
   @override
@@ -183,8 +183,8 @@ void main() {
                   as Text)
               .data,
           expectedCancelString);
-      SizedBox secondSizedBox = tester
-          .widget(find.byKey(const Key("gapBetweenButtons")));
+      SizedBox secondSizedBox =
+          tester.widget(find.byKey(const Key("gapBetweenButtons")));
       expect(secondSizedBox.height, 5);
       Row secondRow = tester
           .widget(find.descendant(of: columnFinder, matching: rowFinder.at(1)));
@@ -332,7 +332,10 @@ void main() {
         const password = "oehgolewrbgowerb";
         when(firebaseAuth.signInWithEmailAndPassword(
                 email: validEmail, password: password))
-            .thenThrow(firebaseAuthException);
+            .thenAnswer((invocaction) async {
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+          throw firebaseAuthException;
+        });
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.enterText(textFieldFinder.at(1), password);
@@ -341,6 +344,11 @@ void main() {
             tester.widget<ElevatedButton>(signInElevatedButtonFinder);
         expect(signInElevatedButton.enabled, isTrue);
         await tester.tap(signInElevatedButtonFinder);
+        await tester.pump();
+        expect(
+            find.descendant(
+                of: centerFinder, matching: circularProgressIndicatorFinder),
+            findsOneWidget);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsOneWidget);
         expect(
@@ -355,12 +363,20 @@ void main() {
         const password = "oehgolewrbgowerb";
         when(firebaseAuth.signInWithEmailAndPassword(
                 email: validEmail, password: password))
-            .thenAnswer((realInvocation) => Future.value(userCredential));
+            .thenAnswer((invocation) async {
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+          return Future.value(userCredential);
+        });
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.enterText(textFieldFinder.at(1), password);
         await tester.pumpAndSettle();
         await tester.tap(signInElevatedButtonFinder);
+        await tester.pump();
+        expect(
+            find.descendant(
+                of: centerFinder, matching: circularProgressIndicatorFinder),
+            findsOneWidget);
         await tester.pumpAndSettle();
         expect(snackBarFinder, findsNothing);
       });
