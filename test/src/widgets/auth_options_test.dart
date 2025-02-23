@@ -106,7 +106,7 @@ void main() {
       verify(mockAuthBloc.startSigningIn()).called(1);
       final SizedBox gapBetweenButtonsSizedBox =
           tester.widget(find.byKey(const Key("gapBetweenButtons")));
-      expect(gapBetweenButtonsSizedBox.height, 20);
+      expect(gapBetweenButtonsSizedBox.height, 10);
       expect(
           checkWidgetsOrder(
               tester

@@ -21,7 +21,7 @@ class AuthOptions extends StatelessWidget {
                 const SizedBox(key: Key("registerGap"), width: 8),
                 Text(AppLocalizations.of(context)!.nonso_register),
               ])),
-          const SizedBox(key: Key("gapBetweenButtons"), height: 20),
+          const SizedBox(key: Key("gapBetweenButtons"), height: 10),
           ElevatedButton(
               onPressed: authBloc.startSigningIn,
               child: Row(
