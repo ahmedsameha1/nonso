@@ -48,6 +48,7 @@ class Register extends HookWidget {
                               label: Text(
                                   AppLocalizations.of(context)!.nonso_name)),
                           keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.next,
                           validator: (value) {
                             final regexp =
                                 RegExp(r"\s*\p{L}+\s*", unicode: true);
@@ -71,6 +72,7 @@ class Register extends HookWidget {
                               label: Text(
                                   AppLocalizations.of(context)!.nonso_email)),
                           keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
                           validator: (value) {
                             final regexp = RegExp(r"^\S+@\S+$", unicode: true);
                             if (value == null || !regexp.hasMatch(value)) {
@@ -97,6 +99,7 @@ class Register extends HookWidget {
                           obscureText: true,
                           autocorrect: false,
                           enableSuggestions: false,
+                          textInputAction: TextInputAction.next,
                           validator: (value) {
                             if (value == null ||
                                 value.trim().length < passwordMinimumLength) {
@@ -123,6 +126,7 @@ class Register extends HookWidget {
                           obscureText: true,
                           autocorrect: false,
                           enableSuggestions: false,
+                          textInputAction: TextInputAction.done,
                           validator: (value) {
                             if (value == null ||
                                 value != passwordTextEditingController.text) {

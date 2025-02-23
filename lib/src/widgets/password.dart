@@ -44,7 +44,7 @@ class Password extends HookWidget {
                             keyboardType: TextInputType.emailAddress,
                             inputFormatters: [noWhiteSpaceInputFormatter],
                             autocorrect: false,
-                            enableSuggestions: false,
+                            textInputAction: TextInputAction.next,
                             validator: (value) {
                               final regexp =
                                   RegExp(r"^\S+@\S+$", unicode: true);
@@ -72,6 +72,7 @@ class Password extends HookWidget {
                             obscureText: true,
                             autocorrect: false,
                             enableSuggestions: false,
+                            textInputAction: TextInputAction.done,
                             validator: (value) {
                               if (value == null ||
                                   value.trim().length < passwordMinimumLength) {

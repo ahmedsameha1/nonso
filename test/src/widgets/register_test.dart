@@ -147,6 +147,7 @@ void main() {
       expect(
           (nameTextField.decoration!.label as Text).data, expectedNameString);
       expect(nameTextField.keyboardType, TextInputType.text);
+      expect(nameTextField.textInputAction, TextInputAction.next);
       final TextField emailTextField = tester.widget(find.descendant(
           of: textFormFieldFinder.at(1),
           matching: textFieldFinder.at(1))) as TextField;
@@ -157,6 +158,7 @@ void main() {
       expect(
           (emailTextField.decoration!.label as Text).data, expectedEmailString);
       expect(emailTextField.keyboardType, TextInputType.emailAddress);
+      expect(emailTextField.textInputAction, TextInputAction.next);
       final TextField passwordTextField = tester.widget(find.descendant(
           of: textFormFieldFinder.at(2),
           matching: textFieldFinder.at(2))) as TextField;
@@ -173,6 +175,7 @@ void main() {
       expect(passwordTextField.obscureText, true);
       expect(passwordTextField.autocorrect, false);
       expect(passwordTextField.enableSuggestions, false);
+      expect(passwordTextField.textInputAction, TextInputAction.next);
       final TextField confirmPasswordTextField = tester.widget(find.descendant(
           of: textFormFieldFinder.at(3),
           matching: textFieldFinder.at(3))) as TextField;
@@ -189,6 +192,7 @@ void main() {
       expect(confirmPasswordTextField.obscureText, true);
       expect(confirmPasswordTextField.autocorrect, false);
       expect(confirmPasswordTextField.enableSuggestions, false);
+      expect(confirmPasswordTextField.textInputAction, TextInputAction.done);
       Row row =
           tester.widget(find.descendant(of: columnFinder, matching: rowFinder));
       expect(row.mainAxisAlignment, MainAxisAlignment.spaceEvenly);

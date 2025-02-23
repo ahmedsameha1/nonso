@@ -145,7 +145,7 @@ void main() {
       expect(emailTextField.inputFormatters!.elementAt(0),
           noWhiteSpaceInputFormatter);
       expect(emailTextField.autocorrect, false);
-      expect(emailTextField.enableSuggestions, false);
+      expect(emailTextField.textInputAction, TextInputAction.next);
       final TextField passwordTextField = tester.widget(find.descendant(
           of: textFormFieldFinder.at(1), matching: textFieldFinder));
       expect(
@@ -161,6 +161,7 @@ void main() {
       expect(passwordTextField.obscureText, true);
       expect(passwordTextField.autocorrect, false);
       expect(passwordTextField.enableSuggestions, false);
+      expect(passwordTextField.textInputAction, TextInputAction.done);
       SizedBox firstSizedBox = tester
           .widget(find.byKey(const Key("gapBetweenTextFieldsAndButtons")));
       expect(firstSizedBox.height, 15);
