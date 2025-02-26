@@ -46,14 +46,14 @@ class Register extends HookWidget {
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           decoration: InputDecoration(
                               label: Text(
-                                  AppLocalizations.of(context)!.nonso_name)),
+                                  AppLocalizations.of(context).nonso_name)),
                           keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.next,
                           validator: (value) {
                             final regexp =
                                 RegExp(r"\s*\p{L}+\s*", unicode: true);
                             if (value == null || !regexp.hasMatch(value)) {
-                              return AppLocalizations.of(context)!
+                              return AppLocalizations.of(context)
                                   .nonso_nameValidationError;
                             }
                             return null;
@@ -70,13 +70,13 @@ class Register extends HookWidget {
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           decoration: InputDecoration(
                               label: Text(
-                                  AppLocalizations.of(context)!.nonso_email)),
+                                  AppLocalizations.of(context).nonso_email)),
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
                           validator: (value) {
                             final regexp = RegExp(r"^\S+@\S+$", unicode: true);
                             if (value == null || !regexp.hasMatch(value)) {
-                              return AppLocalizations.of(context)!
+                              return AppLocalizations.of(context)
                                   .nonso_invalidEmail;
                             }
                             return null;
@@ -93,8 +93,8 @@ class Register extends HookWidget {
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           inputFormatters: [noWhiteSpaceInputFormatter],
                           decoration: InputDecoration(
-                              label: Text(AppLocalizations.of(context)!
-                                  .nonso_password)),
+                              label: Text(
+                                  AppLocalizations.of(context).nonso_password)),
                           keyboardType: TextInputType.text,
                           obscureText: true,
                           autocorrect: false,
@@ -103,7 +103,7 @@ class Register extends HookWidget {
                           validator: (value) {
                             if (value == null ||
                                 value.trim().length < passwordMinimumLength) {
-                              return AppLocalizations.of(context)!
+                              return AppLocalizations.of(context)
                                   .nonso_passwordValidationError(
                                       passwordMinimumLength);
                             }
@@ -120,7 +120,7 @@ class Register extends HookWidget {
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           inputFormatters: [noWhiteSpaceInputFormatter],
                           decoration: InputDecoration(
-                              label: Text(AppLocalizations.of(context)!
+                              label: Text(AppLocalizations.of(context)
                                   .nonso_confirmPassword)),
                           keyboardType: TextInputType.text,
                           obscureText: true,
@@ -130,7 +130,7 @@ class Register extends HookWidget {
                           validator: (value) {
                             if (value == null ||
                                 value != passwordTextEditingController.text) {
-                              return AppLocalizations.of(context)!
+                              return AppLocalizations.of(context)
                                   .nonso_confirmPasswordValidationError;
                             }
                             return null;
@@ -159,7 +159,7 @@ class Register extends HookWidget {
                                       final scaffoldMessenger =
                                           ScaffoldMessenger.of(context);
                                       final successString =
-                                          AppLocalizations.of(context)!
+                                          AppLocalizations.of(context)
                                               .nonso_success;
                                       isAwaiting.value = true;
                                       final result =
@@ -172,7 +172,7 @@ class Register extends HookWidget {
                                                   .showSnackBar(SnackBar(
                                                       content: Text(
                                                           AppLocalizations.of(
-                                                                  context)!
+                                                                  context)
                                                               .nonso_failed(
                                                                   exception
                                                                       .code))))));
@@ -182,12 +182,12 @@ class Register extends HookWidget {
                                             content: Text(successString)));
                                       }
                                     },
-                              child: Text(AppLocalizations.of(context)!
-                                  .nonso_register)),
+                              child: Text(
+                                  AppLocalizations.of(context).nonso_register)),
                           ElevatedButton(
                             onPressed: authBloc.toSignedOut,
-                            child: Text(
-                                AppLocalizations.of(context)!.nonso_cancel),
+                            child:
+                                Text(AppLocalizations.of(context).nonso_cancel),
                           )
                         ],
                       ),

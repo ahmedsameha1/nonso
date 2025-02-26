@@ -40,7 +40,7 @@ class Password extends HookWidget {
                             autovalidateMode: AutovalidateMode.onUnfocus,
                             decoration: InputDecoration(
                                 label: Text(
-                                    AppLocalizations.of(context)!.nonso_email)),
+                                    AppLocalizations.of(context).nonso_email)),
                             keyboardType: TextInputType.emailAddress,
                             inputFormatters: [noWhiteSpaceInputFormatter],
                             autocorrect: false,
@@ -49,7 +49,7 @@ class Password extends HookWidget {
                               final regexp =
                                   RegExp(r"^\S+@\S+$", unicode: true);
                               if (value == null || !regexp.hasMatch(value)) {
-                                return AppLocalizations.of(context)!
+                                return AppLocalizations.of(context)
                                     .nonso_invalidEmail;
                               }
                               return null;
@@ -65,7 +65,7 @@ class Password extends HookWidget {
                             controller: passwordTextEditingController,
                             autovalidateMode: AutovalidateMode.onUnfocus,
                             decoration: InputDecoration(
-                                label: Text(AppLocalizations.of(context)!
+                                label: Text(AppLocalizations.of(context)
                                     .nonso_password)),
                             keyboardType: TextInputType.text,
                             inputFormatters: [noWhiteSpaceInputFormatter],
@@ -76,7 +76,7 @@ class Password extends HookWidget {
                             validator: (value) {
                               if (value == null ||
                                   value.trim().length < passwordMinimumLength) {
-                                return AppLocalizations.of(context)!
+                                return AppLocalizations.of(context)
                                     .nonso_passwordValidationError(
                                         passwordMinimumLength);
                               }
@@ -110,7 +110,7 @@ class Password extends HookWidget {
                                           ((exception) {
                                         scaffoldMessenger.showSnackBar(SnackBar(
                                             content: Text(
-                                                AppLocalizations.of(context)!
+                                                AppLocalizations.of(context)
                                                     .nonso_failed(
                                                         exception.code))));
                                       }));
@@ -119,12 +119,12 @@ class Password extends HookWidget {
                                       }
                                     },
                               child: Text(
-                                  AppLocalizations.of(context)!.nonso_signIn),
+                                  AppLocalizations.of(context).nonso_signIn),
                             ),
                             ElevatedButton(
                               onPressed: authBloc.toSignedOut,
                               child: Text(
-                                  AppLocalizations.of(context)!.nonso_cancel),
+                                  AppLocalizations.of(context).nonso_cancel),
                             ),
                           ],
                         ),
@@ -148,18 +148,18 @@ class Password extends HookWidget {
                                           ((exception) {
                                         scaffoldMessenger.showSnackBar(SnackBar(
                                           content: Text(AppLocalizations.of(
-                                                  context)!
+                                                  context)
                                               .nonso_failed(exception.code)),
                                         ));
                                       }));
                                       if (context.mounted) {
                                         scaffoldMessenger.showSnackBar(SnackBar(
                                             content: Text(
-                                                AppLocalizations.of(context)!
+                                                AppLocalizations.of(context)
                                                     .nonso_resetCodeSent)));
                                       }
                                     },
-                              child: Text(AppLocalizations.of(context)!
+                              child: Text(AppLocalizations.of(context)
                                   .nonso_forgotPassword),
                             )
                           ],

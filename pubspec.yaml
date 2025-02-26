@@ -1,8 +1,8 @@
 name: nonso
 description: >-
-  a library that handles authentication in a flutter app. It is based on Firebase Authentication.
+  a package that handles authentication in a flutter app. It is based on Firebase Authentication.
 version: 0.0.1
-
+repository: https://github.com/ahmedsameha1/nonso
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
@@ -16,8 +16,7 @@ dependencies:
   flutter_bloc: ^8.0.0
   flutter_localizations:
     sdk: flutter
-  intl: any
-
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

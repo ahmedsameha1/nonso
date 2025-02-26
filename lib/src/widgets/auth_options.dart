@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:nonso/l10n/app_localizations.dart';
 import 'package:nonso/nonso.dart';
 
 class AuthOptions extends StatelessWidget {
@@ -19,7 +18,7 @@ class AuthOptions extends StatelessWidget {
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 const Icon(Icons.app_registration),
                 const SizedBox(key: Key("registerGap"), width: 8),
-                Text(AppLocalizations.of(context)!.nonso_register),
+                Text(AppLocalizations.of(context).nonso_register),
               ])),
           const SizedBox(key: Key("gapBetweenButtons"), height: 10),
           ElevatedButton(
@@ -29,7 +28,7 @@ class AuthOptions extends StatelessWidget {
                 children: [
                   const Icon(Icons.login),
                   const SizedBox(key: Key("signInGap"), width: 8),
-                  Text(AppLocalizations.of(context)!.nonso_signIn)
+                  Text(AppLocalizations.of(context).nonso_signIn)
                 ],
               ))
         ],

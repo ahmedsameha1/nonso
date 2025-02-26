@@ -24,22 +24,22 @@ class Locked extends StatelessWidget {
               child: Text(
                   textAlign: TextAlign.center,
                   style: TextTheme.of(context).bodyLarge,
-                  AppLocalizations.of(context)!.nonso_verifyEmailAddress)),
+                  AppLocalizations.of(context).nonso_verifyEmailAddress)),
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: authBloc.updateUser,
-            child: Text(AppLocalizations.of(context)!.nonso_refresh),
+            child: Text(AppLocalizations.of(context).nonso_refresh),
           ),
           const SizedBox(height: 5),
           ElevatedButton(
             onPressed: authBloc.sendEmailToVerifyEmailAddress,
             child: Text(
-                AppLocalizations.of(context)!.nonso_resendVerificationEmail),
+                AppLocalizations.of(context).nonso_resendVerificationEmail),
           ),
           const SizedBox(height: 5),
           ElevatedButton(
             onPressed: authBloc.signOut,
-            child: Text(AppLocalizations.of(context)!.nonso_signOut),
+            child: Text(AppLocalizations.of(context).nonso_signOut),
           )
         ],
       ),
