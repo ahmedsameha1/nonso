@@ -9,7 +9,7 @@ import 'package:nonso/src/state/auth_bloc.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/widgets/locked.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nonso/l10n/app_localizations.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'widget_testing_helper.dart';

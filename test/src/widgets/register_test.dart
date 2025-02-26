@@ -11,7 +11,7 @@ import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 import 'package:nonso/src/widgets/common.dart';
 import 'package:nonso/src/widgets/register.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nonso/l10n/app_localizations.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'widget_testing_helper.dart';

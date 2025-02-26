@@ -8,7 +8,7 @@ import 'package:mockito/mockito.dart';
 import 'package:nonso/src/state/auth_bloc.dart';
 import 'package:nonso/src/widgets/auth_options.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nonso/l10n/app_localizations.dart';
 import '../state/auth_bloc_test.dart';
 import '../state/auth_bloc_test.mocks.dart';
 import 'auth_screen_test.mocks.dart';

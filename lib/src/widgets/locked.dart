@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nonso/src/state/auth_bloc.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nonso/l10n/app_localizations.dart';
 
 class Locked extends StatelessWidget {
   const Locked({super.key});
