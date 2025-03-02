@@ -162,20 +162,17 @@ class Register extends HookWidget {
                                           AppLocalizations.of(context)
                                               .nonso_success;
                                       isAwaiting.value = true;
-                                      final result =
-                                          await authBloc.registerAccount(
-                                              emailTextEditingController.text,
-                                              passwordTextEditingController
-                                                  .text,
-                                              nameTextEditingController.text,
-                                              ((exception) => scaffoldMessenger
-                                                  .showSnackBar(SnackBar(
-                                                      content: Text(
-                                                          AppLocalizations.of(
-                                                                  context)
-                                                              .nonso_failed(
-                                                                  exception
-                                                                      .code))))));
+                                      final result = await authBloc.registerAccount(
+                                          emailTextEditingController.text,
+                                          passwordTextEditingController.text,
+                                          nameTextEditingController.text,
+                                          ((exception) => scaffoldMessenger
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(AppLocalizations
+                                                          .of(context)
+                                                      .nonso_failed(exception
+                                                              .message ??
+                                                          exception.code))))));
                                       isAwaiting.value = false;
                                       if (result) {
                                         scaffoldMessenger.showSnackBar(SnackBar(

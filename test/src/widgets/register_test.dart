@@ -57,6 +57,8 @@ void main() {
   const firebaseAuthExceptionCode = "code";
   final firebaseAuthException =
       FirebaseAuthException(code: firebaseAuthExceptionCode);
+  final firebaseAuthExceptionWithMessage=
+      FirebaseAuthException(code: firebaseAuthExceptionCode, message: "message");
   const User? nullUser = null;
   final User notNullUser = MockUser();
   late StreamController<User?> streamController;
@@ -95,7 +97,8 @@ void main() {
         "This doesn't match the given password.";
     String expectedSuccessString =
         "Success: Check your email inbox to verify your email address.";
-    String expectedFailedString = "Failure: code";
+    String expectedFailureCodeString = "Failure: code";
+    String expectedFailureMessageString = "Failure: message";
 
     setUp(() {
       widgetProviderLocalization = Localizations(
@@ -386,7 +389,7 @@ void main() {
     group("register button action", () {
       const userDisplayName = "name";
       testWidgets(
-          "Test that a SnackBar is shown when FirebaseAuthException is thrown",
+          "Test that a SnackBar is shown when FirebaseAuthException without a message is thrown",
           (WidgetTester tester) async {
         await tester.pumpWidget(widgetProviderLocalization);
         const password = "oehgolewrbgowerb";
@@ -411,7 +414,39 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder, matching: find.text(expectedFailedString)),
+                of: snackBarFinder, matching: find.text(expectedFailureCodeString)),
+            findsOneWidget);
+        await tester.pumpAndSettle(const Duration(seconds: 4));
+        expect(snackBarFinder, findsNothing);
+      });
+
+      testWidgets(
+          "Test that a SnackBar is shown when FirebaseAuthException with a message is thrown",
+          (WidgetTester tester) async {
+        await tester.pumpWidget(widgetProviderLocalization);
+        const password = "oehgolewrbgowerb";
+        when(firebaseAuth.createUserWithEmailAndPassword(
+                email: validEmail, password: password))
+            .thenAnswer((invodcation) async {
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+          throw firebaseAuthExceptionWithMessage;
+        });
+        await tester.enterText(textFieldFinder.at(0), userDisplayName);
+        await tester.enterText(textFieldFinder.at(1), validEmail);
+        await tester.enterText(textFieldFinder.at(2), password);
+        await tester.enterText(textFieldFinder.at(3), password);
+        await tester.pumpAndSettle();
+        await tester.tap(registerElevatedButtonFinder);
+        await tester.pump();
+        expect(
+            find.descendant(
+                of: centerFinder, matching: circularProgressIndicatorFinder),
+            findsOneWidget);
+        await tester.pumpAndSettle();
+        expect(snackBarFinder, findsOneWidget);
+        expect(
+            find.descendant(
+                of: snackBarFinder, matching: find.text(expectedFailureMessageString)),
             findsOneWidget);
         await tester.pumpAndSettle(const Duration(seconds: 4));
         expect(snackBarFinder, findsNothing);

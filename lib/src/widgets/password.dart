@@ -147,9 +147,11 @@ class Password extends HookWidget {
                                           emailTextEditingController.text,
                                           ((exception) {
                                         scaffoldMessenger.showSnackBar(SnackBar(
-                                          content: Text(AppLocalizations.of(
-                                                  context)
-                                              .nonso_failed(exception.code)),
+                                          content: Text(
+                                              AppLocalizations.of(context)
+                                                  .nonso_failed(
+                                                      exception.message ??
+                                                          exception.code)),
                                         ));
                                       }));
                                       if (context.mounted) {

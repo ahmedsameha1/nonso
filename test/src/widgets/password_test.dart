@@ -56,6 +56,8 @@ void main() {
   const firebaseAuthExceptionCode = "code";
   final firebaseAuthException =
       FirebaseAuthException(code: firebaseAuthExceptionCode);
+  final firebaseAuthExceptionWithMessage =
+      FirebaseAuthException(code: firebaseAuthExceptionCode, message: "message");
   const User? nullUser = null;
   late StreamController<User?> streamController;
   late BlocProvider widgetInSkeletonInBlocProvider;
@@ -88,7 +90,8 @@ void main() {
     String expectedCancelString = "Cancel";
     String expectedPasswordValidationErrorString =
         "Password needs to be at least 8 characters.";
-    String expectedFailedString = "Failure: code";
+    String expectedFailureCodeString = "Failure: code";
+    String expectedFailureMessageString = "Failure: message";
     String expectedInvalidEmailString = "This an invalid email.";
     String expectedResetCodeSet =
         "Check your email inbox to reset your password";
@@ -352,7 +355,7 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder, matching: find.text(expectedFailedString)),
+                of: snackBarFinder, matching: find.text(expectedFailureCodeString)),
             findsOneWidget);
       });
 
@@ -383,7 +386,7 @@ void main() {
 
     group("forgot password button action", () {
       testWidgets(
-          "Test that a SnackBar with an error text is shown when FirebaseAuthException is thrown",
+          "Test that a SnackBar with an error text is shown when FirebaseAuthException without a message is thrown",
           (WidgetTester tester) async {
         when(firebaseAuth.sendPasswordResetEmail(email: validEmail))
             .thenThrow(firebaseAuthException);
@@ -398,7 +401,27 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder, matching: find.text(expectedFailedString)),
+                of: snackBarFinder, matching: find.text(expectedFailureCodeString)),
+            findsOneWidget);
+      });
+
+      testWidgets(
+          "Test that a SnackBar with an error text is shown when FirebaseAuthException with a message is thrown",
+          (WidgetTester tester) async {
+        when(firebaseAuth.sendPasswordResetEmail(email: validEmail))
+            .thenThrow(firebaseAuthExceptionWithMessage);
+        await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+        await tester.enterText(textFieldFinder.at(0), validEmail);
+        await tester.pumpAndSettle();
+        ElevatedButton resetPasswordElevatedButton =
+            tester.widget<ElevatedButton>(resetPasswordButtonFinder);
+        expect(resetPasswordElevatedButton.enabled, isTrue);
+        await tester.tap(resetPasswordButtonFinder);
+        await tester.pumpAndSettle();
+        expect(snackBarFinder, findsOneWidget);
+        expect(
+            find.descendant(
+                of: snackBarFinder, matching: find.text(expectedFailureMessageString)),
             findsOneWidget);
       });
 
