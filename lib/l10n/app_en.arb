@@ -3,7 +3,7 @@
     "nonso_email": "Email",
     "nonso_next": "Next",
     "nonso_cancel": "Cancel",
-    "nonso_invalidEmail": "This an invalid email",
+    "nonso_invalidEmail": "This an invalid email.",
     "nonso_refresh": "Refresh account",
     "nonso_verifyEmailAddress": "Check your email inbox to verify your email address",
     "nonso_signOut": "Sign out",
@@ -12,8 +12,8 @@
     "nonso_name": "Name",
     "nonso_password": "Password",
     "nonso_confirmPassword": "Confirm Password",
-    "nonso_forgotPassword": "Forgot password?",
-    "nonso_resetCodeSent": "Check your email inbox to get the reset code",
+    "nonso_resetPassword": "Reset password",
+    "nonso_resetEmailSent": "Check your email inbox to reset your password",
     "nonso_nameValidationError": "Enter your name",
     "nonso_failed": "Failure: {exceptionCode}",
     "@nonso_failed": {
@@ -23,8 +23,8 @@
             }
         }
     },
-    "nonso_success": "Success: Check your email to verify your email address",
-    "nonso_passwordValidationError": "Password needs to be at least {passwordMinimumLength} characters",
+    "nonso_success": "Success: Check your email inbox to verify your email address.",
+    "nonso_passwordValidationError": "Password needs to be at least {passwordMinimumLength} characters.",
     "@nonso_passwordValidationError": {
         "placeholders": {
             "passwordMinimumLength": {
@@ -32,5 +32,5 @@
             }
         }
     },
-    "nonso_confirmPasswordValidationError": "This doesn't match the given password"
+    "nonso_confirmPasswordValidationError": "This doesn't match the given password."
 }

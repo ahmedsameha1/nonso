@@ -156,11 +156,11 @@ class Password extends HookWidget {
                                         scaffoldMessenger.showSnackBar(SnackBar(
                                             content: Text(
                                                 AppLocalizations.of(context)
-                                                    .nonso_resetCodeSent)));
+                                                    .nonso_resetEmailSent)));
                                       }
                                     },
                               child: Text(AppLocalizations.of(context)
-                                  .nonso_forgotPassword),
+                                  .nonso_resetPassword),
                             )
                           ],
                         )

@@ -120,7 +120,7 @@ abstract class AppLocalizations {
   /// No description provided for @nonso_invalidEmail.
   ///
   /// In en, this message translates to:
-  /// **'This an invalid email'**
+  /// **'This an invalid email.'**
   String get nonso_invalidEmail;
 
   /// No description provided for @nonso_refresh.
@@ -171,17 +171,17 @@ abstract class AppLocalizations {
   /// **'Confirm Password'**
   String get nonso_confirmPassword;
 
-  /// No description provided for @nonso_forgotPassword.
+  /// No description provided for @nonso_resetPassword.
   ///
   /// In en, this message translates to:
-  /// **'Forgot password?'**
-  String get nonso_forgotPassword;
+  /// **'Reset password'**
+  String get nonso_resetPassword;
 
-  /// No description provided for @nonso_resetCodeSent.
+  /// No description provided for @nonso_resetEmailSent.
   ///
   /// In en, this message translates to:
-  /// **'Check your email inbox to get the reset code'**
-  String get nonso_resetCodeSent;
+  /// **'Check your email inbox to reset your password'**
+  String get nonso_resetEmailSent;
 
   /// No description provided for @nonso_nameValidationError.
   ///
@@ -198,19 +198,19 @@ abstract class AppLocalizations {
   /// No description provided for @nonso_success.
   ///
   /// In en, this message translates to:
-  /// **'Success: Check your email to verify your email address'**
+  /// **'Success: Check your email inbox to verify your email address.'**
   String get nonso_success;
 
   /// No description provided for @nonso_passwordValidationError.
   ///
   /// In en, this message translates to:
-  /// **'Password needs to be at least {passwordMinimumLength} characters'**
+  /// **'Password needs to be at least {passwordMinimumLength} characters.'**
   String nonso_passwordValidationError(int passwordMinimumLength);
 
   /// No description provided for @nonso_confirmPasswordValidationError.
   ///
   /// In en, this message translates to:
-  /// **'This doesn\'t match the given password'**
+  /// **'This doesn\'t match the given password.'**
   String get nonso_confirmPasswordValidationError;
 }
 

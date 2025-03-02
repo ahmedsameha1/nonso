@@ -21,7 +21,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nonso_cancel => 'Cancel';
 
   @override
-  String get nonso_invalidEmail => 'This an invalid email';
+  String get nonso_invalidEmail => 'This an invalid email.';
 
   @override
   String get nonso_refresh => 'Refresh account';
@@ -48,10 +48,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nonso_confirmPassword => 'Confirm Password';
 
   @override
-  String get nonso_forgotPassword => 'Forgot password?';
+  String get nonso_resetPassword => 'Reset password';
 
   @override
-  String get nonso_resetCodeSent => 'Check your email inbox to get the reset code';
+  String get nonso_resetEmailSent => 'Check your email inbox to reset your password';
 
   @override
   String get nonso_nameValidationError => 'Enter your name';
@@ -62,13 +62,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get nonso_success => 'Success: Check your email to verify your email address';
+  String get nonso_success => 'Success: Check your email inbox to verify your email address.';
 
   @override
   String nonso_passwordValidationError(int passwordMinimumLength) {
-    return 'Password needs to be at least $passwordMinimumLength characters';
+    return 'Password needs to be at least $passwordMinimumLength characters.';
   }
 
   @override
-  String get nonso_confirmPasswordValidationError => 'This doesn\'t match the given password';
+  String get nonso_confirmPasswordValidationError => 'This doesn\'t match the given password.';
 }

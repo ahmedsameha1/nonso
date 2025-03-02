@@ -88,13 +88,13 @@ void main() {
     String expectedRegisterString = "Register";
     String expectedCancelString = "Cancel";
     String expectedNameValidationErrorString = "Enter your name";
-    String expectedInvalidEmailString = "This an invalid email";
+    String expectedInvalidEmailString = "This an invalid email.";
     String expectedPasswordValidationErrorString =
-        "Password needs to be at least 8 characters";
+        "Password needs to be at least 8 characters.";
     String expectedConfirmPasswordValidationErrorString =
-        "This doesn't match the given password";
+        "This doesn't match the given password.";
     String expectedSuccessString =
-        "Success: Check your email to verify your email address";
+        "Success: Check your email inbox to verify your email address.";
     String expectedFailedString = "Failure: code";
 
     setUp(() {
