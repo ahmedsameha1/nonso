@@ -1,7 +1,7 @@
 name: nonso
 description: >-
   a package that handles username and password authentication in a flutter app. It is based on Firebase Authentication.
-version: 0.0.4
+version: 0.0.6
 repository: https://github.com/ahmedsameha1/nonso
 environment:
   sdk: ">=3.0.0 <4.0.0"
