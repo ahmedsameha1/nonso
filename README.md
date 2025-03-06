@@ -45,5 +45,13 @@ class MyApp extends StatelessWidget {
   }
 }
 ```
+6. Use `FirebaseAuth.instance.currentUser!` to get information about the signed in user.
+```dart
+  Widget build(BuildContext context) {
+    // Use FirebaseAuth.instance.currentUser! to get information about the signed in user
+    final userUID = FirebaseAuth.instance.currentUser!.uid;
+    return Text("$userUID");
+  }
+```
 
 #### Here's an example of a Flutter app that uses this package to handle email and password authentication [here](https://github.com/ahmedsameha1/nonso/tree/main/example). Make sure to use the correct values of your Firebase project in the `firebase_options.dart` file.
