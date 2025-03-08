@@ -38,7 +38,8 @@ void main() {
     streamController = StreamController();
     when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
     streamController.sink.add(nullUser);
-    widgetInSkeleton = createWidgetInASkeletonWithoutScaffold(AuthScreen(someWidget));
+    widgetInSkeleton =
+        createWidgetInASkeletonWithoutScaffold(AuthScreen(someWidget));
     mockAuthBloc = MockAuthBloc();
     when(mockAuthBloc.stream)
         .thenAnswer((realInvocation) => Stream.value(signedOutState));

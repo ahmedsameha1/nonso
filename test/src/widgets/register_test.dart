@@ -57,8 +57,8 @@ void main() {
   const firebaseAuthExceptionCode = "code";
   final firebaseAuthException =
       FirebaseAuthException(code: firebaseAuthExceptionCode);
-  final firebaseAuthExceptionWithMessage=
-      FirebaseAuthException(code: firebaseAuthExceptionCode, message: "message");
+  final firebaseAuthExceptionWithMessage = FirebaseAuthException(
+      code: firebaseAuthExceptionCode, message: "message");
   const User? nullUser = null;
   final User notNullUser = MockUser();
   late StreamController<User?> streamController;
@@ -414,7 +414,8 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder, matching: find.text(expectedFailureCodeString)),
+                of: snackBarFinder,
+                matching: find.text(expectedFailureCodeString)),
             findsOneWidget);
         await tester.pumpAndSettle(const Duration(seconds: 4));
         expect(snackBarFinder, findsNothing);
@@ -446,7 +447,8 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder, matching: find.text(expectedFailureMessageString)),
+                of: snackBarFinder,
+                matching: find.text(expectedFailureMessageString)),
             findsOneWidget);
         await tester.pumpAndSettle(const Duration(seconds: 4));
         expect(snackBarFinder, findsNothing);

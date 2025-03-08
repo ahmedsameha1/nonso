@@ -47,6 +47,8 @@ class MyApp extends StatelessWidget {
 ```
 6. Use `FirebaseAuth.instance.currentUser!` to get information about the signed in user.
 ```dart
+  import 'package:firebase_auth/firebase_auth.dart';
+
   Widget build(BuildContext context) {
     // Use FirebaseAuth.instance.currentUser! to get information about the signed in user
     final userUID = FirebaseAuth.instance.currentUser!.uid;

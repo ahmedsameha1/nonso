@@ -59,5 +59,4 @@ class DefaultFirebaseOptions {
     projectId: 'fake-project-id',
     storageBucket: 'fake-storage-bucket',
   );
-
 }

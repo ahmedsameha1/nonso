@@ -56,8 +56,8 @@ void main() {
   const firebaseAuthExceptionCode = "code";
   final firebaseAuthException =
       FirebaseAuthException(code: firebaseAuthExceptionCode);
-  final firebaseAuthExceptionWithMessage =
-      FirebaseAuthException(code: firebaseAuthExceptionCode, message: "message");
+  final firebaseAuthExceptionWithMessage = FirebaseAuthException(
+      code: firebaseAuthExceptionCode, message: "message");
   const User? nullUser = null;
   late StreamController<User?> streamController;
   late BlocProvider widgetInSkeletonInBlocProvider;
@@ -355,7 +355,8 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder, matching: find.text(expectedFailureCodeString)),
+                of: snackBarFinder,
+                matching: find.text(expectedFailureCodeString)),
             findsOneWidget);
       });
 
@@ -401,7 +402,8 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder, matching: find.text(expectedFailureCodeString)),
+                of: snackBarFinder,
+                matching: find.text(expectedFailureCodeString)),
             findsOneWidget);
       });
 
@@ -421,7 +423,8 @@ void main() {
         expect(snackBarFinder, findsOneWidget);
         expect(
             find.descendant(
-                of: snackBarFinder, matching: find.text(expectedFailureMessageString)),
+                of: snackBarFinder,
+                matching: find.text(expectedFailureMessageString)),
             findsOneWidget);
       });
 
