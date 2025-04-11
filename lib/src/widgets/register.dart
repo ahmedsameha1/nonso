@@ -150,6 +150,11 @@ class Register extends HookWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton(
+                            onPressed: authBloc.toSignedOut,
+                            child:
+                                Text(AppLocalizations.of(context).nonso_cancel),
+                          ),
+                          ElevatedButton(
                               onPressed: !(isNameValid.value &&
                                       isEmailValid.value &&
                                       isPasswordValid.value &&
@@ -181,11 +186,6 @@ class Register extends HookWidget {
                                     },
                               child: Text(
                                   AppLocalizations.of(context).nonso_register)),
-                          ElevatedButton(
-                            onPressed: authBloc.toSignedOut,
-                            child:
-                                Text(AppLocalizations.of(context).nonso_cancel),
-                          )
                         ],
                       ),
                     ],

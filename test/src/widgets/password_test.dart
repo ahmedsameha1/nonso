@@ -178,7 +178,7 @@ void main() {
               .data,
           expectedSignInString);
       final cancelElevatedButtonFinder = find.descendant(
-          of: find.byWidget(firstRow), matching: elevatedButtonFinder.at(1));
+          of: find.byWidget(firstRow), matching: elevatedButtonFinder.at(0));
       expect(cancelElevatedButtonFinder, findsOneWidget);
       expect(
           ((tester.widget(cancelElevatedButtonFinder) as ElevatedButton).child
@@ -202,6 +202,12 @@ void main() {
       ElevatedButton cancelElevatedButton =
           tester.widget(cancelElevatedButtonFinder);
       expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
+      expect(
+          checkWidgetsOrder(firstRow.children.toList(), [
+            cancelElevatedButton,
+            tester.widget(signInElevatedButtonFinder)
+          ]),
+          isTrue);
       expect(
           checkWidgetsOrder(
               tester

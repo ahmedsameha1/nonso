@@ -97,6 +97,11 @@ class Password extends HookWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             ElevatedButton(
+                              onPressed: authBloc.toSignedOut,
+                              child: Text(
+                                  AppLocalizations.of(context).nonso_cancel),
+                            ),
+                            ElevatedButton(
                               onPressed: !isEmailValid.value ||
                                       !isPasswordValid.value
                                   ? null
@@ -120,11 +125,6 @@ class Password extends HookWidget {
                                     },
                               child: Text(
                                   AppLocalizations.of(context).nonso_signIn),
-                            ),
-                            ElevatedButton(
-                              onPressed: authBloc.toSignedOut,
-                              child: Text(
-                                  AppLocalizations.of(context).nonso_cancel),
                             ),
                           ],
                         ),

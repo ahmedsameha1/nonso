@@ -67,7 +67,7 @@ void main() {
   late FirebaseAuth firebaseAuth;
   late FakeAuthBloc authBloc;
   late UserCredential userCredential;
-  final registerElevatedButtonFinder = elevatedButtonFinder.at(0);
+  final registerElevatedButtonFinder = elevatedButtonFinder.at(1);
 
   setUp(() {
     firebaseAuth = MockFirebaseAuth();
@@ -202,7 +202,7 @@ void main() {
       expect(find.descendant(of: columnFinder, matching: rowFinder),
           findsOneWidget);
       final registerElevatedButtonFinder =
-          find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(0));
+          find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(1));
       expect(registerElevatedButtonFinder, findsOneWidget);
       expect(
           ((tester.widget(registerElevatedButtonFinder) as ElevatedButton).child
@@ -210,7 +210,7 @@ void main() {
               .data,
           expectedRegisterString);
       final cancelElevatedButtonFinder =
-          find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(1));
+          find.descendant(of: rowFinder, matching: elevatedButtonFinder.at(0));
       expect(cancelElevatedButtonFinder, findsOneWidget);
       expect(
           ((tester.widget(cancelElevatedButtonFinder) as ElevatedButton).child
@@ -220,6 +220,12 @@ void main() {
       ElevatedButton cancelElevatedButton =
           tester.widget(cancelElevatedButtonFinder);
       expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
+      expect(
+          checkWidgetsOrder(row.children.toList(), [
+            cancelElevatedButton,
+            tester.widget(registerElevatedButtonFinder)
+          ]),
+          isTrue);
       SizedBox sizedBox = tester
           .widget(find.byKey(const Key("gapBetweenTextFieldsAndButtons")));
       expect(sizedBox.height, 15);
