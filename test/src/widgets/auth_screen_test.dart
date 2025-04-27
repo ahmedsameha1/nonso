@@ -53,7 +53,9 @@ void main() {
       child: widgetInSkeleton,
     );
     await tester.pumpWidget(widgetInSkeletonInBlocProvider);
-    expect(scaffoldFinder, findsOneWidget);
+    Scaffold scaffold = tester.widget(
+        find.descendant(of: find.byType(AuthScreen), matching: scaffoldFinder));
+    scaffold.body as SafeArea;
   });
 
   testWidgets("Test signedOut state", (WidgetTester tester) async {

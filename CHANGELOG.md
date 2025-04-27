@@ -9,3 +9,7 @@ Upgrade the dependencies of the project to the last major versions.
 ## 0.0.15
 
 Undo the last upgrade of the dependencies of the project to the last major versions.
+
+## 0.0.16
+
+Use SafeArea as a wrapper of screens

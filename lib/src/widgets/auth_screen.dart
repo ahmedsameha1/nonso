@@ -29,7 +29,7 @@ class AuthScreen extends StatelessWidget {
             default:
               notSignedInChild = const AuthOptions();
           }
-          return Scaffold(body: notSignedInChild);
+          return Scaffold(body: SafeArea(child: notSignedInChild));
         } else {
           return child;
         }

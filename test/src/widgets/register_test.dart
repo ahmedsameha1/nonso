@@ -16,11 +16,6 @@ import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'widget_testing_helper.dart';
 
-abstract class RegisterAccountFunction {
-  Future<void> call(String email, String password, String displayName,
-      void Function(FirebaseAuthException exception) errorCallback);
-}
-
 class FakeAuthBloc extends Fake implements AuthBloc {
   final AuthBloc _authBloc;
 
