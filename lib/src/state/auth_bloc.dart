@@ -110,13 +110,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return firebaseAuth.signOut();
   }
 
-  Future<void> resetPassword(String email,
-      void Function(FirebaseAuthException exception) errorCallback) async {
-    try {
-      await firebaseAuth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (exception) {
-      errorCallback(exception);
-    }
+  Future<bool> resetPassword(
+    String email,
+  ) async {
+    await firebaseAuth.sendPasswordResetEmail(email: email);
+    return true;
   }
 
   void toSignedOut() {

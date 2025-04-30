@@ -431,20 +431,17 @@ main() {
     """
       $given $workingWithAuthBloc
       $wheN Calling resetPassword()
-        $and FirebaseAuthException has been thrown
-      $then the errorCallback should be called
+        $then FirebaseAuthException has been thrown
       """,
     setUp: () {
       when(firebaseAuth.sendPasswordResetEmail(email: validEmail))
           .thenThrow(firebaseAuthException);
     },
     build: () => sut,
-    act: (bloc) {
-      sut.resetPassword(validEmail, firebaseAuthExceptionCallback.call);
+    act: (bloc) async {
+      await sut.resetPassword(validEmail);
     },
-    verify: (bloc) {
-      verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
-    },
+    errors: () => [isA<FirebaseAuthException>()],
   );
 
   blocTest(
@@ -459,7 +456,7 @@ main() {
     },
     build: () => sut,
     act: (bloc) {
-      sut.resetPassword(validEmail, firebaseAuthExceptionCallback.call);
+      sut.resetPassword(validEmail);
     },
     verify: (bloc) {
       verify(firebaseAuth.sendPasswordResetEmail(email: validEmail)).called(1);

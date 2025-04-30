@@ -150,17 +150,22 @@ class Password extends HookWidget {
                                   : () async {
                                       final scaffoldMessenger =
                                           ScaffoldMessenger.of(context);
-                                      await authBloc.resetPassword(
+                                      try {
+                                        await authBloc.resetPassword(
                                           emailTextEditingController.text,
-                                          ((exception) {
-                                        scaffoldMessenger.showSnackBar(SnackBar(
-                                          content: Text(
-                                              AppLocalizations.of(context)
-                                                  .nonso_failed(
-                                                      exception.message ??
-                                                          exception.code)),
-                                        ));
-                                      }));
+                                        );
+                                      } on FirebaseAuthException catch (exception) {
+                                        if (context.mounted) {
+                                          scaffoldMessenger
+                                              .showSnackBar(SnackBar(
+                                            content: Text(
+                                                AppLocalizations.of(context)
+                                                    .nonso_failed(
+                                                        exception.message ??
+                                                            exception.code)),
+                                          ));
+                                        }
+                                      }
                                       if (context.mounted) {
                                         scaffoldMessenger.showSnackBar(SnackBar(
                                             content: Text(

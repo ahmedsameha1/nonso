@@ -4,53 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:nonso/nonso.dart';
 
 import 'package:nonso/src/widgets/common.dart';
-import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'widget_testing_helper.dart';
 
-abstract class SignInWithEmailAndPasswordFunction {
-  Future<void> call(String email, String password,
-      void Function(FirebaseAuthException exception) errorCallback);
-}
+class MockAuthBloc extends Mock implements AuthBloc {}
 
-class FakeAuthBloc extends Fake implements AuthBloc {
-  final AuthBloc _authBloc;
-
-  FakeAuthBloc(FirebaseAuth firebaseAuth) : _authBloc = AuthBloc(firebaseAuth);
-
-  @override
-  Future<bool> signInWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
-    _authBloc.emit(AuthState(
-        applicationAuthState: ApplicationAuthState.password, email: email));
-    return _authBloc.signInWithEmailAndPassword(email, password);
-  }
-
-  @override
-  Future<void> resetPassword(String email,
-      void Function(FirebaseAuthException exception) errorCallback) async {
-    _authBloc.resetPassword(email, errorCallback);
-  }
-
-  @override
-  Stream<AuthState> get stream => _authBloc.stream;
-
-  @override
-  AuthState get state => const AuthState(
-      applicationAuthState: ApplicationAuthState.password,
-      email: "test@test.com");
-
-  @override
-  Future<void> close() {
-    return _authBloc.close();
-  }
-}
+class MockFirebaseAuth extends Mock implements FirebaseAuth {}
 
 void main() {
   const validEmail = "test@test.com";
@@ -60,12 +23,9 @@ void main() {
       FirebaseAuthException(code: firebaseAuthExceptionCode);
   final firebaseAuthExceptionWithMessage = FirebaseAuthException(
       code: firebaseAuthExceptionCode, message: "message");
-  const User? nullUser = null;
-  late StreamController<User?> streamController;
+  late StreamController<AuthState> authStateStreamController;
   late BlocProvider widgetInSkeletonInBlocProvider;
-  late FirebaseAuth firebaseAuth;
-  late FakeAuthBloc authBloc;
-  UserCredential userCredential = MockUserCredential();
+  late AuthBloc authBloc;
   late Widget widgetProviderLocalization;
   final signInElevatedButtonFinder =
       find.widgetWithText(ElevatedButton, "Sign in");
@@ -73,11 +33,17 @@ void main() {
       find.widgetWithText(ElevatedButton, "Reset password");
 
   setUp(() {
-    firebaseAuth = MockFirebaseAuth();
-    streamController = StreamController();
-    when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
-    streamController.sink.add(nullUser);
-    authBloc = FakeAuthBloc(firebaseAuth);
+    authStateStreamController = StreamController();
+    authStateStreamController.sink.add(const AuthState(
+        applicationAuthState: ApplicationAuthState.password,
+        email: "test@test.com"));
+    authBloc = MockAuthBloc();
+    when(() => authBloc.stream)
+        .thenAnswer((_) => authStateStreamController.stream);
+    when(() => authBloc.signOut()).thenAnswer((_) => Completer<void>().future);
+    when(() => authBloc.sendEmailToVerifyEmailAddress())
+        .thenAnswer((_) => Completer<void>().future);
+    when(() => authBloc.close()).thenAnswer((_) => Completer<void>().future);
     widgetInSkeleton = createWidgetInASkeleton(Password());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
         create: (context) => authBloc, child: widgetInSkeleton);
@@ -296,9 +262,6 @@ void main() {
             of: textFormFieldFinder.at(1),
             matching: find.text(expectedPasswordValidationErrorString));
         const validPassword = "8*prt&3k";
-        when(firebaseAuth.signInWithEmailAndPassword(
-                email: validEmail, password: validPassword))
-            .thenAnswer((realInvocation) => Future.value(userCredential));
         await tester.pumpWidget(widgetProviderLocalization);
         ElevatedButton signInElevatedButton =
             tester.widget<ElevatedButton>(signInElevatedButtonFinder);
@@ -340,8 +303,7 @@ void main() {
           "Test that a SnackBar with an error text is shown when FirebaseAuthException is thrown",
           (WidgetTester tester) async {
         const password = "oehgolewrbgowerb";
-        when(firebaseAuth.signInWithEmailAndPassword(
-                email: validEmail, password: password))
+        when(() => authBloc.signInWithEmailAndPassword(validEmail, password))
             .thenAnswer((invocaction) async {
           await Future<void>.delayed(const Duration(milliseconds: 30));
           throw firebaseAuthException;
@@ -372,11 +334,10 @@ void main() {
           "Test that no SnackBar is shown when NO FirebaseAuthException is thrown",
           (WidgetTester tester) async {
         const password = "oehgolewrbgowerb";
-        when(firebaseAuth.signInWithEmailAndPassword(
-                email: validEmail, password: password))
+        when(() => authBloc.signInWithEmailAndPassword(validEmail, password))
             .thenAnswer((invocation) async {
           await Future<void>.delayed(const Duration(milliseconds: 30));
-          return Future.value(userCredential);
+          return Future.value(true);
         });
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
         await tester.enterText(textFieldFinder.at(0), validEmail);
@@ -397,8 +358,11 @@ void main() {
       testWidgets(
           "Test that a SnackBar with an error text is shown when FirebaseAuthException without a message is thrown",
           (WidgetTester tester) async {
-        when(firebaseAuth.sendPasswordResetEmail(email: validEmail))
-            .thenThrow(firebaseAuthException);
+        when(() => authBloc.resetPassword(validEmail))
+            .thenAnswer((invocaction) async {
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+          throw firebaseAuthException;
+        });
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.pumpAndSettle();
@@ -418,8 +382,11 @@ void main() {
       testWidgets(
           "Test that a SnackBar with an error text is shown when FirebaseAuthException with a message is thrown",
           (WidgetTester tester) async {
-        when(firebaseAuth.sendPasswordResetEmail(email: validEmail))
-            .thenThrow(firebaseAuthExceptionWithMessage);
+        when(() => authBloc.resetPassword(validEmail))
+            .thenAnswer((invocaction) async {
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+          throw firebaseAuthExceptionWithMessage;
+        });
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.pumpAndSettle();
@@ -439,7 +406,11 @@ void main() {
       testWidgets(
           "Test that a SnackBar with that directs user to check his email inbox is displayed",
           (WidgetTester tester) async {
-        when(firebaseAuth.sendPasswordResetEmail(email: validEmail));
+        when(() => authBloc.resetPassword(validEmail))
+            .thenAnswer((invocation) async {
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+          return Future.value(true);
+        });
         await tester.pumpWidget(widgetInSkeletonInBlocProvider);
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.pumpAndSettle();

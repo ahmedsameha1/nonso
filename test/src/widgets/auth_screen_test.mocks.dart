@@ -177,21 +177,13 @@ class MockAuthBloc extends _i1.Mock implements _i4.AuthBloc {
       ) as _i5.Future<void>);
 
   @override
-  _i5.Future<void> resetPassword(
-    String? email,
-    void Function(_i2.FirebaseAuthException)? errorCallback,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<bool> resetPassword(String? email) => (super.noSuchMethod(
         Invocation.method(
           #resetPassword,
-          [
-            email,
-            errorCallback,
-          ],
+          [email],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
 
   @override
   void toSignedOut() => super.noSuchMethod(
