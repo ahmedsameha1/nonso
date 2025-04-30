@@ -13,8 +13,11 @@ import 'widget_testing_helper.dart';
 
 class MockAuthBloc extends Mock implements AuthBloc {}
 
+class MockUser extends Mock implements User {}
+
 void main() {
   const validEmail = "test@test.com";
+  late User? notNullUser;
   late Widget widgetInSkeleton;
   const firebaseAuthExceptionCode = "code";
   final firebaseAuthException =
@@ -31,10 +34,11 @@ void main() {
       find.widgetWithText(ElevatedButton, "Reset password");
 
   setUp(() {
+    notNullUser = MockUser();
     authStateStreamController = StreamController();
-    authStateStreamController.sink.add(const AuthState(
+    authStateStreamController.sink.add(AuthState(
         applicationAuthState: ApplicationAuthState.password,
-        email: "test@test.com"));
+        user: notNullUser));
     authBloc = MockAuthBloc();
     when(() => authBloc.stream)
         .thenAnswer((_) => authStateStreamController.stream);

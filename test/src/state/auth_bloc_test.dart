@@ -37,16 +37,16 @@ const cancelRegisterExceptionMessage =
     "To cancel registration you need to be at register stage!";
 const verifyEmailExceptionMessage =
     "To verify the email you need to be at emailAddress stage!";
-const lockedState = AuthState(
-    applicationAuthState: ApplicationAuthState.locked, email: validEmail);
-const signedOutState = AuthState(
-    applicationAuthState: ApplicationAuthState.signedOut, email: null);
-const signedInState = AuthState(
-    applicationAuthState: ApplicationAuthState.signedIn, email: validEmail);
+final lockedState = AuthState(
+    applicationAuthState: ApplicationAuthState.locked, user: notNullUser);
+const signedOutState =
+    AuthState(applicationAuthState: ApplicationAuthState.signedOut, user: null);
+final signedInState = AuthState(
+    applicationAuthState: ApplicationAuthState.signedIn, user: notNullUser);
 const passwordState =
-    AuthState(applicationAuthState: ApplicationAuthState.password, email: null);
+    AuthState(applicationAuthState: ApplicationAuthState.password, user: null);
 const registerState =
-    AuthState(applicationAuthState: ApplicationAuthState.register, email: null);
+    AuthState(applicationAuthState: ApplicationAuthState.register, user: null);
 late AuthBloc sut;
 final firebaseAuthExceptionCallback =
     MockFirebaseAuthExceptionErrorCallbackFunction();

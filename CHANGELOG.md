@@ -13,3 +13,7 @@ Undo the last upgrade of the dependencies of the project to the last major versi
 ## 0.0.16
 
 Use SafeArea as a wrapper of screens
+
+## 0.0.17
+
+Expose the FirebaseAuth User in the AuthState instead email

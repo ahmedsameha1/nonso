@@ -1,24 +1,22 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 sealed class AuthEvent {}
 
 final class SignInEvent extends AuthEvent {
-  final String email;
+  final User user;
 
-  SignInEvent(this.email);
+  SignInEvent(this.user);
 }
 
 final class LockedEvent extends AuthEvent {
-  final String email;
+  final User user;
 
-  LockedEvent(this.email);
+  LockedEvent(this.user);
 }
 
-final class PasswordEvent extends AuthEvent {
-  PasswordEvent();
-}
+final class PasswordEvent extends AuthEvent {}
 
-final class RegisterEvent extends AuthEvent {
-  RegisterEvent();
-}
+final class RegisterEvent extends AuthEvent {}
 
 final class SignOutEvent extends AuthEvent {}
 

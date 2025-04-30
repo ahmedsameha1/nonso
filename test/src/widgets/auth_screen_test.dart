@@ -24,7 +24,7 @@ import 'widget_testing_helper.dart';
 @GenerateMocks([AuthBloc])
 void main() {
   const signedOutState = AuthState(
-      applicationAuthState: ApplicationAuthState.signedOut, email: null);
+      applicationAuthState: ApplicationAuthState.signedOut, user: null);
   late Widget widgetInSkeleton;
   late FirebaseAuth firebaseAuth;
   late BlocProvider widgetInSkeletonInBlocProvider;

@@ -14,30 +14,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInEvent>(
       (event, emit) => emit(AuthState(
           applicationAuthState: ApplicationAuthState.signedIn,
-          email: event.email)),
+          user: event.user)),
     );
     on<LockedEvent>(
       (event, emit) => emit(AuthState(
           applicationAuthState: ApplicationAuthState.locked,
-          email: event.email)),
+          user: event.user)),
     );
     on<PasswordEvent>(
       (event, emit) => emit(const AuthState(
-          applicationAuthState: ApplicationAuthState.password, email: null)),
+          applicationAuthState: ApplicationAuthState.password, user: null)),
     );
     on<RegisterEvent>(
       (event, emit) => emit(const AuthState(
-          applicationAuthState: ApplicationAuthState.register, email: null)),
+          applicationAuthState: ApplicationAuthState.register, user: null)),
     );
     on<SignOutEvent>((event, emit) => emit(
           const AuthState(
               applicationAuthState: ApplicationAuthState.signedOut,
-              email: null),
+              user: null),
         ));
     on<CancelButtonEvent>((event, emit) => emit(
           const AuthState(
               applicationAuthState: ApplicationAuthState.signedOut,
-              email: null),
+              user: null),
         ));
   }
 
@@ -46,9 +46,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (!isClosed) {
         if (user != null) {
           if (user.email != null && user.emailVerified) {
-            add(SignInEvent(user.email!));
+            add(SignInEvent(user));
           } else if (user.email != null && !user.emailVerified) {
-            add(LockedEvent(user.email!));
+            add(LockedEvent(user));
           }
         } else {
           add(SignOutEvent());

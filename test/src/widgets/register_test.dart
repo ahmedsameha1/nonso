@@ -34,7 +34,7 @@ void main() {
   setUp(() {
     authStateStreamController = StreamController();
     authStateStreamController.sink.add(const AuthState(
-        applicationAuthState: ApplicationAuthState.register, email: null));
+        applicationAuthState: ApplicationAuthState.register, user: null));
     authBloc = MockAuthBloc();
     when(() => authBloc.stream)
         .thenAnswer((_) => authStateStreamController.stream);
