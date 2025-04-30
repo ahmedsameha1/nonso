@@ -83,23 +83,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<bool> registerAccount(
-      String email,
-      String password,
-      String displayName,
-      void Function(FirebaseAuthException exception) errorCallback) async {
+      String email, String password, String displayName) async {
     if (state.applicationAuthState != ApplicationAuthState.register) {
       throw StateError("To register you need to be at register stage!");
     }
-    try {
-      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      userCredential.user!.updateDisplayName(displayName);
-      await userCredential.user!.sendEmailVerification();
-      return true;
-    } on FirebaseAuthException catch (exception) {
-      errorCallback(exception);
-      return false;
-    }
+    final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+        email: email, password: password);
+    userCredential.user!.updateDisplayName(displayName);
+    await userCredential.user!.sendEmailVerification();
+    return true;
   }
 
   Future<void> signOut() {

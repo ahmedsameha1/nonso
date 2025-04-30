@@ -151,7 +151,6 @@ class MockAuthBloc extends _i1.Mock implements _i4.AuthBloc {
     String? email,
     String? password,
     String? displayName,
-    void Function(_i2.FirebaseAuthException)? errorCallback,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -160,7 +159,6 @@ class MockAuthBloc extends _i1.Mock implements _i4.AuthBloc {
             email,
             password,
             displayName,
-            errorCallback,
           ],
         ),
         returnValue: _i5.Future<bool>.value(false),

@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:flutter/material.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:nonso/src/state/auth_bloc.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
@@ -12,39 +12,10 @@ import 'package:nonso/src/widgets/common.dart';
 import 'package:nonso/src/widgets/register.dart';
 
 import 'package:nonso/l10n/app_localizations.dart';
-import '../state/auth_bloc_test.mocks.dart';
 import 'common_finders.dart';
 import 'widget_testing_helper.dart';
 
-class FakeAuthBloc extends Fake implements AuthBloc {
-  final AuthBloc _authBloc;
-
-  FakeAuthBloc(FirebaseAuth firebaseAuth) : _authBloc = AuthBloc(firebaseAuth);
-
-  @override
-  Future<bool> registerAccount(
-      String email,
-      String password,
-      String displayName,
-      void Function(FirebaseAuthException exception) errorCallback) async {
-    _authBloc.emit(AuthState(
-        applicationAuthState: ApplicationAuthState.register, email: email));
-    return _authBloc.registerAccount(
-        email, password, displayName, errorCallback);
-  }
-
-  @override
-  Stream<AuthState> get stream => _authBloc.stream;
-
-  @override
-  AuthState get state => const AuthState(
-      applicationAuthState: ApplicationAuthState.register, email: null);
-
-  @override
-  Future<void> close() {
-    return _authBloc.close();
-  }
-}
+class MockAuthBloc extends Mock implements AuthBloc {}
 
 void main() {
   const validEmail = "test@test.com";
@@ -54,23 +25,20 @@ void main() {
       FirebaseAuthException(code: firebaseAuthExceptionCode);
   final firebaseAuthExceptionWithMessage = FirebaseAuthException(
       code: firebaseAuthExceptionCode, message: "message");
-  const User? nullUser = null;
-  final User notNullUser = MockUser();
-  late StreamController<User?> streamController;
+  late StreamController<AuthState> authStateStreamController;
   late BlocProvider widgetInSkeletonInBlocProvider;
   late Widget widgetProviderLocalization;
-  late FirebaseAuth firebaseAuth;
-  late FakeAuthBloc authBloc;
-  late UserCredential userCredential;
+  late AuthBloc authBloc;
   final registerElevatedButtonFinder = elevatedButtonFinder.at(1);
 
   setUp(() {
-    firebaseAuth = MockFirebaseAuth();
-    streamController = StreamController();
-    userCredential = MockUserCredential();
-    when(firebaseAuth.userChanges()).thenAnswer((_) => streamController.stream);
-    streamController.sink.add(nullUser);
-    authBloc = FakeAuthBloc(firebaseAuth);
+    authStateStreamController = StreamController();
+    authStateStreamController.sink.add(const AuthState(
+        applicationAuthState: ApplicationAuthState.register, email: null));
+    authBloc = MockAuthBloc();
+    when(() => authBloc.stream)
+        .thenAnswer((_) => authStateStreamController.stream);
+    when(() => authBloc.close()).thenAnswer((_) => Completer<void>().future);
     widgetInSkeleton = createWidgetInASkeleton(Register());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
         create: (context) => authBloc, child: widgetInSkeleton);
@@ -394,8 +362,8 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(widgetProviderLocalization);
         const password = "oehgolewrbgowerb";
-        when(firebaseAuth.createUserWithEmailAndPassword(
-                email: validEmail, password: password))
+        when(() =>
+                authBloc.registerAccount(validEmail, password, userDisplayName))
             .thenAnswer((invodcation) async {
           await Future<void>.delayed(const Duration(milliseconds: 30));
           throw firebaseAuthException;
@@ -427,8 +395,8 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(widgetProviderLocalization);
         const password = "oehgolewrbgowerb";
-        when(firebaseAuth.createUserWithEmailAndPassword(
-                email: validEmail, password: password))
+        when(() =>
+                authBloc.registerAccount(validEmail, password, userDisplayName))
             .thenAnswer((invodcation) async {
           await Future<void>.delayed(const Duration(milliseconds: 30));
           throw firebaseAuthExceptionWithMessage;
@@ -460,14 +428,11 @@ void main() {
           (WidgetTester tester) async {
         await tester.pumpWidget(widgetProviderLocalization);
         const password = "oehgolewrbgowerb";
-        when(notNullUser.updateDisplayName(userDisplayName))
-            .thenAnswer((realInvocation) => Completer<void>().future);
-        when(userCredential.user).thenReturn(notNullUser);
-        when(firebaseAuth.createUserWithEmailAndPassword(
-                email: validEmail, password: password))
+        when(() =>
+                authBloc.registerAccount(validEmail, password, userDisplayName))
             .thenAnswer((realInvocation) async {
           await Future<void>.delayed(const Duration(milliseconds: 30));
-          return Future.value(userCredential);
+          return Future.value(true);
         });
         await tester.enterText(textFieldFinder.at(0), userDisplayName);
         await tester.enterText(textFieldFinder.at(1), validEmail);

@@ -13,8 +13,6 @@ import 'widget_testing_helper.dart';
 
 class MockAuthBloc extends Mock implements AuthBloc {}
 
-class MockFirebaseAuth extends Mock implements FirebaseAuth {}
-
 void main() {
   const validEmail = "test@test.com";
   late Widget widgetInSkeleton;
@@ -40,9 +38,6 @@ void main() {
     authBloc = MockAuthBloc();
     when(() => authBloc.stream)
         .thenAnswer((_) => authStateStreamController.stream);
-    when(() => authBloc.signOut()).thenAnswer((_) => Completer<void>().future);
-    when(() => authBloc.sendEmailToVerifyEmailAddress())
-        .thenAnswer((_) => Completer<void>().future);
     when(() => authBloc.close()).thenAnswer((_) => Completer<void>().future);
     widgetInSkeleton = createWidgetInASkeleton(Password());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(

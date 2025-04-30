@@ -296,8 +296,7 @@ main() {
         $given $workingWithAuthBloc
           $and there is no signed in user
         $wheN Calling registerAccount()
-          $and FirebaseAuthException has been thrown
-        $then the errorCallback() should be called
+          $then FirebaseAuthException has been thrown
 """,
       setUp: () {
         when(firebaseAuth.createUserWithEmailAndPassword(
@@ -307,13 +306,11 @@ main() {
       build: () => sut,
       seed: () => registerState,
       act: (bloc) async {
-        final result = await sut.registerAccount(validEmail, password,
-            displayName, firebaseAuthExceptionCallback.call);
+        final result =
+            await sut.registerAccount(validEmail, password, displayName);
         expect(result, false);
       },
-      verify: (bloc) {
-        verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
-      });
+      errors: () => [isA<FirebaseAuthException>()]);
 
   blocTest(
     """
@@ -335,8 +332,8 @@ main() {
     build: () => sut,
     seed: () => registerState,
     act: (bloc) async {
-      final result = await sut.registerAccount(validEmail, password,
-          displayName, firebaseAuthExceptionCallback.call);
+      final result =
+          await sut.registerAccount(validEmail, password, displayName);
       pushPreparedUserToUserChangesStream(notNullUser, false);
       expect(result, true);
     },
@@ -372,8 +369,8 @@ main() {
     seed: () => registerState,
     act: (bloc) async {
       await bloc.close();
-      final result = await sut.registerAccount(validEmail, password,
-          displayName, firebaseAuthExceptionCallback.call);
+      final result =
+          await sut.registerAccount(validEmail, password, displayName);
       pushPreparedUserToUserChangesStream(notNullUser, false);
       expect(result, true);
     },
@@ -664,8 +661,11 @@ main() {
     build: () => sut,
     seed: () => signedOutState,
     act: (bloc) async {
-      await sut.registerAccount(validEmail, password, displayName,
-          firebaseAuthExceptionCallback.call);
+      await sut.registerAccount(
+        validEmail,
+        password,
+        displayName,
+      );
     },
     errors: () => [
       predicate((e) => e is StateError && e.message == registerExceptionMessage)
@@ -682,8 +682,11 @@ main() {
     build: () => sut,
     seed: () => signedInState,
     act: (bloc) async {
-      await sut.registerAccount(validEmail, password, displayName,
-          firebaseAuthExceptionCallback.call);
+      await sut.registerAccount(
+        validEmail,
+        password,
+        displayName,
+      );
     },
     errors: () => [
       predicate((e) => e is StateError && e.message == registerExceptionMessage)
@@ -700,8 +703,11 @@ main() {
     build: () => sut,
     seed: () => passwordState,
     act: (bloc) async {
-      await sut.registerAccount(validEmail, password, displayName,
-          firebaseAuthExceptionCallback.call);
+      await sut.registerAccount(
+        validEmail,
+        password,
+        displayName,
+      );
     },
     errors: () => [
       predicate((e) => e is StateError && e.message == registerExceptionMessage)
@@ -718,8 +724,11 @@ main() {
     build: () => sut,
     seed: () => lockedState,
     act: (bloc) async {
-      await sut.registerAccount(validEmail, password, displayName,
-          firebaseAuthExceptionCallback.call);
+      await sut.registerAccount(
+        validEmail,
+        password,
+        displayName,
+      );
     },
     errors: () => [
       predicate((e) => e is StateError && e.message == registerExceptionMessage)

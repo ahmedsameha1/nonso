@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -167,17 +168,24 @@ class Register extends HookWidget {
                                           AppLocalizations.of(context)
                                               .nonso_success;
                                       isAwaiting.value = true;
-                                      final result = await authBloc.registerAccount(
+                                      bool result = false;
+                                      try {
+                                        result = await authBloc.registerAccount(
                                           emailTextEditingController.text,
                                           passwordTextEditingController.text,
                                           nameTextEditingController.text,
-                                          ((exception) => scaffoldMessenger
-                                              .showSnackBar(SnackBar(
+                                        );
+                                      } on FirebaseAuthException catch (exception) {
+                                        if (context.mounted) {
+                                          scaffoldMessenger.showSnackBar(
+                                              SnackBar(
                                                   content: Text(AppLocalizations
                                                           .of(context)
                                                       .nonso_failed(exception
                                                               .message ??
-                                                          exception.code))))));
+                                                          exception.code))));
+                                        }
+                                      }
                                       isAwaiting.value = false;
                                       if (result) {
                                         scaffoldMessenger.showSnackBar(SnackBar(
