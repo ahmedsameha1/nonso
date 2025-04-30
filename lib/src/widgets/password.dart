@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -109,16 +110,22 @@ class Password extends HookWidget {
                                       final scaffoldMessenger =
                                           ScaffoldMessenger.of(context);
                                       isAwaiting.value = true;
-                                      await authBloc.signInWithEmailAndPassword(
-                                          emailTextEditingController.text,
-                                          passwordTextEditingController.text,
-                                          ((exception) {
-                                        scaffoldMessenger.showSnackBar(SnackBar(
-                                            content: Text(
-                                                AppLocalizations.of(context)
-                                                    .nonso_failed(
-                                                        exception.code))));
-                                      }));
+                                      try {
+                                        await authBloc
+                                            .signInWithEmailAndPassword(
+                                                emailTextEditingController.text,
+                                                passwordTextEditingController
+                                                    .text);
+                                      } on FirebaseAuthException catch (exception) {
+                                        if (context.mounted) {
+                                          scaffoldMessenger.showSnackBar(
+                                              SnackBar(
+                                                  content: Text(AppLocalizations
+                                                          .of(context)
+                                                      .nonso_failed(
+                                                          exception.code))));
+                                        }
+                                      }
                                       if (context.mounted) {
                                         isAwaiting.value = false;
                                       }

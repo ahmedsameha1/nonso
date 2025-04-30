@@ -23,11 +23,13 @@ class FakeAuthBloc extends Fake implements AuthBloc {
   FakeAuthBloc(FirebaseAuth firebaseAuth) : _authBloc = AuthBloc(firebaseAuth);
 
   @override
-  Future<bool> signInWithEmailAndPassword(String email, String password,
-      void Function(FirebaseAuthException exception) errorCallback) async {
+  Future<bool> signInWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
     _authBloc.emit(AuthState(
         applicationAuthState: ApplicationAuthState.password, email: email));
-    return _authBloc.signInWithEmailAndPassword(email, password, errorCallback);
+    return _authBloc.signInWithEmailAndPassword(email, password);
   }
 
   @override

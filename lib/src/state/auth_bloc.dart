@@ -65,17 +65,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     add(PasswordEvent());
   }
 
-  Future<bool> signInWithEmailAndPassword(String email, String password,
-      void Function(FirebaseAuthException exception) errorCallback) async {
+  Future<bool> signInWithEmailAndPassword(String email, String password) async {
     if (state.applicationAuthState != ApplicationAuthState.password) {
       throw StateError("To sign in you need to be at password stage!");
     }
-    try {
-      await firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
-    } on FirebaseAuthException catch (exception) {
-      errorCallback(exception);
-    }
+    await firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
     return true;
   }
 

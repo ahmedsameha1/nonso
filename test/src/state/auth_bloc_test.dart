@@ -140,27 +140,25 @@ main() {
     expect: () => [passwordState],
   );
 
-  blocTest("""
+  blocTest(
+    """
         $given $workingWithAuthBloc
           $and there is no signed in user
-        $wheN Calling signInWithEmailAndPassword()
-          $and FirebaseAuthException has been thrown
-        $then the errorCallback() should be called
+        $wheN Calling signInWithEmailAndPassword() with a reason to fail
+          $then FirebaseAuthException has been thrown
 """,
-      setUp: () {
-        when(firebaseAuth.signInWithEmailAndPassword(
-                email: invalidEmail, password: password))
-            .thenThrow(firebaseAuthException);
-      },
-      build: () => sut,
-      seed: () => passwordState,
-      act: (bloc) async {
-        await sut.signInWithEmailAndPassword(
-            invalidEmail, password, firebaseAuthExceptionCallback.call);
-      },
-      verify: (bloc) {
-        verify(firebaseAuthExceptionCallback(firebaseAuthException)).called(1);
-      });
+    setUp: () {
+      when(firebaseAuth.signInWithEmailAndPassword(
+              email: invalidEmail, password: password))
+          .thenThrow(firebaseAuthException);
+    },
+    build: () => sut,
+    seed: () => passwordState,
+    act: (bloc) async {
+      await sut.signInWithEmailAndPassword(invalidEmail, password);
+    },
+    errors: () => [isA<FirebaseAuthException>()],
+  );
 
   blocTest(
     """
@@ -179,12 +177,8 @@ main() {
     build: () => sut,
     seed: () => passwordState,
     act: (bloc) async {
-      await sut.signInWithEmailAndPassword(
-          validEmail, password, firebaseAuthExceptionCallback.call);
+      await sut.signInWithEmailAndPassword(validEmail, password);
       pushPreparedUserToUserChangesStream(notNullUser, false);
-    },
-    verify: (bloc) {
-      verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
     },
     expect: () => [lockedState],
   );
@@ -208,12 +202,8 @@ main() {
     seed: () => passwordState,
     act: (bloc) async {
       await sut.close();
-      await sut.signInWithEmailAndPassword(
-          validEmail, password, firebaseAuthExceptionCallback.call);
+      await sut.signInWithEmailAndPassword(validEmail, password);
       pushPreparedUserToUserChangesStream(notNullUser, false);
-    },
-    verify: (bloc) {
-      verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
     },
     expect: () => [],
   );
@@ -235,12 +225,8 @@ main() {
     build: () => sut,
     seed: () => passwordState,
     act: (bloc) async {
-      await sut.signInWithEmailAndPassword(
-          validEmail, password, firebaseAuthExceptionCallback.call);
+      await sut.signInWithEmailAndPassword(validEmail, password);
       pushPreparedUserToUserChangesStream(notNullUser, true);
-    },
-    verify: (bloc) {
-      verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
     },
     expect: () => [signedInState],
   );
@@ -264,12 +250,8 @@ main() {
     seed: () => passwordState,
     act: (bloc) async {
       await sut.close();
-      await sut.signInWithEmailAndPassword(
-          validEmail, password, firebaseAuthExceptionCallback.call);
+      await sut.signInWithEmailAndPassword(validEmail, password);
       pushPreparedUserToUserChangesStream(notNullUser, true);
-    },
-    verify: (bloc) {
-      verifyNever(firebaseAuthExceptionCallback(firebaseAuthException));
     },
     expect: () => [],
   );
@@ -613,8 +595,7 @@ main() {
     build: () => sut,
     seed: () => signedOutState,
     act: (bloc) async {
-      await sut.signInWithEmailAndPassword(
-          validEmail, password, firebaseAuthExceptionCallback.call);
+      await sut.signInWithEmailAndPassword(validEmail, password);
     },
     errors: () => [
       predicate(
@@ -632,8 +613,7 @@ main() {
     build: () => sut,
     seed: () => signedInState,
     act: (bloc) async {
-      await sut.signInWithEmailAndPassword(
-          validEmail, password, firebaseAuthExceptionCallback.call);
+      await sut.signInWithEmailAndPassword(validEmail, password);
     },
     errors: () => [
       predicate(
@@ -651,8 +631,7 @@ main() {
     build: () => sut,
     seed: () => registerState,
     act: (bloc) async {
-      await sut.signInWithEmailAndPassword(
-          validEmail, password, firebaseAuthExceptionCallback.call);
+      await sut.signInWithEmailAndPassword(validEmail, password);
     },
     errors: () => [
       predicate(
@@ -670,8 +649,7 @@ main() {
     build: () => sut,
     seed: () => lockedState,
     act: (bloc) async {
-      await sut.signInWithEmailAndPassword(
-          validEmail, password, firebaseAuthExceptionCallback.call);
+      await sut.signInWithEmailAndPassword(validEmail, password);
     },
     errors: () => [
       predicate(
