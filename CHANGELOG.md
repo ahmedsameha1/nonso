@@ -17,3 +17,6 @@ Use SafeArea as a wrapper of screens
 ## 0.0.17
 
 Expose the FirebaseAuth User in the AuthState instead email
+
+## 0.0.18
+Upgrade intl package to 0.20.2
