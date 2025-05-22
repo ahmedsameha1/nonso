@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nonso/src/state/auth_bloc.dart';
+import 'package:nonso/src/state/auth_events.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 
@@ -733,6 +734,36 @@ main() {
     errors: () => [
       predicate((e) => e is StateError && e.message == registerExceptionMessage)
     ],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+        $and $theCurrentStateIs $passwordState
+          $wheN add RegisterEvent to the bloc 
+        $then $theResultStateIs $registerState
+      """,
+    build: () => sut,
+    seed: () => passwordState,
+    act: (bloc) {
+      bloc.add(RegisterEvent());
+    },
+    expect: () => [registerState],
+  );
+
+  blocTest(
+    """
+        $given $workingWithAuthBloc
+        $and $theCurrentStateIs $registerState
+          $wheN add PasswordEvent to the bloc 
+        $then $theResultStateIs $passwordState
+      """,
+    build: () => sut,
+    seed: () => registerState,
+    act: (bloc) {
+      bloc.add(PasswordEvent());
+    },
+    expect: () => [passwordState],
   );
 }
 
