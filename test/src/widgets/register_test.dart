@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nonso/src/state/auth_bloc.dart';
+import 'package:nonso/src/state/auth_events.dart';
 import 'package:nonso/src/state/auth_state.dart';
 import 'package:nonso/src/state/value_classes/application_auth_state.dart';
 import 'package:nonso/src/widgets/common.dart';
@@ -42,6 +43,7 @@ void main() {
     widgetInSkeleton = createWidgetInASkeleton(Register());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
         create: (context) => authBloc, child: widgetInSkeleton);
+    registerFallbackValue(SignOutEvent());
   });
 
   group("English locale", () {
@@ -62,6 +64,7 @@ void main() {
         "Success: Check your email inbox to verify your email address.";
     String expectedFailureCodeString = "Failure: code";
     String expectedFailureMessageString = "Failure: message";
+    String expectedSignInString = "Sign in";
 
     setUp(() {
       widgetProviderLocalization = Localizations(
@@ -75,20 +78,28 @@ void main() {
       await tester.pumpWidget(widgetProviderLocalization);
       final registerFinder = find.byType(Register);
       expect(registerFinder, findsOneWidget);
-      expect(find.descendant(of: registerFinder, matching: centerFinder),
+      expect(find.descendant(of: registerFinder, matching: centerFinder.at(0)),
           findsOneWidget);
+      ListView listView = tester.widget(
+          find.descendant(of: centerFinder, matching: find.byType(ListView)));
+      expect(listView.padding!.vertical, 20);
+      expect(listView.shrinkWrap, isTrue);
+      Text registerText = tester.widget(find.descendant(
+          of: find.byWidget(listView),
+          matching: find.descendant(
+              of: centerFinder.at(1), matching: find.byType(Text))));
+      expect(registerText.data, expectedRegisterString);
+      expect(registerText.textAlign, TextAlign.center);
+      expect(registerText.style!.fontWeight, FontWeight.w400);
+      expect(registerText.style!.fontSize, 36.0);
       Card card = tester.widget(
-        find.descendant(of: centerFinder, matching: cardFinder),
+        find.descendant(of: find.byWidget(listView), matching: cardFinder),
       );
       expect(card.margin!.horizontal, 40);
       expect(card.margin!.vertical, 40);
-      expect(
-          find.descendant(
-              of: find.byWidget(card), matching: singleChildScrollViewFinder),
-          findsOneWidget);
       Padding padding = tester.widget(
         find.descendant(
-            of: singleChildScrollViewFinder,
+            of: cardFinder,
             matching: find.byKey(const Key("paddingAroundColumn"))),
       );
       expect(padding.padding.horizontal, 32);
@@ -200,6 +211,11 @@ void main() {
                   .toList(),
               [tester.widget(confirmPasswordFormFinder), sizedBox, row]),
           isTrue);
+      TextButton signInTextButton = tester.widget(find.descendant(
+          of: find.byWidget(listView),
+          matching: find.descendant(
+              of: centerFinder.at(2), matching: find.byType(TextButton))));
+      expect((signInTextButton.child as Text).data, expectedSignInString);
     });
 
     group("Form validation", () {
@@ -452,6 +468,12 @@ void main() {
                 of: snackBarFinder, matching: find.text(expectedSuccessString)),
             findsOneWidget);
       });
+    });
+
+    testWidgets('Sign in button', (WidgetTester tester) async {
+      await tester.pumpWidget(widgetProviderLocalization);
+      await tester.tap(find.widgetWithText(TextButton, expectedSignInString));
+      verify(() => authBloc.add((any(that: isA<PasswordEvent>()))));
     });
   });
 }
