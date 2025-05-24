@@ -18,8 +18,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     on<LockedEvent>(
       (event, emit) => emit(AuthState(
-          applicationAuthState: ApplicationAuthState.locked,
-          user: event.user)),
+          applicationAuthState: ApplicationAuthState.locked, user: event.user)),
     );
     on<PasswordEvent>(
       (event, emit) => emit(const AuthState(
@@ -31,13 +30,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     on<SignOutEvent>((event, emit) => emit(
           const AuthState(
-              applicationAuthState: ApplicationAuthState.signedOut,
-              user: null),
+              applicationAuthState: ApplicationAuthState.signedOut, user: null),
         ));
     on<CancelButtonEvent>((event, emit) => emit(
           const AuthState(
-              applicationAuthState: ApplicationAuthState.signedOut,
-              user: null),
+              applicationAuthState: ApplicationAuthState.signedOut, user: null),
         ));
   }
 

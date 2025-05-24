@@ -20,3 +20,7 @@ Expose the FirebaseAuth User in the AuthState instead email
 
 ## 0.0.18
 Upgrade intl package to 0.20.2
+
+## 0.0.19
+Add a sign in button to Register page
+Add a register button to Password page
