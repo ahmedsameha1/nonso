@@ -43,7 +43,11 @@ void main() {
     authBloc = MockAuthBloc();
     when(() => authBloc.stream)
         .thenAnswer((_) => authStateStreamController.stream);
+    when(() => authBloc.state).thenAnswer((_) => AuthState(
+        applicationAuthState: ApplicationAuthState.password,
+        user: notNullUser));
     when(() => authBloc.close()).thenAnswer((_) => Completer<void>().future);
+    when(() => notNullUser!.displayName).thenReturn("John");
     widgetInSkeleton = createWidgetInASkeleton(Password());
     widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
         create: (context) => authBloc, child: widgetInSkeleton);
@@ -65,6 +69,7 @@ void main() {
     String expectedResetCodeSet =
         "Check your email inbox to reset your password";
     String expectedRegisterString = "Register";
+    String expectedWelcomeString = "Welcome John!";
 
     setUp(() {
       widgetProviderLocalization = Localizations(
@@ -363,13 +368,22 @@ void main() {
         await tester.enterText(textFieldFinder.at(1), password);
         await tester.pumpAndSettle();
         await tester.tap(signInElevatedButtonFinder);
-        await tester.pump();
-        expect(
-            find.descendant(
-                of: centerFinder, matching: circularProgressIndicatorFinder),
-            findsOneWidget);
-        await tester.pumpAndSettle();
-        expect(snackBarFinder, findsNothing);
+        await tester.runAsync(
+          () async {
+            await tester.pump();
+            expect(
+                find.descendant(
+                    of: centerFinder,
+                    matching: circularProgressIndicatorFinder),
+                findsOneWidget);
+            await tester.pumpAndSettle();
+            expect(
+                find.descendant(
+                    of: snackBarFinder,
+                    matching: find.text(expectedWelcomeString)),
+                findsOneWidget);
+          },
+        );
       });
     });
 

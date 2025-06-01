@@ -213,6 +213,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This doesn\'t match the given password.'**
   String get nonso_confirmPasswordValidationError;
+
+  /// No description provided for @nonso_welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome {name}!'**
+  String nonso_welcome(String name);
 }
 
 class _AppLocalizationsDelegate

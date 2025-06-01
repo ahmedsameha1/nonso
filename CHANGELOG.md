@@ -24,3 +24,6 @@ Upgrade intl package to 0.20.2
 ## 0.0.19
 Add a sign in button to Register page
 Add a register button to Password page
+
+## 0.0.22
+Show a welcome messeage in a Snackbar after singning in successfully

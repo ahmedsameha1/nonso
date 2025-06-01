@@ -75,4 +75,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get nonso_confirmPasswordValidationError =>
       'This doesn\'t match the given password.';
+
+  @override
+  String nonso_welcome(String name) {
+    return 'Welcome $name!';
+  }
 }

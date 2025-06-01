@@ -32,5 +32,13 @@
             }
         }
     },
-    "nonso_confirmPasswordValidationError": "This doesn't match the given password."
+    "nonso_confirmPasswordValidationError": "This doesn't match the given password.",
+    "nonso_welcome": "Welcome {name}!",
+    "@nonso_welcome": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    }
 }

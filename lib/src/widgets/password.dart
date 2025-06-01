@@ -148,6 +148,14 @@ class Password extends HookWidget {
                                           }
                                           if (context.mounted) {
                                             isAwaiting.value = false;
+                                            scaffoldMessenger.showSnackBar(
+                                                SnackBar(
+                                                    content: Text(AppLocalizations
+                                                            .of(context)
+                                                        .nonso_welcome(authBloc
+                                                            .state
+                                                            .user!
+                                                            .displayName!))));
                                           }
                                         },
                                   child: Text(AppLocalizations.of(context)
