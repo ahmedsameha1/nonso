@@ -27,3 +27,6 @@ Add a register button to Password page
 
 ## 0.0.22
 Show a welcome messeage in a Snackbar after singning in successfully
+
+## 0.0.23
+Fix a bug when showing the welcome message

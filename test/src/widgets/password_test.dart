@@ -9,6 +9,7 @@ import 'package:nonso/nonso.dart';
 import 'package:nonso/src/state/auth_events.dart';
 
 import 'package:nonso/src/widgets/common.dart';
+
 import 'common_finders.dart';
 import 'widget_testing_helper.dart';
 
@@ -16,19 +17,28 @@ class MockAuthBloc extends Mock implements AuthBloc {}
 
 class MockUser extends Mock implements User {}
 
+Widget createWidgetInASkeleton(
+    AuthBloc authBloc, Locale locale, Widget widget) {
+  return RepositoryProvider.value(
+    value: authBloc,
+    child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: locale,
+        home: Scaffold(body: widget)),
+  );
+}
+
 void main() {
   const validEmail = "test@test.com";
   late User? notNullUser;
-  late Widget widgetInSkeleton;
   const firebaseAuthExceptionCode = "code";
   final firebaseAuthException =
       FirebaseAuthException(code: firebaseAuthExceptionCode);
   final firebaseAuthExceptionWithMessage = FirebaseAuthException(
       code: firebaseAuthExceptionCode, message: "message");
   late StreamController<AuthState> authStateStreamController;
-  late BlocProvider widgetInSkeletonInBlocProvider;
   late AuthBloc authBloc;
-  late Widget widgetProviderLocalization;
   final signInElevatedButtonFinder =
       find.widgetWithText(ElevatedButton, "Sign in");
   final resetPasswordButtonFinder =
@@ -38,19 +48,13 @@ void main() {
     notNullUser = MockUser();
     authStateStreamController = StreamController();
     authStateStreamController.sink.add(AuthState(
-        applicationAuthState: ApplicationAuthState.password,
-        user: notNullUser));
+        applicationAuthState: ApplicationAuthState.password, user: null));
     authBloc = MockAuthBloc();
     when(() => authBloc.stream)
         .thenAnswer((_) => authStateStreamController.stream);
     when(() => authBloc.state).thenAnswer((_) => AuthState(
-        applicationAuthState: ApplicationAuthState.password,
-        user: notNullUser));
-    when(() => authBloc.close()).thenAnswer((_) => Completer<void>().future);
+        applicationAuthState: ApplicationAuthState.password, user: null));
     when(() => notNullUser!.displayName).thenReturn("John");
-    widgetInSkeleton = createWidgetInASkeleton(Password());
-    widgetInSkeletonInBlocProvider = BlocProvider<AuthBloc>(
-        create: (context) => authBloc, child: widgetInSkeleton);
     registerFallbackValue(SignOutEvent());
   });
 
@@ -71,16 +75,10 @@ void main() {
     String expectedRegisterString = "Register";
     String expectedWelcomeString = "Welcome John!";
 
-    setUp(() {
-      widgetProviderLocalization = Localizations(
-          locale: currentLocale,
-          delegates: AppLocalizations.localizationsDelegates,
-          child: widgetInSkeletonInBlocProvider);
-    });
-
     testWidgets("Test the precense of the main widgets",
         (WidgetTester tester) async {
-      await tester.pumpWidget(widgetProviderLocalization);
+      await tester.pumpWidget(
+          createWidgetInASkeleton(authBloc, currentLocale, Password()));
       final passwordFinder = find.byType(Password);
       expect(passwordFinder, findsOneWidget);
       expect(find.descendant(of: passwordFinder, matching: centerFinder.at(0)),
@@ -223,7 +221,8 @@ void main() {
         final emailValidationErrorTextFinder = find.descendant(
             of: emailTextFormFieldFinder,
             matching: find.text(expectedInvalidEmailString));
-        await tester.pumpWidget(widgetProviderLocalization);
+        await tester.pumpWidget(
+            createWidgetInASkeleton(authBloc, currentLocale, Password()));
         ElevatedButton signInElevatedButton =
             tester.widget<ElevatedButton>(signInElevatedButtonFinder);
         ElevatedButton resetPasswordElevatedButton =
@@ -286,7 +285,8 @@ void main() {
             of: textFormFieldFinder.at(1),
             matching: find.text(expectedPasswordValidationErrorString));
         const validPassword = "8*prt&3k";
-        await tester.pumpWidget(widgetProviderLocalization);
+        await tester.pumpWidget(
+            createWidgetInASkeleton(authBloc, currentLocale, Password()));
         ElevatedButton signInElevatedButton =
             tester.widget<ElevatedButton>(signInElevatedButtonFinder);
         ElevatedButton resetPasswordElevatedButton =
@@ -332,7 +332,8 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 30));
           throw firebaseAuthException;
         });
-        await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+        await tester.pumpWidget(
+            createWidgetInASkeleton(authBloc, currentLocale, Password()));
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.enterText(textFieldFinder.at(1), password);
         await tester.pumpAndSettle();
@@ -363,7 +364,16 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 30));
           return Future.value(true);
         });
-        await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+        authStateStreamController.sink.add(AuthState(
+            applicationAuthState: ApplicationAuthState.signedIn,
+            user: notNullUser));
+        when(() => authBloc.stream)
+            .thenAnswer((_) => authStateStreamController.stream);
+        when(() => authBloc.state).thenAnswer((_) => AuthState(
+            applicationAuthState: ApplicationAuthState.signedIn,
+            user: notNullUser));
+        await tester.pumpWidget(
+            createWidgetInASkeleton(authBloc, currentLocale, Password()));
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.enterText(textFieldFinder.at(1), password);
         await tester.pumpAndSettle();
@@ -396,7 +406,8 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 30));
           throw firebaseAuthException;
         });
-        await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+        await tester.pumpWidget(
+            createWidgetInASkeleton(authBloc, currentLocale, Password()));
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.pumpAndSettle();
         ElevatedButton resetPasswordElevatedButton =
@@ -420,7 +431,8 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 30));
           throw firebaseAuthExceptionWithMessage;
         });
-        await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+        await tester.pumpWidget(
+            createWidgetInASkeleton(authBloc, currentLocale, Password()));
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.pumpAndSettle();
         ElevatedButton resetPasswordElevatedButton =
@@ -444,7 +456,8 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 30));
           return Future.value(true);
         });
-        await tester.pumpWidget(widgetInSkeletonInBlocProvider);
+        await tester.pumpWidget(
+            createWidgetInASkeleton(authBloc, currentLocale, Password()));
         await tester.enterText(textFieldFinder.at(0), validEmail);
         await tester.pumpAndSettle();
         ElevatedButton resetPasswordElevatedButton =
@@ -461,7 +474,8 @@ void main() {
     });
 
     testWidgets('Register button', (WidgetTester tester) async {
-      await tester.pumpWidget(widgetProviderLocalization);
+      await tester.pumpWidget(
+          createWidgetInASkeleton(authBloc, currentLocale, Password()));
       await tester.tap(find.widgetWithText(TextButton, expectedRegisterString));
       verify(() => authBloc.add((any(that: isA<RegisterEvent>()))));
     });
