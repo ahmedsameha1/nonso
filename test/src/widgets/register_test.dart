@@ -195,22 +195,21 @@ void main() {
           tester.widget(cancelElevatedButtonFinder);
       expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
       expect(
-          checkWidgetsOrder(row.children.toList(), [
+          row.children.toList(),
+          containsAllInOrder([
             cancelElevatedButton,
             tester.widget(registerElevatedButtonFinder)
-          ]),
-          isTrue);
+          ]));
       SizedBox sizedBox = tester
           .widget(find.byKey(const Key("gapBetweenTextFieldsAndButtons")));
       expect(sizedBox.height, 15);
       expect(
-          checkWidgetsOrder(
-              tester
-                  .widgetList(find.descendant(
-                      of: columnFinder, matching: find.bySubtype<Widget>()))
-                  .toList(),
-              [tester.widget(confirmPasswordFormFinder), sizedBox, row]),
-          isTrue);
+          tester
+              .widgetList(find.descendant(
+                  of: columnFinder, matching: find.bySubtype<Widget>()))
+              .toList(),
+          containsAllInOrder(
+              [tester.widget(confirmPasswordFormFinder), sizedBox, row]));
       TextButton signInTextButton = tester.widget(find.descendant(
           of: find.byWidget(listView),
           matching: find.descendant(

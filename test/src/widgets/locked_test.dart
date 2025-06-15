@@ -141,22 +141,20 @@ void main() {
           authBloc.sendEmailToVerifyEmailAddress);
       expect(logoutElevatedButton.onPressed, authBloc.signOut);
       expect(
-          checkWidgetsOrder(
-              tester
-                  .widgetList(find.descendant(
-                      of: find.byWidget(column),
-                      matching: find.bySubtype<Widget>()))
-                  .toList(),
-              [
-                container,
-                firstSizedBox,
-                refreshAccountElevatedButton,
-                secondSizedBox,
-                sendVerificationEmailElevatedButton,
-                thirdSizedBox,
-                logoutElevatedButton
-              ]),
-          isTrue);
+          tester
+              .widgetList(find.descendant(
+                  of: find.byWidget(column),
+                  matching: find.bySubtype<Widget>()))
+              .toList(),
+          containsAllInOrder([
+            container,
+            firstSizedBox,
+            refreshAccountElevatedButton,
+            secondSizedBox,
+            sendVerificationEmailElevatedButton,
+            thirdSizedBox,
+            logoutElevatedButton,
+          ]));
     });
   });
 }

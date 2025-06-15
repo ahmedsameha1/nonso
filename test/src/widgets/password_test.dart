@@ -188,25 +188,23 @@ void main() {
           tester.widget(cancelElevatedButtonFinder);
       expect(cancelElevatedButton.onPressed, authBloc.toSignedOut);
       expect(
-          checkWidgetsOrder(firstRow.children.toList(), [
+          firstRow.children.toList(),
+          containsAllInOrder([
             cancelElevatedButton,
             tester.widget(signInElevatedButtonFinder)
-          ]),
-          isTrue);
+          ]));
       expect(
-          checkWidgetsOrder(
-              tester
-                  .widgetList(find.descendant(
-                      of: columnFinder, matching: find.bySubtype<Widget>()))
-                  .toList(),
-              [
-                tester.widget(passwordFormFinder),
-                firstSizedBox,
-                firstRow,
-                secondSizedBox,
-                secondRow
-              ]),
-          isTrue);
+          tester
+              .widgetList(find.descendant(
+                  of: columnFinder, matching: find.bySubtype<Widget>()))
+              .toList(),
+          containsAllInOrder([
+            tester.widget(passwordFormFinder),
+            firstSizedBox,
+            firstRow,
+            secondSizedBox,
+            secondRow
+          ]));
       TextButton registerTextButton = tester.widget(find.descendant(
           of: find.byWidget(listView),
           matching: find.descendant(

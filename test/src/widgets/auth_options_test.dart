@@ -72,14 +72,11 @@ void main() {
       expect(registerSizedBox.width, 8);
       Text registerText = tester.widget(registerTextFinder);
       expect(
-          checkWidgetsOrder(
-              tester
-                  .widgetList(find.descendant(
-                      of: registerRowFinder,
-                      matching: find.bySubtype<Widget>()))
-                  .toList(),
-              [registerIcon, registerSizedBox, registerText]),
-          isTrue);
+          tester
+              .widgetList(find.descendant(
+                  of: registerRowFinder, matching: find.bySubtype<Widget>()))
+              .toList(),
+          containsAllInOrder([registerIcon, registerSizedBox, registerText]));
       await tester.tap(registerButtonFinder);
       verify(mockAuthBloc.startRegistration()).called(1);
       final signInButtonFinder = elevatedButtonFinder.at(1);
@@ -95,30 +92,26 @@ void main() {
       expect(signInSizedBox.width, 8);
       Text signInText = tester.widget(signInTextFinder);
       expect(
-          checkWidgetsOrder(
-              tester
-                  .widgetList(find.descendant(
-                      of: signInRowFinder, matching: find.bySubtype<Widget>()))
-                  .toList(),
-              [signInIcon, signInSizedBox, signInText]),
-          isTrue);
+          tester
+              .widgetList(find.descendant(
+                  of: signInRowFinder, matching: find.bySubtype<Widget>()))
+              .toList(),
+          containsAllInOrder([signInIcon, signInSizedBox, signInText]));
       await tester.tap(signInButtonFinder);
       verify(mockAuthBloc.startSigningIn()).called(1);
       final SizedBox gapBetweenButtonsSizedBox =
           tester.widget(find.byKey(const Key("gapBetweenButtons")));
       expect(gapBetweenButtonsSizedBox.height, 10);
       expect(
-          checkWidgetsOrder(
-              tester
-                  .widgetList(find.descendant(
-                      of: columnFinder, matching: find.bySubtype<Widget>()))
-                  .toList(),
-              [
-                tester.widget(registerButtonFinder),
-                gapBetweenButtonsSizedBox,
-                tester.widget(signInButtonFinder)
-              ]),
-          isTrue);
+          tester
+              .widgetList(find.descendant(
+                  of: columnFinder, matching: find.bySubtype<Widget>()))
+              .toList(),
+          containsAllInOrder([
+            tester.widget(registerButtonFinder),
+            gapBetweenButtonsSizedBox,
+            tester.widget(signInButtonFinder)
+          ]));
     });
   });
 }
